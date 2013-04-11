@@ -1,0 +1,19 @@
+{
+  "name": "seniorproject",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git", 
+    "url": "git@github.com:eagler/seniorproject.git"
+  },
+  "description": "senior project",
+  "dependencies": {
+    "async": "0.1.9",
+    "node-uuid": "1.2.0",
+    "redis": "",
+    "underscore": "",
+    "getconfig": "",
+    "socket.io": "",
+    "express": ""
+  },
+  "main": "server.js"
+}
