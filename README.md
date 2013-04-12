@@ -8,6 +8,7 @@ Sophia Westwood
 
 How to run
 
-cd real_server
-npm install
-node server
+- cd real_server
+- node server
+- http://localhost:8890/server
+- http://localhost:8890/client

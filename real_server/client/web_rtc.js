@@ -71,7 +71,8 @@
         };
         this.dataChannel.onmessage = function(message) {
           console.log("data stream message");
-          return console.log(message);
+          console.log(message);
+          return _this.receiveEvent(message.data);
         };
         return this.dataChannel.onerror = function(err) {
           return console.log("data stream error: " + err);
@@ -80,6 +81,17 @@
         error = _error;
         console.log("seems that DataChannel is NOT actually supported!");
         throw error;
+      }
+    };
+
+    WebRTC.prototype.receiveEvent = function(messageEventData) {
+      var eventName, messageData;
+
+      messageEventData = JSON.parse(messageEventData);
+      eventName = messageEventData.eventName;
+      messageData = messageEventData.data;
+      if (this.onMessageCallback) {
+        this.onMessageCallback(messageData);
       }
     };
 

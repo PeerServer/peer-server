@@ -31,11 +31,6 @@ class window.WebRTC
     @serverRTCPC.onicecandidate = (event) =>
       @connection.emit("sendICECandidate", "server", event.candidate)
 
-#    @serverRTCPC.ondatachannel = (evt) =>
-#      console.log('data channel connecting to server');
-#      @dataChannel = evt.channel
-#      return
-    
   createDataChannel: =>
     try
       console.log "createDataChannel to server"
@@ -50,6 +45,8 @@ class window.WebRTC
       @dataChannel.onmessage = (message) =>
         console.log "data stream message"
         console.log message
+        @receiveEvent(message.data)
+        
 
       @dataChannel.onerror = (err) =>
         console.log "data stream error: " + err
@@ -57,3 +54,13 @@ class window.WebRTC
     catch error
       console.log "seems that DataChannel is NOT actually supported!"
       throw error
+
+  receiveEvent: (messageEventData) ->
+    messageEventData = JSON.parse(messageEventData)
+    eventName = messageEventData.eventName
+    messageData = messageEventData.data
+
+    if @onMessageCallback
+      @onMessageCallback(messageData)
+    
+    return

@@ -12,7 +12,12 @@
 
 <script>
     webRTC = new WebRTC();
+    webRTC.onMessageCallback = function(message) {
+        $("#text").html(message);
+    }
 </script>
+
+<div id="text"></div>
 
 </body>
 </html>
