@@ -19,7 +19,7 @@
     webRTC = new WebRTC();
     webRTC.onMessageCallback = function(message) {
         // final_html = intercept(message) // handle relative link insertion/loading (relative a hrefs, css/js, img src)
-        $("#container").contents().find("html").html(message);
+        document.getElementById("container").contentWindow.document.documentElement.innerHTML = message;
     }
 </script>
 </body>

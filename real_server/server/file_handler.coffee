@@ -1,4 +1,3 @@
-
 class window.FileHandler
 
     constructor: (@output) ->
