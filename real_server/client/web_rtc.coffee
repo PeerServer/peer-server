@@ -39,8 +39,7 @@ class window.WebRTC
         console.log "data stream error: " + err
 
     catch error
-      console.log "seems that DataChannel is NOT actually supported!"
-      throw error
+      console.error "seems that DataChannel is NOT actually supported!"
 
   receiveEvent: (messageEventData) =>
     messageEventData = JSON.parse(messageEventData)
@@ -49,7 +48,6 @@ class window.WebRTC
 
     if @onMessageCallback
       @onMessageCallback(messageData)
-    return
 
 
   # Part of connection handshake

@@ -42,13 +42,11 @@ class window.WebRTC
       console.log "data stream error " + socketID + ": " + err
   
     @dataChannels[socketID] = channel
-    channel
     
   sendEvent: (eventName, data) =>
     for socketID, dataChannel of @dataChannels
       console.log("send event " + eventName);
       dataChannel.send(JSON.stringify({ "eventName": eventName, "data": data }))
-    return
 
   # Make a peer connection with a data channel to the clientBrowser with the socketID
   addBrowserConnection: (socketID) =>
@@ -63,9 +61,8 @@ class window.WebRTC
     peerConnection.ondatachannel = (evt) =>
       console.log("data channel connecting " + socketID);
       @addDataChannel(socketID, evt.channel);
-      return
+      
     console.log("client joined", socketID)
-    return
 
   # Part of connection handshake
   receiveOffer: (socketID, sdp) =>
@@ -73,7 +70,6 @@ class window.WebRTC
     pc = @browserConnections[socketID]
     pc.setRemoteDescription(new RTCSessionDescription(sdp))
     @sendAnswer(socketID)
-    return
     
   # Part of connection handshake
   sendAnswer: (socketID) ->
@@ -83,7 +79,6 @@ class window.WebRTC
       pc.setLocalDescription(session_description)
       console.log("sendAnswer emit")
       @connection.emit("sendAnswer", socketID, session_description)
-    return
 
   # Part of connection handshake
   receiveICECandidate: (socketID, candidate) =>
