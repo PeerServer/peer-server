@@ -1,80 +1,93 @@
+""" 
+  WebRTC handler for clientServer. 
+
+  (TODO at some point refactor)
+"""
+
 class window.WebRTC
+  # Become a clientServer and set up events.
   constructor: ->
-    @peerConnections = {}
+    @browserConnections = {}
     @dataChannels = {}
+     
+    @connection = io.connect("http://localhost:8890") # TODO fix hard coded connection url
     
-    @connection = io.connect("http://localhost:8890")
+    @connection.emit("joinAsClientServer") # Start becoming a clientServer
     
-    @connection.emit('joinAsServer')
-    
-    @connection.on 'joined', (clientID) =>
-      @addPeerConnection(clientID)
-      console.log('client joined', clientID)
+    # Add a clientBrowser who has joined
+    @connection.on("joined", @addBrowserConnection)
 
     @connection.on("receiveOffer", @receiveOffer)
-
-    @connection.on "receiveICECandidate", (clientID, candidate) =>
-      console.log "receive_ice_candidate", candidate
-      if candidate
-        candidate = new RTCIceCandidate(candidate)
-        console.log candidate
-        @peerConnections[clientID].addIceCandidate(candidate)
+    @connection.on("receiveICECandidate", @receiveICECandidate)
 
 
-  addPeerConnection: (clientID) =>
-    pc = new RTCPeerConnection(null, { "optional": [{ "RtpDataChannels": true }] })
-    @peerConnections[clientID] = pc
-    
-    pc.onicecandidate = (event) =>
-      console.log("onicecandidate")
-      @connection.emit("sendICECandidate", clientID, event.candidate)
-
-    pc.ondatachannel = (evt) =>
-      console.log('data channel connecting ' + clientID);
-      @addDataChannel(clientID, evt.channel);
-      return
-      
-    return
-
-  receiveOffer: (clientID, sdp) =>
-    console.log("offer received from " + clientID);
-    pc = @peerConnections[clientID]
-    pc.setRemoteDescription(new RTCSessionDescription(sdp))
-    @sendAnswer(clientID)
-    return
-
-  sendAnswer: (clientID) ->
-    console.log("sendAnswer")
-    pc = @peerConnections[clientID]
-    pc.createAnswer (session_description) =>
-      pc.setLocalDescription(session_description)
-      console.log("sendAnswer emit")
-      @connection.emit("sendAnswer", clientID, session_description)
-    return
-
-  addDataChannel: (clientID, channel) ->
+  # Set up events for new data channel
+  addDataChannel: (socketID, channel) ->
     console.log("adding data channel")
     
     channel.onopen = ->
-      console.log "data stream open " + clientID
+      console.log "data stream open " + socketID
   
     channel.onclose = (event) =>
-      delete @dataChannels[clientID]
-      console.log "data stream close " + clientID
+      delete @dataChannels[socketID]
+      console.log "data stream close " + socketID
   
+    # Incoming message from the channel (ie, from one of the clientBrowsers)
     channel.onmessage = (message) ->
-      console.log "data stream message " + clientID
+      console.log "data stream message " + socketID
       console.log message
   
     channel.onerror = (err) ->
-      console.log "data stream error " + clientID + ": " + err
+      console.log "data stream error " + socketID + ": " + err
   
-    @dataChannels[clientID] = channel
+    @dataChannels[socketID] = channel
     channel
     
   sendEvent: (eventName, data) =>
-    for clientID, dataChannel of @dataChannels
+    for socketID, dataChannel of @dataChannels
       console.log("send event " + eventName);
       dataChannel.send(JSON.stringify({ "eventName": eventName, "data": data }))
       return
 
+  # Make a peer connection with a data channel to the clientBrowser with the socketID
+  addBrowserConnection: (socketID) =>
+    # Make a peer connection for a data channel (first arg is null ice server)
+    peerConnection = new RTCPeerConnection(null, { "optional": [{ "RtpDataChannels": true }] })
+    @browserConnections[socketID] = peerConnection
+    
+    peerConnection.onicecandidate = (event) =>
+      console.log("onicecandidate")
+      @connection.emit("sendICECandidate", socketID, event.candidate)
+
+    peerConnection.ondatachannel = (evt) =>
+      console.log("data channel connecting " + socketID);
+      @addDataChannel(socketID, evt.channel);
+      return
+    console.log("client joined", socketID)
+    return
+
+  # Part of connection handshake
+  receiveOffer: (socketID, sdp) =>
+    console.log("offer received from " + socketID);
+    pc = @browserConnections[socketID]
+    pc.setRemoteDescription(new RTCSessionDescription(sdp))
+    @sendAnswer(socketID)
+    return
+    
+  # Part of connection handshake
+  sendAnswer: (socketID) ->
+    console.log("sendAnswer")
+    pc = @browserConnections[socketID]
+    pc.createAnswer (session_description) =>
+      pc.setLocalDescription(session_description)
+      console.log("sendAnswer emit")
+      @connection.emit("sendAnswer", socketID, session_description)
+    return
+
+  # Part of connection handshake
+  receiveICECandidate: (socketID, candidate) =>
+      console.log "receive_ice_candidate", candidate
+      if candidate
+        candidate = new RTCIceCandidate(candidate)
+        console.log candidate
+        @browserConnections[socketID].addIceCandidate(candidate)

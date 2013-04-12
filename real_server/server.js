@@ -47,18 +47,16 @@ io = io.listen(server);
 io.sockets.on('connection', function(socket) {
   
   /* Add the socket to the client server pool */
-  socket.on('joinAsServer', function () {
+  socket.on('joinAsClientServer', function () {
     console.log("client server joined");
     socket.join("clientServer");
-    socket.emit("setClientID", socket.id);  // TODO necessary?
   });
 
   /* Add the socket to the client browser pool */
-  socket.on('joinAsClient', function () {
+  socket.on('joinAsClientBrowser', function () {
     console.log("client browser joined");
     socket.join("clientBrowser");
     io.sockets.in("clientServer").emit('joined', socket.id);
-    socket.emit("setClientID", socket.id);
     socket.emit("joinedToServer", socket.id);
   });
   
