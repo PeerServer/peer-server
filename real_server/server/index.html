@@ -2,26 +2,44 @@
 <html>
 <head>
     <title>Server</title>
-</head>
-<body>
-
-<textarea></textarea>
-
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/adapter.js"></script>
 <script src="/server/web_rtc.js"></script>
+<script src="/server/file_handler.js"></script>
+
+</head>
+<body>
+<h1>Client Server</h1>
+
+
+<div id="file-drop" style="padding:40px; margin: 10px; background-color: lightblue"> 
+    <h3>Drop files here</h3>
+</div>
+
+<button id="send-content" style="padding:10px; margin:8px; font-size:15px">Send it!</button>
+
+<textarea style="height:400px; width:600px"></textarea>
+
+
 
 <script>
     webRTC = new WebRTC();
     console.log(webRTC);
     
     $(function() {
-        $("textarea").change(function() {
-            webRTC.sendEvent("textAreaValueChanged", $(this).val());
+        $("#send-content").click(function() {
+            webRTC.sendEvent("textAreaValueChanged", $("textarea").val());
         });
     });
-</script>
 
+    /* Prevent the page from opening the file directly on drop. */
+    $("#file-drop").bind('drop dragover', function (e) {
+            e.preventDefault();
+    });
+
+    fileHandler = new FileHandler($("textarea"));  // TODO nice indicator on drag-over
+    $("#file-drop").bind("drop", fileHandler.handleDrop);
+</script>
 </body>
 </html>

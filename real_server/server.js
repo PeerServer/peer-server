@@ -27,6 +27,9 @@ app.get('/server', function(req, res) {
 app.get('/server/web_rtc.js', function(req, res) {
   res.sendfile(__dirname + '/server/web_rtc.js');
 });
+app.get('/server/file_handler.js', function(req, res) {
+  res.sendfile(__dirname + '/server/file_handler.js');
+});
 
 app.get('/client', function(req, res) {
   res.sendfile(__dirname + '/client/index.html');

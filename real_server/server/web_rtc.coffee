@@ -27,6 +27,7 @@ class window.WebRTC
     
     channel.onopen = ->
       console.log "data stream open " + socketID
+      channel.send(JSON.stringify({ "eventName": "initialLoad", "data": "<h2>Welcome page</h2><p>Good job.</p>" }))
   
     channel.onclose = (event) =>
       delete @dataChannels[socketID]
