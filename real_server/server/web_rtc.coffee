@@ -47,7 +47,7 @@ class window.WebRTC
     for socketID, dataChannel of @dataChannels
       console.log("send event " + eventName);
       dataChannel.send(JSON.stringify({ "eventName": eventName, "data": data }))
-      return
+    return
 
   # Make a peer connection with a data channel to the clientBrowser with the socketID
   addBrowserConnection: (socketID) =>
