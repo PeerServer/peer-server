@@ -2,46 +2,58 @@ class window.WebRTC
   constructor: ->
     @connection = io.connect("http://localhost:8890")
     @connection.emit('joinAsClient')
-    
-    @peerConnection = new RTCPeerConnection(null, { "optional": [{ "RtpDataChannels": true }] })
-    @peerConnection.onicecandidate = (event) =>
-      if event.candidate
-        @connection.emit("sendICECandidate", event.candidate)
-    
+
+    @createServerConnection()
+    @createDataChannel()
+    @sendOffer()
+
+    @connection.on("receiveAnswer", @receiveAnswer)
+
     @connection.on "receiveICECandidate", (candidate) =>
-      console.log("receive ICE")
-      @peerConnection.addIceCandidate(new RTCIceCandidate(candidate))
-
-    @connection.on "setClientID", (clientID) =>
-      @clientID = clientID
-      @createDataChannel()
-      @sendOffer()
-      
+      console.log "receive_ice_candidate", candidate
+      if candidate
+        candidate = new RTCIceCandidate(candidate)
+        console.log candidate
+        @serverRTCPC.addIceCandidate(candidate)
+    
   sendOffer: ->
-    @peerConnection.createOffer (sessionDescription) =>
-      @peerConnection.setLocalDescription(sessionDescription)
-      @connection.emit("sendOffer", @clientID, sessionDescription)
-#      console.log(sessionDescription.sdp)
+    @serverRTCPC.createOffer (sessionDescription) =>
+      @serverRTCPC.setLocalDescription(sessionDescription)
+      @connection.emit("sendOffer", sessionDescription)
 
-  createDataChannel: ->
+  receiveAnswer: (sessionDescription) =>
+    console.log("receive answer", sessionDescription);
+    @serverRTCPC.setRemoteDescription(new RTCSessionDescription(sessionDescription))
+
+  createServerConnection: =>
+    @serverRTCPC = new RTCPeerConnection(null, { "optional": [{ "RtpDataChannels": true }] })
+
+    @serverRTCPC.onicecandidate = (event) =>
+      @connection.emit("sendICECandidate", "server", event.candidate)
+
+#    @serverRTCPC.ondatachannel = (evt) =>
+#      console.log('data channel connecting to server');
+#      @dataChannel = evt.channel
+#      return
+    
+  createDataChannel: =>
     try
-      console.log "createDataChannel " + @clientID 
-      @dataChannel = @peerConnection.createDataChannel(@clientID, { reliable: false })
+      console.log "createDataChannel to server"
+      @dataChannel = @serverRTCPC.createDataChannel("RTCDataChannel", { reliable: false })
 
       @dataChannel.onopen = =>
-        console.log "data stream open " + @clientID
+        console.log "data stream open"
 
       @dataChannel.onclose = (event) =>
-        delete @dataChannels[clientID]
-        console.log "data stream close " + @clientID
+        console.log "data stream close"
 
       @dataChannel.onmessage = (message) =>
-        console.log "data stream message " + @clientID
+        console.log "data stream message"
         console.log message
 
       @dataChannel.onerror = (err) =>
-        console.log "data stream error " + @clientID + ": " + err
-        
+        console.log "data stream error: " + err
+
     catch error
       console.log "seems that DataChannel is NOT actually supported!"
       throw error

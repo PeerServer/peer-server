@@ -36,23 +36,34 @@ io.sockets.on('connection', function(client) {
   client.on('joinAsServer', function () {
     console.log("server joined");
     client.join("server");
+    client.emit("setClientID", client.id);
   });
 
   client.on('joinAsClient', function () {
     console.log("client joined");
     client.join("client");
-    client.emit("setClientID", client.id);
     io.sockets.in("server").emit('joined', client.id);
+    client.emit("setClientID", client.id);
+    client.emit("joinedToServer", client.id);
   });
   
-  client.on("sendOffer", function(clientID, sessionDescription) {
-    io.sockets.in("server").emit("receiveOffer", clientID, sessionDescription);
-  });
-  
-  client.on("sendICECandidate", function(candidate) {
-    io.sockets.in("client").emit("receiveICECandidate", candidate, client.id);
+  client.on("sendOffer", function(sessionDescription) {
+    io.sockets.in("server").emit("receiveOffer", client.id, sessionDescription);
   });
 
+  client.on("sendAnswer", function(clientID, sessionDescription) {
+    io.sockets.socket(clientID).emit("receiveAnswer", sessionDescription);
+  });
+
+  //Receive ICE candidates and send to the correct socket
+  client.on('sendICECandidate', function(clientID, candidate) {
+    if (clientID == "server") {
+      io.sockets.in("server").emit("receiveICECandidate", client.id, candidate);
+    } else {
+      io.sockets.socket(clientID).emit("receiveICECandidate", candidate);
+    }
+  });
+  
   client.on('disconnect', function () {
     console.log("disconnect");
     var rooms = io.sockets.manager.roomClients[client.id];

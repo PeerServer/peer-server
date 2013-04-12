@@ -6,9 +6,11 @@
     function WebRTC() {
       this.sendEvent = __bind(this.sendEvent, this);
       this.receiveOffer = __bind(this.receiveOffer, this);
+      this.addPeerConnection = __bind(this.addPeerConnection, this);
       var _this = this;
 
       this.peerConnections = {};
+      this.dataChannels = {};
       this.connection = io.connect("http://localhost:8890");
       this.connection.emit('joinAsServer');
       this.connection.on('joined', function(clientID) {
@@ -16,22 +18,32 @@
         return console.log('client joined', clientID);
       });
       this.connection.on("receiveOffer", this.receiveOffer);
-      this.dataChannels = {};
-      this.dataChannelConfig = {
-        "optional": [
-          {
-            "RtpDataChannels": true
-          }
-        ]
-      };
+      this.connection.on("receiveICECandidate", function(clientID, candidate) {
+        console.log("receive_ice_candidate", candidate);
+        if (candidate) {
+          candidate = new RTCIceCandidate(candidate);
+          console.log(candidate);
+          return _this.peerConnections[clientID].addIceCandidate(candidate);
+        }
+      });
     }
 
     WebRTC.prototype.addPeerConnection = function(clientID) {
       var pc,
         _this = this;
 
-      pc = new RTCPeerConnection(null, this.dataChannelConfig);
+      pc = new RTCPeerConnection(null, {
+        "optional": [
+          {
+            "RtpDataChannels": true
+          }
+        ]
+      });
       this.peerConnections[clientID] = pc;
+      pc.onicecandidate = function(event) {
+        console.log("onicecandidate");
+        return _this.connection.emit("sendICECandidate", clientID, event.candidate);
+      };
       pc.ondatachannel = function(evt) {
         console.log('data channel connecting ' + clientID);
         _this.addDataChannel(clientID, evt.channel);
@@ -41,8 +53,23 @@
     WebRTC.prototype.receiveOffer = function(clientID, sdp) {
       var pc;
 
+      console.log("offer received from " + clientID);
       pc = this.peerConnections[clientID];
       pc.setRemoteDescription(new RTCSessionDescription(sdp));
+      this.sendAnswer(clientID);
+    };
+
+    WebRTC.prototype.sendAnswer = function(clientID) {
+      var pc,
+        _this = this;
+
+      console.log("sendAnswer");
+      pc = this.peerConnections[clientID];
+      pc.createAnswer(function(session_description) {
+        pc.setLocalDescription(session_description);
+        console.log("sendAnswer emit");
+        return _this.connection.emit("sendAnswer", clientID, session_description);
+      });
     };
 
     WebRTC.prototype.addDataChannel = function(clientID, channel) {
@@ -68,18 +95,18 @@
     };
 
     WebRTC.prototype.sendEvent = function(eventName, data) {
-      var dataChannel, _i, _len, _ref, _results;
+      var clientID, dataChannel, _ref;
 
       _ref = this.dataChannels;
-      _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        dataChannel = _ref[_i];
-        _results.push(dataChannel.send(JSON.stringify({
+      for (clientID in _ref) {
+        dataChannel = _ref[clientID];
+        console.log("send event " + eventName);
+        dataChannel.send(JSON.stringify({
           "eventName": eventName,
           "data": data
-        })));
+        }));
+        return;
       }
-      return _results;
     };
 
     return WebRTC;

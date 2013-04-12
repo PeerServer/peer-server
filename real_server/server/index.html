@@ -18,10 +18,9 @@
     
     $(function() {
         $("textarea").change(function() {
-            console.log($(this).val());
             webRTC.sendEvent("textAreaValueChanged", $(this).val());
         });
-    });    
+    });
 </script>
 
 </body>
