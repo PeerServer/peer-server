@@ -5,9 +5,9 @@ $(document).ready ->
 
   # Initialize global state
   console.log("Initializing global state")
-  window.file_store = new FileStore()
+  window.fileStore = new FileStore()
 
-  webRTC = new WebRTC()
+  webRTC = new WebRTC(window.fileStore)
 
   $("#send-content").click ->
       webRTC.sendEvent("textAreaValueChanged", $("textarea").val())
@@ -16,10 +16,10 @@ $(document).ready ->
   $("#file-drop").bind 'drop dragover', (e) ->
     e.preventDefault()
 
-  window.drop_handler = new DropHandler(window.file_store, $("#file-list"), $("#file-name"), $("#file-contents"))
+  window.drop_handler = new DropHandler(window.fileStore, $("#file-list"), $("#file-name"), $("#file-contents"))
   $("#file-drop").bind("drop", window.drop_handler.handleDrop)
 
   # UI glue for managing the selection element
   $("#file-list").change ->
     selected_file = $("#file-list option:selected").val()
-    $("#file-contents").val(window.file_store.getFile(selected_file))
+    $("#file-contents").val(window.fileStore.getFile(selected_file))

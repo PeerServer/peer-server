@@ -6,7 +6,7 @@
 
 class window.WebRTC
   # Become a clientServer and set up events.
-  constructor: ->
+  constructor: (@fileStore) ->
     @browserConnections = {}
     @dataChannels = {}
     
@@ -101,6 +101,8 @@ class window.WebRTC
         filename: filename,
         fileContents: event.target.result
       })
+
+    if window.fileStore
     
     if @isCSSFile(filename)
       blob = new Blob(["body { color: red; }"], { "type" : "text\/css" })
