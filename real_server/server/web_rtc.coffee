@@ -9,7 +9,7 @@ class window.WebRTC
   constructor: (@fileStore) ->
     @browserConnections = {}
     @dataChannels = {}
-    
+     
     # Event Transmission
     @eventTransmitter = new window.EventTransmitter()
     @setUpReceiveEventCallbacks()
@@ -102,7 +102,6 @@ class window.WebRTC
         fileContents: event.target.result
       })
 
-    if window.fileStore
     
     if @isCSSFile(filename)
       blob = new Blob(["body { color: red; }"], { "type" : "text\/css" })
