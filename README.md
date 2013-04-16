@@ -9,12 +9,12 @@ Sophia Westwood
 How to run
 
 In one terminal
-- cd real_server
-- node server
+- `cd real_server`
+- `node server`
 
 In another terminal
-- cd real_server
-- coffee -wc */*.coffee
+- `cd real_server`
+- `coffee -wc */*.coffee`
 
 In FirefoxNightly
 - http://localhost:8890/server
