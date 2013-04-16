@@ -10,25 +10,22 @@ class window.DropHandler
             console.log 'file:' + name
             @file_name_list.append('<option value="' + name + '">' + name + '</li>')
         @file_name_list.val(file_name)
+        @file_contents_view.val(window.file_store.getFile(file_name))
+        @file_name_view.val(file_name)
 
     handleDrop: (event) =>
         droppedFiles = event.originalEvent.dataTransfer.files
         console.log "processing dropped files:" + droppedFiles
-        if droppedFiles.length > 1
-            console.error "Only handling one file for now."
-
-        file = droppedFiles[0]
-        console.log "processing " + file.name
+        for file in droppedFiles
+            @handleFile(file)
+            
+    handleFile: (file) =>
+        console.log "uploading" + file.name
         reader = new FileReader()
-        console.log reader
         reader.readAsText(file)  # Set the mode and the file
         reader.onload = (evt) =>
             console.log "reader loaded"
             text = evt.target.result  # Result of the text file.
-            console.log text
             @file_store.addFile(file.name, text)
-            console.log "added new file"
-            @file_name_view.val(file.name)
-            @file_contents_view.val(text)
+            console.log "added new file named " + file.name
             @updateListView(file.name)
-
