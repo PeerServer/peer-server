@@ -1,2 +1,4 @@
 real_server/client/*.js
 real_server/server/*.js
+real_server/shared/*.js
+!real_server/shared/adapter.js
