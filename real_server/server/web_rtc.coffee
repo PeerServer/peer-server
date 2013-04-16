@@ -9,6 +9,10 @@ class window.WebRTC
   constructor: ->
     @browserConnections = {}
     @dataChannels = {}
+    
+    # Event Transmission
+    @eventTransmitter = new window.EventTransmitter()
+    @setUpReceiveEventCallbacks()
      
     @connection = io.connect("http://localhost:8890") # TODO fix hard coded connection url
     
@@ -25,7 +29,7 @@ class window.WebRTC
   addDataChannel: (socketID, channel) ->
     console.log("adding data channel")
     
-    channel.onopen = ->
+    channel.onopen = =>
       console.log "data stream open " + socketID
       channel.send(JSON.stringify({ "eventName": "initialLoad", "data": "<h2>Welcome page</h2><p>Good job.</p>" }))
   
@@ -34,20 +38,16 @@ class window.WebRTC
       console.log "data stream close " + socketID
   
     # Incoming message from the channel (ie, from one of the clientBrowsers)
-    channel.onmessage = (message) ->
+    channel.onmessage = (message) =>
       console.log "data stream message " + socketID
       console.log message
+      @eventTransmitter.receiveEvent(message.data)
   
-    channel.onerror = (err) ->
+    channel.onerror = (err) =>
       console.log "data stream error " + socketID + ": " + err
   
     @dataChannels[socketID] = channel
     
-  sendEvent: (eventName, data) =>
-    for socketID, dataChannel of @dataChannels
-      console.log("send event " + eventName);
-      dataChannel.send(JSON.stringify({ "eventName": eventName, "data": data }))
-
   # Make a peer connection with a data channel to the clientBrowser with the socketID
   addBrowserConnection: (socketID) =>
     # Make a peer connection for a data channel (first arg is null ice server)
@@ -55,7 +55,6 @@ class window.WebRTC
     @browserConnections[socketID] = peerConnection
     
     peerConnection.onicecandidate = (event) =>
-      console.log("onicecandidate")
       @connection.emit("sendICECandidate", socketID, event.candidate)
 
     peerConnection.ondatachannel = (evt) =>
@@ -73,17 +72,22 @@ class window.WebRTC
     
   # Part of connection handshake
   sendAnswer: (socketID) ->
-    console.log("sendAnswer")
     pc = @browserConnections[socketID]
     pc.createAnswer (session_description) =>
       pc.setLocalDescription(session_description)
-      console.log("sendAnswer emit")
       @connection.emit("sendAnswer", socketID, session_description)
 
   # Part of connection handshake
   receiveICECandidate: (socketID, candidate) =>
-      console.log "receive_ice_candidate", candidate
       if candidate
         candidate = new RTCIceCandidate(candidate)
         console.log candidate
         @browserConnections[socketID].addIceCandidate(candidate)
+
+  sendEvent: (eventName, data) =>
+    for socketID, dataChannel of @dataChannels
+      @eventTransmitter.sendEvent(dataChannel, eventName, data)
+        
+  setUpReceiveEventCallbacks: =>
+    @eventTransmitter.addEventCallback "testEvent", () ->
+      console.log("test event received")

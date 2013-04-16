@@ -4,7 +4,8 @@
     <title>Client Browser</title>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
-<script src="/adapter.js"></script>
+<script src="/shared/adapter.js"></script>
+<script src="/shared/event_transmitter.js"></script>
 <script src="/client/web_rtc.js"></script>
 </head>
 <body>
@@ -16,11 +17,11 @@
 
 
 <script>
-    webRTC = new WebRTC();
-    webRTC.onMessageCallback = function(message) {
+    webRTC = new WebRTC(document.getElementById("container").contentWindow.document.documentElement);
+//    webRTC.onMessageCallback = function(message) {
         // final_html = intercept(message) // handle relative link insertion/loading (relative a hrefs, css/js, img src)
-        document.getElementById("container").contentWindow.document.documentElement.innerHTML = message;
-    }
+//    }
+    
 </script>
 </body>
 </html>

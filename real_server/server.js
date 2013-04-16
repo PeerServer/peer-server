@@ -20,27 +20,30 @@ server.listen(config.server.port, function() {
 });
 
 /* Static file mappings */
+app.param('filename');
+
 app.get('/server', function(req, res) {
   res.sendfile(__dirname + '/server/index.html');
 });
 
-app.get('/server/web_rtc.js', function(req, res) {
-  res.sendfile(__dirname + '/server/web_rtc.js');
-});
-app.get('/server/file_handler.js', function(req, res) {
-  res.sendfile(__dirname + '/server/file_handler.js');
+app.get('/server/:filename', function(req, res) {
+  var filename = req.params.filename;
+  res.sendfile(__dirname + '/server/' + filename);
 });
 
 app.get('/client', function(req, res) {
   res.sendfile(__dirname + '/client/index.html');
 });
 
-app.get('/client/web_rtc.js', function(req, res) {
-  res.sendfile(__dirname + '/client/web_rtc.js');
+app.get('/client/:filename', function(req, res) {
+  var filename = req.params.filename;
+  res.sendfile(__dirname + '/client/' + filename);
 });
 
-app.get('/adapter.js', function(req, res) {
-  res.sendfile(__dirname + '/adapter.js');
+app.get('/shared/:filename', function(req, res) {
+  var filename = req.params.filename;
+  console.log(filename);
+  res.sendfile(__dirname + '/shared/' + filename);
 });
 
 

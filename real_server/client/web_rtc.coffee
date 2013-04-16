@@ -7,16 +7,23 @@
 class window.WebRTC
 
   # Become a clientBrowser and set up events.
-  constructor: ->
+  constructor: (documentElement)->
+    @documentElement = documentElement
+    
     @connection = io.connect("http://localhost:8890") # TODO fix hard coded connection url
     @connection.emit("joinAsClientBrowser") # Start becoming a clientServer
 
     # Handshake
+    @serverRTCPC = null
     @createServerConnection()
     @createDataChannel()
     @sendOffer()
     @connection.on("receiveAnswer", @receiveAnswer)
     @connection.on("receiveICECandidate", @receiveICECandidate)
+
+    # Event Transmission
+    @eventTransmitter = new window.EventTransmitter()
+    @setUpReceiveEventCallbacks()
 
   # Set up events for new data channel
   createDataChannel: =>
@@ -26,6 +33,7 @@ class window.WebRTC
 
       @dataChannel.onopen = =>
         console.log "data stream open"
+        @sendEvent("testEvent", {}) #TODO remove
 
       @dataChannel.onclose = (event) =>
         console.log "data stream close"
@@ -33,22 +41,13 @@ class window.WebRTC
       @dataChannel.onmessage = (message) =>
         console.log "data stream message"
         console.log message
-        @receiveEvent(message.data)
+        @eventTransmitter.receiveEvent(message.data)
 
       @dataChannel.onerror = (err) =>
         console.log "data stream error: " + err
 
     catch error
       console.error "seems that DataChannel is NOT actually supported!"
-
-  receiveEvent: (messageEventData) =>
-    messageEventData = JSON.parse(messageEventData)
-    eventName = messageEventData.eventName
-    messageData = messageEventData.data
-
-    if @onMessageCallback
-      @onMessageCallback(messageData)
-
 
   # Part of connection handshake
   createServerConnection: =>
@@ -65,13 +64,22 @@ class window.WebRTC
 
   # Part of connection handshake
   receiveAnswer: (sessionDescription) =>
-    console.log("receive answer", sessionDescription);
     @serverRTCPC.setRemoteDescription(new RTCSessionDescription(sessionDescription))
 
   # Part of connection handshake
   receiveICECandidate: (candidate) =>
-      console.log "receive_ice_candidate", candidate
       if candidate
         candidate = new RTCIceCandidate(candidate)
         console.log candidate
         @serverRTCPC.addIceCandidate(candidate)
+
+  sendEvent: (eventName, data) =>
+    console.log("sendEvent", @dataChannel)
+    @eventTransmitter.sendEvent(@dataChannel, eventName, data)
+        
+  setUpReceiveEventCallbacks: =>
+    @eventTransmitter.addEventCallback("textAreaValueChanged", @setDocumentElementInnerHTML)
+    @eventTransmitter.addEventCallback("initialLoad", @setDocumentElementInnerHTML)
+    
+  setDocumentElementInnerHTML: (html)=>
+    @documentElement.innerHTML = html
