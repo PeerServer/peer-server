@@ -1,4 +1,3 @@
-
 # Initialization code. 
 
 $(document).ready ->

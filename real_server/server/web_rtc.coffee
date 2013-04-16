@@ -107,7 +107,7 @@ class window.WebRTC
       blob = new Blob(["body { color: red; }"], { "type" : "text\/css" })
       fileReader.readAsText(blob)
     else if @isJSFile(filename)
-      blob = new Blob(['document.getElementsByTagName("h1")[0].innerHTML="CHANGED BY SCRIPT"; alert("AAA"); window.parent.window.alert("ALERT"); document.onreadystatechange=function(){var e=document.readyState;if(e=="complete"){document.getElementsByTagName("h1")[0].innerHTML="CHANGED BY SCRIPT"}}'], { "type" : "text\/javascript" })
+      blob = new Blob(['alert("hi");'], { "type" : "text\/javascript" })
       fileReader.readAsText(blob)
     else if @isImageFile(filename)
       blob = new Blob(["data:image/png;base64,iVBORw0KGgoAAAANSUhE"], { "type" : "image\/png" })
