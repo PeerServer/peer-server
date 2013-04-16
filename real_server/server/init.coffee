@@ -22,4 +22,4 @@ $(document).ready ->
   # UI glue for managing the selection element
   $("#file-list").change ->
     selected_file = $("#file-list option:selected").val()
-    $("#file-contents").val(window.fileStore.getFile(selected_file))
+    $("#file-contents").val(window.fileStore.getFileContents(selected_file))

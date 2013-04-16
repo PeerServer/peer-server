@@ -1,6 +1,6 @@
 class window.HTMLProcessor
 
-  constructor: (@sendEvent) ->
+  constructor: (@sendEvent, @socketIdFcn) ->
     @requestedFilenamesToElement = {}
     @container = null
     @completionCallback = null
@@ -46,7 +46,11 @@ class window.HTMLProcessor
     return filename.match(/(?:https?:\/\/)|(?:data:)/) is null
     
   requestFile: (filename) =>
-    @sendEvent("requestFile", filename)
+    console.log "sending socket id " + @socketIdFcn()
+    data = 
+      "filename": filename
+      "socketId": @socketIdFcn()
+    @sendEvent("requestFile", data)
 
   receiveFile: (data) =>
     console.log("receive file", data)

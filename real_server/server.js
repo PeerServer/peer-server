@@ -56,6 +56,7 @@ io.sockets.on('connection', function(socket) {
   socket.on('joinAsClientServer', function () {
     console.log("client server joined");
     socket.join("clientServer");
+    socket.emit("setSocketId", socket.id)
   });
 
   /* Add the socket to the client browser pool */
@@ -63,7 +64,8 @@ io.sockets.on('connection', function(socket) {
     console.log("client browser joined");
     socket.join("clientBrowser");
     io.sockets.in("clientServer").emit('joined', socket.id);
-    socket.emit("joinedToServer", socket.id);
+    socket.emit("setSocketId", socket.id)
+    socket.emit("joinedToServer");
   });
   
   /* Next part of handshake -- client-browser sends offer, trigger a receive offer

@@ -20,12 +20,19 @@ class window.WebRTC
     @sendOffer()
     @connection.on("receiveAnswer", @receiveAnswer)
     @connection.on("receiveICECandidate", @receiveICECandidate)
+    # Store own socket id
+    @connection.on "setSocketId", (socketId) =>
+      @socketId = socketId
 
-    @htmlProcessor = new HTMLProcessor(@sendEvent)
+    @htmlProcessor = new HTMLProcessor(@sendEvent, @getSocketId)
     
     # Event Transmission
     @eventTransmitter = new window.EventTransmitter()
     @setUpReceiveEventCallbacks()
+
+  # Returns the client-server's own socket id. 
+  getSocketId: =>
+    return @socketId
 
   # Set up events for new data channel
   createDataChannel: =>

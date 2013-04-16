@@ -23,7 +23,13 @@ class window.WebRTC
 
     @connection.on("receiveOffer", @receiveOffer)
     @connection.on("receiveICECandidate", @receiveICECandidate)
+    # Store own socket id
+    @connection.on "setSocketId", (socketId) =>
+      @socketId = socketId
 
+  # Returns the client-server's own socket id. 
+  getSocketId: =>
+    return @socketId
 
   # Set up events for new data channel
   addDataChannel: (socketID, channel) ->
@@ -88,30 +94,30 @@ class window.WebRTC
     for socketID, dataChannel of @dataChannels
       @eventTransmitter.sendEvent(dataChannel, eventName, data)
         
+  sendEventTo: (socketId, eventName, data) =>
+    @eventTransmitter.sendEvent(@dataChannels[socketId], eventName, data)
+
   setUpReceiveEventCallbacks: =>
     @eventTransmitter.addEventCallback("requestFile", @serveFile)
       
-  serveFile: (filename)=>
-    fileReader = new FileReader()
-    
-    fileReader.onloadend = (event) =>
-      console.log(event.target.result)
-      # TODO only send to the interested client-browser
-      @sendEvent("receiveFile", {
-        filename: filename,
-        fileContents: event.target.result
-      })
+  serveFile: (data) =>
+    # TODO handle leading slash and  handle "./file" -- currently breaks
+    filename = data.filename
 
-    
-    if @isCSSFile(filename)
-      blob = new Blob(["body { color: red; }"], { "type" : "text\/css" })
-      fileReader.readAsText(blob)
-    else if @isJSFile(filename)
-      blob = new Blob(['document.getElementsByTagName("h1")[0].innerHTML="CHANGED BY SCRIPT"; alert("AAA"); window.parent.window.alert("ALERT"); document.onreadystatechange=function(){var e=document.readyState;if(e=="complete"){document.getElementsByTagName("h1")[0].innerHTML="CHANGED BY SCRIPT"}}'], { "type" : "text\/javascript" })
-      fileReader.readAsText(blob)
-    else if @isImageFile(filename)
-      blob = new Blob(["data:image/png;base64,iVBORw0KGgoAAAANSUhE"], { "type" : "image\/png" })
-      fileReader.readAsDataURL(blob)
+    console.log "FILENAME: " + filename
+
+    if not @fileStore.hasFile(filename)
+      console.error "Error: Client requested " + filename + " which does not exist on server."
+      @sendEventTo(data.socketId, "receiveFile", { 
+        filename: filename,
+        fileContents: ""
+      })
+      return
+
+    @sendEventTo(data.socketId, "receiveFile", {
+      filename: filename,
+      fileContents: @fileStore.getFileContents(filename)
+    })
       
     
   isCSSFile: (filename) =>
