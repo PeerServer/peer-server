@@ -7,8 +7,14 @@
 <script src="/shared/adapter.js"></script>
 <script src="/shared/event_transmitter.js"></script>
 <script src="/server/web_rtc.js"></script>
-<script src="/server/file_handler.js"></script>
+<script src="/server/drop_handler.js"></script>
+<script src="/server/file_store.js"></script>
 
+<script>
+  /** Initialize global state **/
+  console.log("Initializing global state");
+  window.file_store = new FileStore();
+</script>
 </head>
 <body>
 <h1>Client Server</h1>
@@ -20,7 +26,12 @@
 
 <button id="send-content" style="padding:10px; margin:8px; font-size:15px">Send it!</button>
 
-<textarea style="height:400px; width:600px"></textarea>
+<div id="file-name"></div>
+<select id="file-list"></select>
+
+<br />
+
+<textarea id="file-contents" style="height:400px; width:600px"></textarea>
 
 
 
@@ -38,8 +49,17 @@
             e.preventDefault();
     });
 
-    fileHandler = new FileHandler($("textarea"));  // TODO nice indicator on drag-over
-    $("#file-drop").bind("drop", fileHandler.handleDrop);
+    window.drop_handler = new DropHandler(window.file_store, $("#file-list"), $("#file-name"), $("#file-contents"));
+    $("#file-drop").bind("drop", window.drop_handler.handleDrop);
+</script>
+
+<script>
+/** UI glue for managing the selection element **/
+$("#file-list").change(function(){
+  var selected_file = $("#file-list option:selected").val();
+  $("#file-contents").val(window.file_store.getFile(selected_file));
+});
+
 </script>
 </body>
 </html>
