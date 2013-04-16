@@ -84,5 +84,6 @@ class window.WebRTC
     @eventTransmitter.addEventCallback("receiveFile", @htmlProcessor.receiveFile)
     
   setDocumentElementInnerHTML: (html)=>
+    @documentElement.innerHTML = "<img src='/client/loading.gif' />"
     @htmlProcessor.processHTML html, (processedHTML) =>
       @documentElement.innerHTML = processedHTML
