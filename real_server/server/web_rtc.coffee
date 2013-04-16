@@ -118,13 +118,3 @@ class window.WebRTC
       filename: filename,
       fileContents: @fileStore.getFileContents(filename)
     })
-      
-    
-  isCSSFile: (filename) =>
-    return filename.match(/\.css/) isnt null
-    
-  isJSFile: (filename) =>
-    return filename.match(/\.js/) isnt null
-
-  isImageFile: (filename) =>
-    return filename.match(/\.(?:png)|(?:jpg)|(?:jpeg)/) isnt null
