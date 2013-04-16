@@ -9,12 +9,8 @@
 <script src="/server/web_rtc.js"></script>
 <script src="/server/drop_handler.js"></script>
 <script src="/server/file_store.js"></script>
+<script src="/server/init.js"></script>
 
-<script>
-  /** Initialize global state **/
-  console.log("Initializing global state");
-  window.file_store = new FileStore();
-</script>
 </head>
 <body>
 <h1>Client Server</h1>
@@ -33,33 +29,5 @@
 
 <textarea id="file-contents" style="height:400px; width:600px"></textarea>
 
-
-
-<script>
-    webRTC = new WebRTC();
-    
-    $(function() {
-        $("#send-content").click(function() {
-            webRTC.sendEvent("textAreaValueChanged", $("textarea").val());
-        });
-    });
-
-    /* Prevent the page from opening the file directly on drop. */
-    $("#file-drop").bind('drop dragover', function (e) {
-            e.preventDefault();
-    });
-
-    window.drop_handler = new DropHandler(window.file_store, $("#file-list"), $("#file-name"), $("#file-contents"));
-    $("#file-drop").bind("drop", window.drop_handler.handleDrop);
-</script>
-
-<script>
-/** UI glue for managing the selection element **/
-$("#file-list").change(function(){
-  var selected_file = $("#file-list option:selected").val();
-  $("#file-contents").val(window.file_store.getFile(selected_file));
-});
-
-</script>
 </body>
 </html>

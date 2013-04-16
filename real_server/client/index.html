@@ -7,6 +7,7 @@
 <script src="/shared/adapter.js"></script>
 <script src="/shared/event_transmitter.js"></script>
 <script src="/client/web_rtc.js"></script>
+<script src="/client/init.js"></script>
 </head>
 <body>
 
@@ -14,14 +15,5 @@
 
 <iframe id="container" style="height:400px; width:600px"></iframe>
 
-
-
-<script>
-    webRTC = new WebRTC(document.getElementById("container").contentWindow.document.documentElement);
-//    webRTC.onMessageCallback = function(message) {
-        // final_html = intercept(message) // handle relative link insertion/loading (relative a hrefs, css/js, img src)
-//    }
-    
-</script>
 </body>
 </html>

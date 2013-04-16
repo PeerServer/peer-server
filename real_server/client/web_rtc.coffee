@@ -51,7 +51,7 @@ class window.WebRTC
 
   # Part of connection handshake
   createServerConnection: =>
-    @serverRTCPC = new RTCPeerConnection(null, { "optional": [{ "RtpDataChannels": true }] })
+    @serverRTCPC = new mozRTCPeerConnection(null, { "optional": [{ "RtpDataChannels": true }] })
 
     @serverRTCPC.onicecandidate = (event) =>
       @connection.emit("sendICECandidate", "server", event.candidate)
@@ -64,12 +64,12 @@ class window.WebRTC
 
   # Part of connection handshake
   receiveAnswer: (sessionDescription) =>
-    @serverRTCPC.setRemoteDescription(new RTCSessionDescription(sessionDescription))
+    @serverRTCPC.setRemoteDescription(new mozRTCSessionDescription(sessionDescription))
 
   # Part of connection handshake
   receiveICECandidate: (candidate) =>
       if candidate
-        candidate = new RTCIceCandidate(candidate)
+        candidate = new mozRTCIceCandidate(candidate)
         console.log candidate
         @serverRTCPC.addIceCandidate(candidate)
 

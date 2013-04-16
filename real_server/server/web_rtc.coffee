@@ -51,7 +51,7 @@ class window.WebRTC
   # Make a peer connection with a data channel to the clientBrowser with the socketID
   addBrowserConnection: (socketID) =>
     # Make a peer connection for a data channel (first arg is null ice server)
-    peerConnection = new RTCPeerConnection(null, { "optional": [{ "RtpDataChannels": true }] })
+    peerConnection = new mozRTCPeerConnection(null, { "optional": [{ "RtpDataChannels": true }] })
     @browserConnections[socketID] = peerConnection
     
     peerConnection.onicecandidate = (event) =>
@@ -67,7 +67,7 @@ class window.WebRTC
   receiveOffer: (socketID, sdp) =>
     console.log("offer received from " + socketID);
     pc = @browserConnections[socketID]
-    pc.setRemoteDescription(new RTCSessionDescription(sdp))
+    pc.setRemoteDescription(new mozRTCSessionDescription(sdp))
     @sendAnswer(socketID)
     
   # Part of connection handshake
@@ -80,7 +80,7 @@ class window.WebRTC
   # Part of connection handshake
   receiveICECandidate: (socketID, candidate) =>
       if candidate
-        candidate = new RTCIceCandidate(candidate)
+        candidate = new mozRTCIceCandidate(candidate)
         console.log candidate
         @browserConnections[socketID].addIceCandidate(candidate)
 
