@@ -21,6 +21,8 @@ class window.WebRTC
     @connection.on("receiveAnswer", @receiveAnswer)
     @connection.on("receiveICECandidate", @receiveICECandidate)
 
+    @htmlProcessor = new HTMLProcessor(@sendEvent)
+    
     # Event Transmission
     @eventTransmitter = new window.EventTransmitter()
     @setUpReceiveEventCallbacks()
@@ -74,12 +76,13 @@ class window.WebRTC
         @serverRTCPC.addIceCandidate(candidate)
 
   sendEvent: (eventName, data) =>
-    console.log("sendEvent", @dataChannel)
     @eventTransmitter.sendEvent(@dataChannel, eventName, data)
         
   setUpReceiveEventCallbacks: =>
-    @eventTransmitter.addEventCallback("textAreaValueChanged", @setDocumentElementInnerHTML)
     @eventTransmitter.addEventCallback("initialLoad", @setDocumentElementInnerHTML)
+    @eventTransmitter.addEventCallback("textAreaValueChanged", @setDocumentElementInnerHTML)
+    @eventTransmitter.addEventCallback("receiveFile", @htmlProcessor.receiveFile)
     
   setDocumentElementInnerHTML: (html)=>
-    @documentElement.innerHTML = html
+    @htmlProcessor.processHTML html, (processedHTML) =>
+      @documentElement.innerHTML = processedHTML
