@@ -110,11 +110,13 @@ class window.WebRTC
       console.error "Error: Client requested " + filename + " which does not exist on server."
       @sendEventTo(data.socketId, "receiveFile", { 
         filename: filename,
-        fileContents: ""
+        fileContents: "",
+        type: ""
       })
       return
 
     @sendEventTo(data.socketId, "receiveFile", {
       filename: filename,
-      fileContents: @fileStore.getFileContents(filename)
+      fileContents: @fileStore.getFileContents(filename),
+      type: data.type
     })

@@ -24,7 +24,7 @@ class window.WebRTC
     @connection.on "setSocketId", (socketId) =>
       @socketId = socketId
 
-    @htmlProcessor = new HTMLProcessor(@sendEvent, @getSocketId)
+    @htmlProcessor = new HTMLProcessor(@sendEvent, @setDocumentElementInnerHTML, @getSocketId)
     
     # Event Transmission
     @eventTransmitter = new window.EventTransmitter()
