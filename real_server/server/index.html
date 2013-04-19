@@ -8,7 +8,8 @@
 <script src="/server/web_rtc.js"></script>
 <script src="/server/drop_handler.js"></script>
 <script src="/server/file_store.js"></script>
-<script src="/server/code-editor.js"></script>
+<script src="/server/code_editor.js"></script>
+<!-- <script src="/server/server_user_portal.js"></script> -->
 <script src="/server/init.js"></script>
 <!-- TODO possibly make a local copy of the ace editor -->
 <script src="http://rawgithub.com/ajaxorg/ace-builds/master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -23,10 +24,13 @@
     <h3>Drop files here</h3>
 </div>
 
+<div id="user-portal">
+
+</div>
+
+<select id="file-list"></select>
 <button id="send-content" style="padding:10px; margin:8px; font-size:15px">Send it!</button>
 
-<div id="file-name"></div>
-<select id="file-list"></select>
 
 <br />
 
