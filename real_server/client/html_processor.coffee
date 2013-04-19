@@ -102,27 +102,8 @@ class window.HTMLProcessor
         if $element.attr("src") and $element[0].tagName is "IMG" 
           $element.attr("src", fileContents)
         else if $element.attr("src") and $element[0].tagName is "SCRIPT"
-  #        $element.removeAttr("src")
-  #        $element.append(fileContents)
-        
-          iframe = document.getElementById("container")
-          script = iframe.contentWindow.document.createElement("script")
-          script.type = "text/javascript"
-          script.text = fileContents
-          console.log(fileContents)
-          iframe.contentWindow.document.head.appendChild(script)
-          
-  #        $element.after(script)
-          $element.remove()
-          
-  #        $element.replaceWith($("<script/>").append(fileContents))
-  #        $("<script/>").append(fileContents).insertAfter($element)
-  #        $(script).insertAfter($element)
-  #        $element.after(script)
-  #        document.body.appendChild(script)
-  #        console.log($element[0].parentNode)
-  #        $element[0].parentNode.appendChild(script)
-  #        $element.remove()
+          $element.removeAttr("src")
+          $element.append(fileContents)
         else if $element[0].tagName is "LINK"
           $element.replaceWith("<style>" + fileContents + "</style>")
   #        @container.find("head").append($element)        

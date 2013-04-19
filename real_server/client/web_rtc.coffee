@@ -94,3 +94,18 @@ class window.WebRTC
     @documentElement.innerHTML = "<img src='/client/loading.gif' />"
     @htmlProcessor.processHTML html, (processedHTML) =>
       @documentElement.innerHTML = processedHTML
+      @executeScripts()
+
+  # Needed since innerHTML does not run scripts.
+  # Inspired by:
+  #   http://stackoverflow.com/questions/2592092/executing-script-elements-inserted-with-innerhtml
+  executeScripts: =>
+    scriptElements = @documentElement.getElementsByTagName("script")
+    for oldScriptEl in scriptElements
+      newScriptEl = document.createElement("script")
+      newScriptEl.type = "text/javascript"
+      newScriptEl.text = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || ""
+
+      oldScriptEl.parentNode.insertBefore(newScriptEl, oldScriptEl)
+      oldScriptEl.parentNode.removeChild(oldScriptEl)
+      
