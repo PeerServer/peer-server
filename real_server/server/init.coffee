@@ -6,7 +6,7 @@ $(document).ready ->
   console.log("Initializing global state")
   window.fileStore = new FileStore()
 
-  webRTC = new WebRTC(window.fileStore)
+  webRTC = new WebRTC(window.fileStore, $("#user-portal"))
 
   editor = new CodeEditor(ace.edit("file-contents"))
 
@@ -14,7 +14,7 @@ $(document).ready ->
   $("#file-drop").bind 'drop dragover', (e) ->
     e.preventDefault()
 
-  window.drop_handler = new DropHandler(window.fileStore, $("#file-list"), $("#file-name"), editor)
+  window.drop_handler = new DropHandler(window.fileStore, $("#file-list"), editor)
   $("#file-drop").bind("drop", window.drop_handler.handleDrop)
 
   $("#send-content").click =>

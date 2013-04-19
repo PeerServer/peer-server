@@ -6,13 +6,15 @@
 
 class window.WebRTC
   # Become a clientServer and set up events.
-  constructor: (@fileStore) ->
+  constructor: (@fileStore, portalElem) ->
     @browserConnections = {}
     @dataChannels = {}
      
     # Event Transmission
     @eventTransmitter = new window.EventTransmitter()
     @setUpReceiveEventCallbacks()
+
+    @serverUserPortal = new window.ServerUserPortal(portalElem, @fileStore)
      
     @connection = io.connect("http://localhost:8890") # TODO fix hard coded connection url
     
@@ -37,7 +39,8 @@ class window.WebRTC
     
     channel.onopen = =>
       console.log "data stream open " + socketID
-      channel.send(JSON.stringify({ "eventName": "initialLoad", "data": "<h2>Welcome page</h2><p>Good job.</p>" }))
+      landingPage = @serverUserPortal.getLandingPage()
+      channel.send(JSON.stringify({ "eventName": "initialLoad", "data": landingPage }))
   
     channel.onclose = (event) =>
       delete @dataChannels[socketID]

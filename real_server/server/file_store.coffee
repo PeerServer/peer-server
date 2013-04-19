@@ -1,14 +1,32 @@
 class window.FileStore
   constructor: ->
     console.log "FileStore initializing"
-    @fileList = {};
+    @fileList = {}
+    @triggerFor = {}
 
+  # NOTE: This file may be a file of the same name as an existing file, in which case
+  #  the existing file will be overwritten.
   addFile: (name, size, type, contents) =>
     @fileList[name] = 
       "name": name
       "size": size
       "type": type
       "contents": contents
+    @trigger("fileStore:fileAdded", {"name": name})
+
+
+  # Trigger the event on all callbacks registered to be notified.
+  trigger: (eventName, data) =>
+    for callback in @triggerFor[eventName]
+      callback(data)
+
+
+  # Simple way of registering to listen to an event on the filestore, 
+  #   ie a file being added/removed. 
+  registerForEvent: (eventName, callback) =>
+    if not @triggerFor[eventName]
+      @triggerFor[eventName] = []
+    @triggerFor[eventName].push(callback)
 
   getFileContents: (name) =>
     console.log @fileList
