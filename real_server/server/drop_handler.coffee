@@ -1,5 +1,5 @@
 class window.DropHandler
-    constructor: (@fileStore, @file_name_list, @file_name_view, @file_contents_view) ->
+    constructor: (@fileStore, @file_name_list, @file_name_view, @codeEditor) ->
         # Just setting up instance variables for now
 
     updateListView: (file_name) =>
@@ -10,7 +10,7 @@ class window.DropHandler
             console.log 'file:' + name
             @file_name_list.append('<option value="' + name + '">' + name + '</li>')
         @file_name_list.val(file_name)
-        @file_contents_view.val(window.fileStore.getFileContents(file_name))
+        @codeEditor.setCodeContents(window.fileStore.getFileContents(file_name))
         @file_name_view.val(file_name)
 
     handleDrop: (event) =>
@@ -21,7 +21,6 @@ class window.DropHandler
             
     handleFile: (file) =>
         console.log "uploading" + file.name
-        console.log file
         reader = new FileReader()
         if file.type is "image/jpeg"
             reader.readAsDataURL(file)

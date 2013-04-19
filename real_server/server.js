@@ -42,10 +42,8 @@ app.get('/client/:filename', function(req, res) {
 
 app.get('/shared/:filename', function(req, res) {
   var filename = req.params.filename;
-  console.log(filename);
   res.sendfile(__dirname + '/shared/' + filename);
 });
-
 
 /* Real server is notified when a browser attaches to it. 
      socket = a user connecting to our real server. May become */

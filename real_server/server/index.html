@@ -4,12 +4,15 @@
     <title>Server</title>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
-<script src="/shared/adapter.js"></script>
 <script src="/shared/event_transmitter.js"></script>
 <script src="/server/web_rtc.js"></script>
 <script src="/server/drop_handler.js"></script>
 <script src="/server/file_store.js"></script>
+<script src="/server/code-editor.js"></script>
 <script src="/server/init.js"></script>
+<!-- TODO possibly make a local copy of the ace editor -->
+<script src="http://rawgithub.com/ajaxorg/ace-builds/master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
 
 </head>
 <body>
@@ -27,7 +30,9 @@
 
 <br />
 
-<textarea id="file-contents" style="height:400px; width:600px"></textarea>
+<div id="file-contents" style="height:500px; width:700px">
+<!-- client HTML goes here -->
+</div>
 
 </body>
 </html>
