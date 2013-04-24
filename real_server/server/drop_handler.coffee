@@ -2,13 +2,6 @@ class window.DropHandler
     constructor: (@fileStore, @file_name_list, @codeEditor) ->
         # Just setting up instance variables for now
 
-    updateListView: (file_name) =>
-        @file_name_list.empty()
-        for idx,name of @fileStore.fileNames()
-            @file_name_list.append('<option value="' + name + '">' + name + '</option>')
-        @file_name_list.val(file_name)
-        @codeEditor.setCodeContents(window.fileStore.getFileContents(file_name))
-
     handleDrop: (event) =>
         droppedFiles = event.originalEvent.dataTransfer.files
         console.log "processing dropped files:" + droppedFiles
@@ -26,4 +19,5 @@ class window.DropHandler
             text = evt.target.result  # Result of the text file.
             @fileStore.addFile(file.name, file.size, file.type, text)
             console.log "added new file named " + file.name
-            @updateListView(file.name)
+            window.ServerUserPortal.updateFileListView(file.name)
+

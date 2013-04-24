@@ -3,6 +3,7 @@ class window.FileStore
     console.log "FileStore initializing"
     @fileList = {}
     @triggerFor = {}
+    @recallFromLocalStorgae()
 
   # NOTE: This file may be a file of the same name as an existing file, in which case
   #  the existing file will be overwritten.
@@ -12,14 +13,13 @@ class window.FileStore
       "size": size
       "type": type
       "contents": contents
+    @saveLocally()
     @trigger("fileStore:fileAdded", {"name": name})
-
 
   # Trigger the event on all callbacks registered to be notified.
   trigger: (eventName, data) =>
     for callback in @triggerFor[eventName]
       callback(data)
-
 
   # Simple way of registering to listen to an event on the filestore, 
   #   ie a file being added/removed. 
@@ -49,3 +49,20 @@ class window.FileStore
   # Returns an array containing all of the file names in the file store
   fileNames: =>
     return Object.keys(@fileList)
+
+  # Save the current fileList datastructure to local storage
+  saveLocally: =>
+    localStorage['fileList'] = JSON.stringify(@fileList)
+    console.log("saved fileStore to local storage")
+
+  recallFromLocalStorgae: =>
+    try
+      @fileList = JSON.parse(localStorage['fileList'])
+      console.log("recalled fileStore from local storage")
+    catch e
+      console.log ("unable to recall fileStore from local storage")
+ 
+  clear: =>
+    @fileList = {}
+    localStorage.clear()
+    window.ServerUserPortal.updateFileListView()

@@ -28,3 +28,26 @@ class window.ServerUserPortal
 
   selectorContainsOption: (selector, option) =>
     return (selector.find("option[value='" + option + "']").length > 0)
+
+  @updateFileListView: (file_name) ->
+    file_name_list = $("#file-list")
+    storedNames = window.fileStore.fileNames()
+    current = file_name_list.val()
+    file_name_list.empty()
+
+    if storedNames.length == 0
+      return
+
+    if file_name == undefined
+      if window.fileStore.hasFile(current)
+        file_name = current
+      else
+        file_name = storedNames[0]
+
+    console.log("updating list view with primary file:", file_name);
+
+    for idx,name of storedNames
+      file_name_list.append('<option value="' + name + '">' + name + '</option>')
+
+    file_name_list.val(file_name)
+    window.codeEditor.setCodeContents(window.fileStore.getFileContents(file_name))
