@@ -20,8 +20,12 @@
     };
 
     PathMappingView.prototype.render = function() {
+      var template;
+
       this.el.id = this.model.get("path");
-      $(this.el).html("<p>I'm in Section " + (this.model.get("path")) + ".</p>");
+      template = Handlebars.compile($("#tab-pane-template").html());
+      $(this.el).html(template);
+      new CodeEditor(ace.edit($(this.el).find(".file-contents")));
       return this;
     };
 
