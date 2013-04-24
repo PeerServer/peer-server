@@ -26,7 +26,7 @@ app.get('/server', function(req, res) {
   res.sendfile(__dirname + '/server/index.html');
 });
 
-app.get('/server/:filename', function(req, res) {
+app.get('/server/:filename(*)', function(req, res) {
   var filename = req.params.filename;
   res.sendfile(__dirname + '/server/' + filename);
 });
@@ -35,12 +35,12 @@ app.get('/client', function(req, res) {
   res.sendfile(__dirname + '/client/index.html');
 });
 
-app.get('/client/:filename', function(req, res) {
+app.get('/client/:filename(*)', function(req, res) {
   var filename = req.params.filename;
   res.sendfile(__dirname + '/client/' + filename);
 });
 
-app.get('/shared/:filename', function(req, res) {
+app.get('/shared/:filename(*)', function(req, res) {
   var filename = req.params.filename;
   res.sendfile(__dirname + '/shared/' + filename);
 });
