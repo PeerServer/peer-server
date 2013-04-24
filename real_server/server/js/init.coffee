@@ -8,15 +8,15 @@ $(document).ready ->
 
   webRTC = new WebRTC(window.fileStore, $("#user-portal"))
 
-  editor = new CodeEditor(ace.edit("file-contents"))
-  window.codeEditor = editor
+#  editor = new CodeEditor(ace.edit("file-contents"))
+#  window.codeEditor = editor
 
   # Prevent the page from opening the file directly on drop.
-  $("#file-drop").bind 'drop dragover', (e) ->
-    e.preventDefault()
+#  $("#file-drop").bind 'drop dragover', (e) ->
+#    e.preventDefault()
 
-  window.drop_handler = new DropHandler(window.fileStore, $("#file-list"), editor)
-  $("#file-drop").bind("drop", window.drop_handler.handleDrop)
+#  window.drop_handler = new DropHandler(window.fileStore, $("#file-list"), editor)
+#  $("#file-drop").bind("drop", window.drop_handler.handleDrop)
 
   $("#send-content").click =>
       webRTC.sendEvent("textAreaValueChanged", editor.getCodeContents())
@@ -25,7 +25,7 @@ $(document).ready ->
       fileStore.clear()
 
 
-  editor.setCodeContents("<!-- Code goes here -->")
+#  editor.setCodeContents("<!-- Code goes here -->")
 
   # TODO save the editor's contents to the relevant file (or make a new file for it) when the user changes the code.
   # TODO adjust editor's mode based on type of file (js/html/css etc)
@@ -35,4 +35,4 @@ $(document).ready ->
     selected_file = $("#file-list option:selected").val()
     editor.setCodeContents(window.fileStore.getFileContents(selected_file))
   
-  window.ServerUserPortal.updateFileListView()
+#  window.ServerUserPortal.updateFileListView()

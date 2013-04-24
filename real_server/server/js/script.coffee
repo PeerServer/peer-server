@@ -1,2 +1,2 @@
 jQuery ->
-  pathMappingCollectionView = new PathMappingCollectionView
+#  pathMappingCollectionView = new PathMappingCollectionView

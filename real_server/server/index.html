@@ -32,9 +32,12 @@
     <script src="/server/js/server_user_portal.js"></script>
     <script src="/server/js/init.js"></script>
 
-    <script src="/server/js/lib/ace.js"></script>
+    <!--<script src="/server/js/lib/ace.js"></script>-->
+    <!-- TODO possibly make a local copy of the ace editor -->
+    <script src="http://rawgithub.com/ajaxorg/ace-builds/master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 
     <link href="/server/css/bootstrap.css" rel="stylesheet">
+    <link href="/server/css/style.css" rel="stylesheet">
 </head>
 <body>
 
@@ -81,12 +84,29 @@
 	<button id="clear-files" style="padding:10px; margin:8px; font-size:15px">Clear File Store</button>
 
     <script id="tab-pane-template" type="text/x-handlebars-template">
-        <div id="file-drop">
-            <h3>Drop files here</h3>
+        <div class="row">
+            <button class="landing-page btn pull-right">Is Landing Page?</button>
+        </div>
+        
+        <div class="row">
+            <div class="span9">
+                <div class="file-drop well well-large">
+                    <h3>Drop files here</h3>
+                </div>
+            </div>
         </div>
 
-        <div class="file-contents" style="height:500px; width:700px">
-            <!-- client HTML goes here -->
+        <div class="row">
+            <div class="span2">
+                <ul class="file-list nav nav-list">
+                    <li class="nav-header">Files</li>
+                </ul>
+            </div>
+            <div class="span7">
+                <div class="file-contents" style="height:600px;">
+                    <!-- client HTML goes here -->
+                </div>
+            </div>
         </div>
     </script>
 

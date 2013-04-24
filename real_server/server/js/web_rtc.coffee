@@ -14,7 +14,8 @@ class window.WebRTC
     @eventTransmitter = new window.EventTransmitter()
     @setUpReceiveEventCallbacks()
 
-    @serverUserPortal = new window.ServerUserPortal(portalElem, @fileStore)
+#    @serverUserPortal = new window.ServerUserPortal(portalElem, @fileStore)
+    @pathMappingCollectionView = new PathMappingCollectionView()
      
     @connection = io.connect(document.location.origin)
     
@@ -39,7 +40,7 @@ class window.WebRTC
     
     channel.onopen = =>
       console.log "data stream open " + socketID
-      landingPage = @serverUserPortal.getLandingPage()
+      landingPage = @pathMappingCollectionView.getLandingPage()
       channel.send(JSON.stringify({ "eventName": "initialLoad", "data": landingPage }))
   
     channel.onclose = (event) =>
