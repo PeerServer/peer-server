@@ -10,7 +10,7 @@ class window.WebRTC
   constructor: (documentElement)->
     @documentElement = documentElement
     
-    @connection = io.connect("http://localhost:8890") # TODO fix hard coded connection url
+    @connection = io.connect(document.location.origin)
     @connection.emit("joinAsClientBrowser") # Start becoming a clientServer
 
     # Handshake

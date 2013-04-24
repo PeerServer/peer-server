@@ -16,7 +16,7 @@ class window.WebRTC
 
     @serverUserPortal = new window.ServerUserPortal(portalElem, @fileStore)
      
-    @connection = io.connect("http://localhost:8890") # TODO fix hard coded connection url
+    @connection = io.connect(document.location.origin)
     
     @connection.emit("joinAsClientServer") # Start becoming a clientServer
     
