@@ -9,7 +9,6 @@ class window.WebRTC
   # Become a clientBrowser and set up events.
   constructor: (documentElement)->
     @documentElement = documentElement
-    
     @connection = io.connect(document.location.origin)
     @connection.emit("joinAsClientBrowser") # Start becoming a clientServer
 
@@ -23,11 +22,11 @@ class window.WebRTC
     # Store own socket id
     @connection.on "setSocketId", (socketId) =>
       @socketId = socketId
-
+    
     @htmlProcessor = new HTMLProcessor(@sendEvent, @setDocumentElementInnerHTML, @getSocketId)
     
     # Event Transmission
-    @eventTransmitter = new window.EventTransmitter()
+    @eventTransmitter = new EventTransmitter()
     @setUpReceiveEventCallbacks()
 
     # TODO this is bad
@@ -35,7 +34,6 @@ class window.WebRTC
     @history = contentWindow.history
 
     contentWindow.onpopstate = (evt) =>
-      console.log "ONPOPSTATE"
       filename = evt.state.path
       @htmlProcessor.requestFile(filename, "backbutton")
 
@@ -101,7 +99,6 @@ class window.WebRTC
     @eventTransmitter.addEventCallback("receiveFile", @htmlProcessor.receiveFile)
     
   setDocumentElementInnerHTML: (data, optionalInfo)=>
-    console.log optionalInfo
     html = data.fileContents
     path = data.filename
     console.log "PATH: " + path

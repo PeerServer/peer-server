@@ -21,13 +21,13 @@ class window.PathMappingCollectionView extends Backbone.View
   getLandingPage: ->
     landing = @collection.find (pathMapping) ->
       return pathMapping.get("isLandingPage") == true
-    console.log "landing page:" + landing
     if landing
       path = landing.get("path")
     else
       # return {"contents": "", "url":"default.html"}
       path = "default.html"
-    return {"fileContents": window.fileStore.getFileContents(path), "filename": path, "type":"text/html"}
+    contents = window.fileStore.getFileContents(path)
+    return {"fileContents": contents, "filename": path, "type":"text/html"}
 
   render: ->
     $(@el).html """

@@ -39,8 +39,6 @@ class window.HTMLProcessor
   #   by using "target='_top'.
   # TODO: links to non-text/non-html files do not work (ie, you cannot link to an image and have it 
   #   display correctly likely due to the MIME type)
-  # TODO: back button support (currently does not work). This probably involves storing a stack of past page 
-  #   history in localStorage and intercepting presses of the back button on the top page. 
   processLinks: =>
     elements = @container.find("a[href]")
     elements.each (index, el) =>
@@ -50,10 +48,11 @@ class window.HTMLProcessor
       # Ignore local links
       if href[0] is "#"
         return
-      if @isInternalFile(href)
+      else if @isInternalFile(href)
         $el.attr("onclick", @triggerOnParentString("relativeLinkClicked", href))
       else 
         $el.attr("target", "_blank")
+
 
   # Triggers an event on the top (actual) window, passing in href as the parameter. 
   #  The return false is important so that the href portion of the link is ignored. 
