@@ -100,6 +100,8 @@ class window.WebRTC
         
   sendEventTo: (socketId, eventName, data) =>
     @eventTransmitter.sendEvent(@dataChannels[socketId], eventName, data)
+    console.log "sending event"
+    console.log data
 
   setUpReceiveEventCallbacks: =>
     @eventTransmitter.addEventCallback("requestFile", @serveFile)

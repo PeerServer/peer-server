@@ -8,6 +8,7 @@ class window.PathMappingView extends Backbone.View
     @fileStore.registerForEvent("fileStore:fileAdded", @handleFileAdded)
     
     @model.bind("change:isLandingPage", @handleIsLandingPageChange)
+
     
   render: =>
     @el.id = @model.cid
@@ -52,7 +53,7 @@ class window.PathMappingView extends Backbone.View
     reader.onload = (evt) =>
       text = evt.target.result  # Result of the text file.
       @fileStore.addFile(file.name, file.size, file.type, text)
-      console.log "added new file named " + file.name
+      console.log "added new file named " + file.name + file.size
 #      window.ServerUserPortal.updateFileListView(file.name)
 
   handleFileAdded: (data) ->
@@ -62,6 +63,8 @@ class window.PathMappingView extends Backbone.View
     if filename.slice(-5) is ".html"
       @model.set("path", filename)
     @elFileList.append("<li><a href='#'>#{filename}</a></li>")
+    @aceEditor.setValue(window.fileStore.getFileContents(filename))
+    @aceEditor.navigateFileStart()
 
   handleFileSelection: (event) ->
     target = $(event.target)
@@ -78,6 +81,7 @@ class window.PathMappingView extends Backbone.View
       @model.set("isLandingPage", isLandingPage)
 
   handleIsLandingPageChange: ->
+    console.log "change"
     if @model.get("isLandingPage")
       @landingPageButton.addClass("active")
     else

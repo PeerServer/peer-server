@@ -30,6 +30,15 @@ class window.WebRTC
     @eventTransmitter = new window.EventTransmitter()
     @setUpReceiveEventCallbacks()
 
+    # TODO this is bad
+    contentWindow = document.getElementById("container").contentWindow
+    @history = contentWindow.history
+
+    contentWindow.onpopstate = (evt) =>
+      console.log "ONPOPSTATE"
+      filename = evt.state.path
+      @htmlProcessor.requestFile(filename, "backbutton")
+
   # Returns the client-server's own socket id. 
   getSocketId: =>
     return @socketId
@@ -49,7 +58,7 @@ class window.WebRTC
 
       @dataChannel.onmessage = (message) =>
         console.log "data stream message"
-        console.log message
+        #console.log message
         @eventTransmitter.receiveEvent(message.data)
 
       @dataChannel.onerror = (err) =>
@@ -86,11 +95,19 @@ class window.WebRTC
     @eventTransmitter.sendEvent(@dataChannel, eventName, data)
         
   setUpReceiveEventCallbacks: =>
-    @eventTransmitter.addEventCallback("initialLoad", @setDocumentElementInnerHTML)
+    @eventTransmitter.addEventCallback "initialLoad", (data) =>
+      @setDocumentElementInnerHTML(data, "initialLoad")
     @eventTransmitter.addEventCallback("textAreaValueChanged", @setDocumentElementInnerHTML)
     @eventTransmitter.addEventCallback("receiveFile", @htmlProcessor.receiveFile)
     
-  setDocumentElementInnerHTML: (html)=>
+  setDocumentElementInnerHTML: (data, optionalInfo)=>
+    console.log optionalInfo
+    html = data.fileContents
+    path = data.filename
+    console.log "PATH: " + path
+    if optionalInfo isnt "backbutton"
+      @history.pushState({"path": path}, path)  # Passing in a third param for the url breaks since this is a frame with no src
+    console.log @history.state
     @documentElement.innerHTML = "<img src='/client/loading.gif' />"
     @htmlProcessor.processHTML html, (processedHTML) =>
       @documentElement.innerHTML = processedHTML

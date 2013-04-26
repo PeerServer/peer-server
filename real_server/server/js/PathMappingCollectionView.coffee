@@ -10,15 +10,24 @@ class window.PathMappingCollectionView extends Backbone.View
     @collection.bind("change:isLandingPage", @handleIsLandingPageChange)
     
     @render()
+    @addDefaultFile()
+
+  addDefaultFile: =>
+    # TODO fix this up nicely so it is indicated on the frontend as the landing page at first.
+    defaultFile = "<h2>Welcome page</h2><p>Good job.</p>"
+    @addPathMapping()
+    window.fileStore.addFile("default.html", defaultFile.length, "text/html", defaultFile)
 
   getLandingPage: ->
     landing = @collection.find (pathMapping) ->
       return pathMapping.get("isLandingPage") == true
     console.log "landing page:" + landing
-    if not landing
-      return "<h2>Welcome page</h2><p>Good job.</p>"
-    landing = landing.get("path")
-    return window.fileStore.getFileContents(landing)
+    if landing
+      path = landing.get("path")
+    else
+      # return {"contents": "", "url":"default.html"}
+      path = "default.html"
+    return {"fileContents": window.fileStore.getFileContents(path), "filename": path, "type":"text/html"}
 
   render: ->
     $(@el).html """

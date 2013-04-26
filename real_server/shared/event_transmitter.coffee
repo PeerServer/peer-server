@@ -10,7 +10,7 @@ class window.EventTransmitter
     @eventCallbacks[eventName] = eventCallbacks
   
   sendEvent: (dataChannel, eventName, data) =>
-    console.log("send event " + eventName, JSON.stringify({ "eventName": eventName, "data": data }))
+    #console.log("send event " + eventName, JSON.stringify({ "eventName": eventName, "data": data }))
     dataChannel.send(JSON.stringify({ "eventName": eventName, "data": data }))
 
   receiveEvent: (messageEventData) =>
@@ -18,7 +18,7 @@ class window.EventTransmitter
     eventName = messageEventData.eventName
     messageData = messageEventData.data
 
-    console.log("receive event " + eventName, messageData);
+    #console.log("receive event " + eventName, messageData);
     
     eventCallbacks = @eventCallbacks[eventName]
     if eventCallbacks

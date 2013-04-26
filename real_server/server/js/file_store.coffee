@@ -8,6 +8,7 @@ class window.FileStore
   # NOTE: This file may be a file of the same name as an existing file, in which case
   #  the existing file will be overwritten.
   addFile: (name, size, type, contents) =>
+    console.log type
     @fileList[name] = 
       "name": name
       "size": size

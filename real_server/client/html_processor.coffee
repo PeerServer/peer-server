@@ -47,6 +47,9 @@ class window.HTMLProcessor
       $el = $(el)
       href = $el.attr("href")  # Don't change the href so that the hover behavior is correct -- instead, it 
       # will be ignored because onclick returns false. 
+      # Ignore local links
+      if href[0] is "#"
+        return
       if @isInternalFile(href)
         $el.attr("onclick", @triggerOnParentString("relativeLinkClicked", href))
       else 
@@ -81,7 +84,7 @@ class window.HTMLProcessor
     @sendEvent("requestFile", data)
 
   receiveFile: (data) =>
-    console.log("receive file", data)
+    #console.log("receive file", data)
     filename = data.filename
     fileContents = data.fileContents
     type = data.type  # Same as what we passed along in request file.
@@ -93,7 +96,9 @@ class window.HTMLProcessor
     #   another round of setting up the HTML for the frame (with processing). 
     if type is "alink"
       console.log "Is alink"
-      @setDocumentElementInnerHTML data.fileContents
+      @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename}, type)
+    else if type is "backbutton"
+      @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename}, type)
     else 
       $element = @requestedFilenamesToElement[filename]
       if $element
