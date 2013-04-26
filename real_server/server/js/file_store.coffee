@@ -32,6 +32,8 @@ class window.FileStore
   getFileContents: (name) =>
     console.log @fileList
     console.log name
+    console.log "INDEX OF &AMP"
+    console.log @fileList[name].contents.indexOf("&amp")
     return @fileList[name].contents
 
   getFileSize: (name) =>

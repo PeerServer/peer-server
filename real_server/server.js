@@ -45,6 +45,19 @@ app.get('/shared/:filename(*)', function(req, res) {
   res.sendfile(__dirname + '/shared/' + filename);
 });
 
+/* Temporary mapping kept at the bottom just for testing test files 
+    outside of the server browser. */
+app.get('/test', function(req, res) {
+  var filename = req.params.filename;
+  res.sendfile(__dirname + '/test_files/wrapper.html');
+});
+
+/* Temporary mapping kept at the bottom just for testing. TODO remove. */
+app.get(':filename(*)', function(req, res) {
+  var filename = req.params.filename;
+  res.sendfile(__dirname + '/test_files/bootstrap-example/' + filename);
+});
+
 /* Real server is notified when a browser attaches to it. 
      socket = a user connecting to our real server. May become */
 io = io.listen(server);

@@ -7,7 +7,8 @@ class window.HTMLProcessor
 
   processHTML: (html, completionCallback) =>
     @completionCallback = completionCallback
-    
+    @scriptMapping = {}
+
     container = document.createElement("html")
     container.innerHTML = html.replace(/<\/?html>/g, "")
     @container = $(container)
@@ -69,8 +70,11 @@ class window.HTMLProcessor
         @requestFile(filename, type)
 
   isInternalFile: (filename) =>
-    return filename.match(/(?:https?:\/\/)|(?:data:)/) is null
-    
+    # TODO hack -- basically, an internal file needs to have an extension (hence the .), and also
+    #   shouldn't match http/https.
+    if (filename[0] != "#" and (filename.indexOf(".") != -1) and filename.match(/(?:https?:\/\/)|(?:data:)/) is null)
+      return true
+    return false
 
   # Note that requestFile is also called externally (ie, by the global function that
   #   handles a href tags being clicked.)  
@@ -100,19 +104,26 @@ class window.HTMLProcessor
       @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename}, type)
     else 
       $element = @requestedFilenamesToElement[filename]
-      if $element
-        delete @requestedFilenamesToElement[filename]
-        
+      if $element        
         if $element.attr("src") and $element[0].tagName is "IMG" 
           $element.attr("src", fileContents)
         else if $element.attr("src") and $element[0].tagName is "SCRIPT"
           $element.removeAttr("src")
-          $element.append(fileContents)
+          @scriptMapping[data.filename] = fileContents
+          # TODO this is dangerous b/c we might get encoded if the filename has bad characters in it
+          #   (which I think is plausible), and then we're screwed when we try to find the non-encoded file name
+          #   contents using the encoded file name we pull out when we execute the script. It would be safest to include a 
+          #   unique ID with each file (perhaps imparted by the client-server filestore) that we can use instead. 
+          #   Basically any unique ID here is fine.
+          $element.append(data.filename)  
+          # console.log "INDEX OF &AMP on insertion"
+          # console.log fileContents.indexOf("&amp")
         else if $element[0].tagName is "LINK"
           $element.replaceWith("<style>" + fileContents + "</style>")
-  #        @container.find("head").append($element)        
+  #        @container.find("head").append($element)     
+        delete @requestedFilenamesToElement[filename]   
     @checkForProcessCompletion()
 
   checkForProcessCompletion: =>
     if Object.keys(@requestedFilenamesToElement).length is 0 and @completionCallback
-      @completionCallback(@container[0].outerHTML)
+      @completionCallback(@container[0].outerHTML, @scriptMapping)
