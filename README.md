@@ -21,4 +21,3 @@ In FirefoxNightly
 - http://localhost:8890/client
 
 
-Just a test commit to see if pushing works. Shouldn't be any size issues, I don't think.
