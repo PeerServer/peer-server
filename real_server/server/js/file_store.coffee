@@ -3,7 +3,7 @@ class window.FileStore
     console.log "FileStore initializing"
     @fileList = {}
     @triggerFor = {}
-    @recallFromLocalStorgae()
+    @recallFromLocalStorage()
 
   # NOTE: This file may be a file of the same name as an existing file, in which case
   #  the existing file will be overwritten.
@@ -19,8 +19,10 @@ class window.FileStore
 
   # Trigger the event on all callbacks registered to be notified.
   trigger: (eventName, data) =>
-    for callback in @triggerFor[eventName]
-      callback(data)
+    callbacks = @triggerFor[eventName]
+    if callbacks
+      for callback in callbacks
+        callback(data)
 
   # Simple way of registering to listen to an event on the filestore, 
   #   ie a file being added/removed. 
@@ -58,7 +60,7 @@ class window.FileStore
     localStorage['fileList'] = JSON.stringify(@fileList)
     console.log("saved fileStore to local storage")
 
-  recallFromLocalStorgae: =>
+  recallFromLocalStorage: =>
     try
       @fileList = JSON.parse(localStorage['fileList'])
       console.log("recalled fileStore from local storage")
@@ -67,5 +69,5 @@ class window.FileStore
  
   clear: =>
     @fileList = {}
-    localStorage.clear()
-    window.ServerUserPortal.updateFileListView()
+    localStorage.removeItem("fileList")
+

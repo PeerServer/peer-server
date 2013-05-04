@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Server</title>
-    
+
     <!--<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20121008/json2.js"></script>-->
     <!--<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>-->
     <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>-->
-    
+
     <script src="/server/js/lib/jquery-2.0.0.js"></script>
-    
+
     <script src="/server/js/lib/bootstrap.js"></script>
-    
+
     <script src="/server/js/lib/json2.js"></script>
     <script src="/server/js/lib/underscore.js"></script>
     <script src="/server/js/lib/backbone.js"></script>
     <script src="/server/js/lib/handlebars.js"></script>
 
-    <script src="/server/js/PathMapping.js"></script>
-    <script src="/server/js/PathMappingCollection.js"></script>
-    <script src="/server/js/PathMappingView.js"></script>
-    <script src="/server/js/PathMappingCollectionView.js"></script>
+    <script src="/server/js/ServerFile.js"></script>
+    <script src="/server/js/ServerFileCollection.js"></script>
+    <script src="/server/js/ServerFileView.js"></script>
+    <script src="/server/js/ServerFileCollectionView.js"></script>
     <script src="/server/js/script.js"></script>
-    
+
     <script src="/socket.io/socket.io.js"></script>
-    
+
     <script src="/shared/event_transmitter.js"></script>
     <script src="/server/js/web_rtc.js"></script>
     <script src="/server/js/drop_handler.js"></script>
@@ -38,81 +38,54 @@
 
     <link href="/server/css/bootstrap.css" rel="stylesheet">
     <link href="/server/css/style.css" rel="stylesheet">
-</head>
-<body>
+  </head>
+  <body>
 
-<div class="container">
-    <div class="page-header">
+    <div class="container">
+      <div class="page-header">
         <h1>Client Server</h1>
+      </div>
+
+      <div id="file-collection-view">
+        <div class="row">
+          <div class="span12">
+            <div class="file-drop well well-large">
+              <h3>Drop files here</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="span3">
+            <label>Landing page:</label>
+            <select class="landing-page">
+            </select>
+
+            <div class="well" style="padding: 8px 0;">
+              <ul class="file-list nav nav-list">
+                <li class="nav-header html">HTML</li>
+                <li class="nav-header css">CSS</li>
+                <li class="nav-header js">JS</li>
+                <li class="nav-header images">Images</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="span9">
+            <div id="file-view-container"></div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <script id="file-view-template" type="text/x-handlebars-template">
+        <div class="row">
+          <div class="file-contents" style="height:600px;"></div>
+        </div>
+      </script>
+
     </div>
 
-    <div id="path-mapping-collection-view" class="tabbable tabs-left">
-        <!--<ul class="nav nav-tabs">-->
-            <!--<li class="active">-->
-                <!--<a data-toggle="tab" href="#lA">index.html</a>-->
-            <!--</li>-->
-            <!--<li>-->
-                <!--<a data-toggle="tab" href="#lB">about.html</a>-->
-            <!--</li>-->
-        <!--</ul>-->
-        <!--<div class="tab-content">-->
-            <!--<div id="lA" class="tab-pane active">-->
-                <!--<p>I'm in Section A.</p>-->
-            <!--</div>-->
-            <!--<div id="lB" class="tab-pane">-->
-                <!--<p>I'm in about.html</p>-->
-            <!--</div>-->
-        <!--</div>-->
-    </div>
-
-
-    <!--<div id="file-drop" style="padding:40px; margin: 10px; background-color: lightblue">-->
-    <!--<h3>Drop files here</h3>-->
-    <!--</div>-->
-
-
-    <!--</div>-->
-
-    <!--<select id="file-list"></select>-->
-    <!--<button id="send-content" style="padding:10px; margin:8px; font-size:15px">Send it!</button>-->
-
-
-    <!--<br/>-->
-
-
-
-	<button id="clear-files" style="padding:10px; margin:8px; font-size:15px">Clear File Store</button>
-
-    <script id="tab-pane-template" type="text/x-handlebars-template">
-        <div class="row">
-            <button class="landing-page btn pull-right">Is Landing Page?</button>
-        </div>
-        
-        <div class="row">
-            <div class="span9">
-                <div class="file-drop well well-large">
-                    <h3>Drop files here</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="span2">
-                <ul class="file-list nav nav-list">
-                    <li class="nav-header">Files</li>
-                </ul>
-            </div>
-            <div class="span7">
-                <div class="file-contents" style="height:600px;">
-                    <!-- client HTML goes here -->
-                </div>
-            </div>
-        </div>
-    </script>
-
-
-</div>
-
-
-</body>
+  </body>
 </html>

@@ -9,8 +9,7 @@ $(document).ready ->
   #   and it needs to finish doing that otherwise the src will overwrite our innerHTML.
   document.getElementById("container").onload = (evt) =>
     # Must be declared on the window so that the rest of the page can see it.
-    window.webRTC = new WebRTC(document.getElementById("container").contentWindow.document.documentElement) 
-  , 500
+    window.webRTC = new WebRTC(document.getElementById("container").contentWindow.document.documentElement)
 
   # This event is triggered by the "onclick" of an a href tag pointing to some file
   #   on the server-browser. The onclick event trigger is set up in webRTC's html_processor 
