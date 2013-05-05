@@ -14,7 +14,7 @@ In one terminal
 
 In another terminal
 - `cd real_server`
-- `coffee -wc */*.coffee`
+- `coffee -wc **/*.coffee`
 
 In FirefoxNightly
 - http://localhost:8890/server
