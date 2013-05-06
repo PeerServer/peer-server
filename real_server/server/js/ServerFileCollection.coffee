@@ -10,7 +10,6 @@ class window.ServerFileCollection extends Backbone.Collection
 
   getLandingPage: ->
     landingPage = @find (serverFile) ->
-      console.log serverFile
       return serverFile.get("isLandingPage") and serverFile.get("isProductionVersion")
 
     if landingPage
@@ -29,7 +28,6 @@ class window.ServerFileCollection extends Backbone.Collection
 
    createProductionVersion: =>
      productionFiles = @where(isProductionVersion: true)
-     console.log productionFiles
      _.each productionFiles, (serverFile) =>
        serverFile.destroy()
 
@@ -44,6 +42,5 @@ class window.ServerFileCollection extends Backbone.Collection
     forEachDevelopmentFile: (fn) =>
       @each (serverFile) ->
         if not serverFile.get("isProductionVersion")
-          console.log serverFile.get("isProductionVersion")
           fn(serverFile)
 
