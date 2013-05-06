@@ -6,6 +6,7 @@ class window.ServerFile extends Backbone.Model
     type: ""
     fileType: ""
     isLandingPage: false
+    isProductionVersion: false
 
   fileTypeEnum:
     HTML: "HTML",
@@ -17,12 +18,6 @@ class window.ServerFile extends Backbone.Model
   initialize: () ->
     @on("change:type", @updateFileType)
     @updateFileType()
-
-    @on("change:contents", @updateContentsInFileStore)
-    @on("change:isLandingPage", @handleIsLandingPageChange)
-
-    if @get("fileType") is @fileTypeEnum.HTML
-      @initIsLandingPage()
 
   updateFileType: =>
     @set("fileType", @rawTypeToFileType(@get("type")))
@@ -37,20 +32,4 @@ class window.ServerFile extends Backbone.Model
     if rawType is "application/x-javascript"
       return @fileTypeEnum.JS
     return @fileTypeEnum.NONE
-
-  updateContentsInFileStore: =>
-    fileStore = window.fileStore
-    fileStore.addFile(@get("name"), @get("size"), @get("type"), @get("contents"))
-
-  initIsLandingPage: =>
-    landingPageName = localStorage["landingPage"]
-    if landingPageName is @get("name")
-      @set("isLandingPage", true)
-
-  handleIsLandingPageChange: =>
-    if @get("isLandingPage")
-      localStorage["landingPage"] = @get("name")
-    else
-      localStorage.removeItem("landingPage")
-
 

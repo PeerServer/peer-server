@@ -6,15 +6,13 @@
 
 class window.WebRTC
   # Become a clientServer and set up events.
-  constructor: (@fileStore, portalElem) ->
+  constructor: (@serverFileCollection) ->
     @browserConnections = {}
     @dataChannels = {}
 
     # Event Transmission
     @eventTransmitter = new window.EventTransmitter()
     @setUpReceiveEventCallbacks()
-
-    @serverFileCollectionView = new ServerFileCollectionView()
 
     @connection = io.connect(document.location.origin)
 
@@ -39,7 +37,7 @@ class window.WebRTC
 
     channel.onopen = =>
       console.log "data stream open " + socketID
-      landingPage = @serverFileCollectionView.getLandingPage()
+      landingPage = @serverFileCollection.getLandingPage()
       channel.send(JSON.stringify({ "eventName": "initialLoad", "data": landingPage }))
 
     channel.onclose = (event) =>
@@ -111,7 +109,7 @@ class window.WebRTC
 
     console.log "FILENAME: " + filename
 
-    if not @fileStore.hasFile(filename)
+    if not @serverFileCollection.hasFile(filename)
       console.error "Error: Client requested " + filename + " which does not exist on server."
       @sendEventTo(data.socketId, "receiveFile", {
         filename: filename,
@@ -122,6 +120,6 @@ class window.WebRTC
 
     @sendEventTo(data.socketId, "receiveFile", {
       filename: filename,
-      fileContents: @fileStore.getFileContents(filename),
+      fileContents: @serverFileCollection.getContents(filename),
       type: data.type
     })

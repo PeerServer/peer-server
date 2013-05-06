@@ -1,2 +1,0 @@
-jQuery ->
-#  pathMappingCollectionView = new PathMappingCollectionView

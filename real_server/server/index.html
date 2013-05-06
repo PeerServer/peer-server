@@ -15,21 +15,18 @@
     <script src="/server/js/lib/underscore.js"></script>
     <script src="/server/js/lib/backbone.js"></script>
     <script src="/server/js/lib/handlebars.js"></script>
+    <script src="/server/js/lib/backbone.localStorage.js"></script>
 
     <script src="/server/js/ServerFile.js"></script>
     <script src="/server/js/ServerFileCollection.js"></script>
     <script src="/server/js/ServerFileView.js"></script>
     <script src="/server/js/ServerFileCollectionView.js"></script>
-    <script src="/server/js/script.js"></script>
+    <script src="/server/js/AppView.js"></script>
 
     <script src="/socket.io/socket.io.js"></script>
 
     <script src="/shared/event_transmitter.js"></script>
     <script src="/server/js/web_rtc.js"></script>
-    <script src="/server/js/drop_handler.js"></script>
-    <script src="/server/js/file_store.js"></script>
-    <script src="/server/js/code_editor.js"></script>
-    <script src="/server/js/server_user_portal.js"></script>
     <script src="/server/js/init.js"></script>
 
     <!--<script src="/server/js/lib/ace.js"></script>-->
@@ -41,8 +38,10 @@
   </head>
   <body>
 
-    <div class="container">
+    <div id="client-server" class="container">
       <div class="page-header">
+        <button class="btn btn-large pull-right edit-server">Edit</button>
+        <button class="btn btn-large pull-right edit-server-done" style="display: none;">Done</button>
         <h1>Client Server</h1>
       </div>
 
@@ -58,8 +57,7 @@
         <div class="row">
           <div class="span3">
             <label>Landing page:</label>
-            <select class="landing-page">
-            </select>
+            <select class="landing-page"></select>
 
             <div class="well" style="padding: 8px 0;">
               <ul class="file-list nav nav-list">
@@ -77,11 +75,15 @@
         </div>
       </div>
 
-
-
-      <script id="file-view-template" type="text/x-handlebars-template">
+      <script id="source-code-template" type="text/x-handlebars-template">
         <div class="row">
           <div class="file-contents" style="height:600px;"></div>
+        </div>
+      </script>
+
+      <script id="image-template" type="text/x-handlebars-template">
+        <div class="row">
+          <img src=""></img>
         </div>
       </script>
 
