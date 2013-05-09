@@ -112,8 +112,8 @@ class window.ServerFileCollectionView extends Backbone.View
     reader.onload = (evt) =>
       contents = evt.target.result  # Result of the text file.
       serverFile = new ServerFile(name: file.name, size: file.size, type: file.type, contents: contents)
-      serverFile.save()
       @collection.add(serverFile)
+      serverFile.save()
 
   eventChangeLandingPage: (event) =>
     return unless @isEditable
