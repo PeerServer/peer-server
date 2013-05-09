@@ -1,3 +1,6 @@
+''' Handles all frontend setup for UI.
+'''
+
 class window.AppView extends Backbone.View
   el: "#client-server"
 

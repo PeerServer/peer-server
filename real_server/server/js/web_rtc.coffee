@@ -1,7 +1,8 @@
 """
   WebRTC handler for clientServer.
 
-  (TODO at some point refactor)
+  Dispatches (sends and receives) WebRTC data. Should be kept 
+  as minimal as possible, dispatching to other modules.
 """
 
 class window.WebRTC

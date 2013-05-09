@@ -1,3 +1,9 @@
+''' 
+  Display and organization of the user-uploaded file collection. 
+  Edit/Done modes for saving.
+'''
+
+
 class window.ServerFileCollectionView extends Backbone.View
   el: "#file-collection-view"
 

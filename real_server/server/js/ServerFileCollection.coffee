@@ -1,3 +1,7 @@
+'''
+  Tracks user-uploaded files, and their edit/production state.
+'''
+
 class window.ServerFileCollection extends Backbone.Collection
   model: ServerFile
 
@@ -15,7 +19,7 @@ class window.ServerFileCollection extends Backbone.Collection
     if landingPage
       return {"fileContents": landingPage.get("contents"), "filename": landingPage.get("name"), "type": "text/html"}
     else
-      return {"fileContents": "no landing page", "filename": "404.html", "type": "text/html"}
+      return {"fileContents": "Under development... (set a landing page)", "filename": "404.html", "type": "text/html"}
 
   hasFile: (filename) =>
     return @findWhere(name: filename)

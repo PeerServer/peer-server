@@ -1,3 +1,7 @@
+'''
+  View of a single file in the editor (depends on js/img/css etc)
+'''
+
 class window.ServerFileView extends Backbone.View
 
   initialize: (options) ->

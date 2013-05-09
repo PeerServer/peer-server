@@ -15,7 +15,7 @@ class window.ServerFile extends Backbone.Model
     IMG: "IMG",
     NONE: "NONE"
 
-  initialize: () ->
+  initialize: ->
     @on("change:type", @updateFileType)
     @updateFileType()
 
