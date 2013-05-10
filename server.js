@@ -13,10 +13,10 @@ var app = require('express')();
 /* Create the real server for the app */
 var server = require('http').createServer(app);
 var io = require('socket.io');
-
+var port = process.env.PORT || config.server.port || 5000;
 /* Start the server at the port. */
-server.listen(config.server.port, function() {
-  console.log('Server running at: http://localhost:' + config.server.port);
+server.listen(port, function() {
+  console.log('Server running at: http://localhost:' + port);
 });
 
 /* Static file mappings */
@@ -52,11 +52,14 @@ app.get('/test', function(req, res) {
   res.sendfile(__dirname + '/test_files/wrapper.html');
 });
 
-/* Temporary mapping kept at the bottom just for testing. TODO remove. */
-app.get(':filename(*)', function(req, res) {
-  var filename = req.params.filename;
-  res.sendfile(__dirname + '/test_files/bootstrap-example/' + filename);
-});
+// /* Temporary mapping kept at the bottom just for testing. TODO remove. */
+// app.get(':filename(*)', function(req, res) {
+//   var filename = req.params.filename;
+//   res.sendfile(__dirname + '/test_files/bootstrap-example/' + filename);
+// });
+app.get("/", function(req, res) {
+  res.sendfile(__dirname + '/index.html');
+})
 
 /* Real server is notified when a browser attaches to it. 
      socket = a user connecting to our real server. May become */
