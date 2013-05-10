@@ -1,7 +1,5 @@
-real_server/client/*.js
-real_server/server/*.js
-real_server/server/js/*.js
-real_server/shared/*.js
-!real_server/shared/adapter.js
+real_server/client/compiled
+real_server/server/js/compiled
+real_server/shared/compiled
 .DS_Store
 *.dmg
