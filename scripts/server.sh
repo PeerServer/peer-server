@@ -1,2 +1,2 @@
-cd ../real_server/
+cd ../
 node server

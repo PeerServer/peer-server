@@ -1,5 +1,5 @@
-real_server/client/compiled
-real_server/server/js/compiled
-real_server/shared/compiled
+client/compiled
+server/js/compiled
+shared/compiled
 .DS_Store
 *.dmg
