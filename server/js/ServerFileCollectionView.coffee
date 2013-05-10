@@ -11,17 +11,17 @@ class window.ServerFileCollectionView extends Backbone.View
     @isEditable = options.isEditable
     @previousServerFileView = null
 
+    @tmplFileListItem = Handlebars.compile($("#file-list-item-template").html())
     @render()
 
+    @addAll()
     @collection.bind("add", @addOne)
     @collection.bind("reset", @addAll)
-    @collection.fetch()
 
   events:
     "dragover .file-drop": "preventDefault"
     "drop .file-drop": "eventDropFiles"
     "click .file-list li[data-cid]": "eventSelectFile"
-    "change .landing-page": "eventChangeLandingPage"
 
   toggleIsEditable: =>
     @isEditable = !@isEditable
@@ -38,34 +38,7 @@ class window.ServerFileCollectionView extends Backbone.View
 
   addOne: (serverFile) =>
     return if serverFile.get("isProductionVersion")
-
-    listEl = $("<li data-cid='#{serverFile.cid}'><a href='#'>#{serverFile.get('name')}</a></li>")
-
-    headerToAppendAfter = null
-    switch serverFile.get("fileType")
-      when ServerFile.prototype.fileTypeEnum.HTML then headerToAppendAfter = @$(".nav-header.html")
-      when ServerFile.prototype.fileTypeEnum.CSS  then headerToAppendAfter = @$(".nav-header.css")
-      when ServerFile.prototype.fileTypeEnum.JS   then headerToAppendAfter = @$(".nav-header.js")
-      when ServerFile.prototype.fileTypeEnum.IMG  then headerToAppendAfter = @$(".nav-header.img")
-
-    if headerToAppendAfter
-      nextHeader = headerToAppendAfter.nextAll(".nav-header").first()
-    else
-      nextHeader = null
-
-    if nextHeader and nextHeader.length > 0
-      nextHeader.before(listEl)
-    else
-      @$(".file-list").append(listEl)
-
-    @addedServerFile(serverFile)
-
-  addedServerFile: (serverFile) =>
-    if serverFile.get("fileType") is ServerFile.prototype.fileTypeEnum.HTML
-      optionEl = $("<option value='#{serverFile.cid}'>#{serverFile.get('name')}</option>")
-      if serverFile.get("isLandingPage")
-        optionEl.attr("selected", "selected")
-      @$(".landing-page").append(optionEl)
+    @appendFileToFileList(serverFile)
 
   eventSelectFile: (event) =>
     target = $(event.currentTarget)
@@ -84,11 +57,12 @@ class window.ServerFileCollectionView extends Backbone.View
   preventDefault: (event) =>
     event.preventDefault()
 
+
+
   # --- READ-ONLY MODE METHODS ---
   
   switchToReadOnlyMode: =>
     @$(".file-drop").hide()
-    @$(".landing-page").attr("disabled", "disabled")
     if @previousServerFileView
       @previousServerFileView.setIsEditable(false)
     
@@ -96,7 +70,6 @@ class window.ServerFileCollectionView extends Backbone.View
 
   switchToEditableMode: =>
     @$(".file-drop").show()
-    @$(".landing-page").removeAttr("disabled")
     if @previousServerFileView
       @previousServerFileView.setIsEditable(true)
 
@@ -125,13 +98,21 @@ class window.ServerFileCollectionView extends Backbone.View
       @collection.add(serverFile)
       serverFile.save()
 
-  eventChangeLandingPage: (event) =>
-    return unless @isEditable
-    @collection.forEachDevelopmentFile (serverFile) ->
-      serverFile.save("isLandingPage", false)
+  # --- HELPER METHODS ---
+  
+  appendFileToFileList: (serverFile) =>
+    listEl = @tmplFileListItem(cid: serverFile.cid, name:serverFile.get("name"))
 
-    target = $(event.currentTarget)
-    cid = target.val()
-    serverFile = @collection.get(cid)
-    serverFile.save("isLandingPage", true)
+    section = null
+    if serverFile.get("isRequired")
+      section = @$(".file-list.required")
+    else
+      switch serverFile.get("fileType")
+        when ServerFile.prototype.fileTypeEnum.HTML then section = @$(".file-list.html")
+        when ServerFile.prototype.fileTypeEnum.CSS  then section = @$(".file-list.css")
+        when ServerFile.prototype.fileTypeEnum.JS   then section = @$(".file-list.js")
+        when ServerFile.prototype.fileTypeEnum.IMG  then section = @$(".file-list.img")
+
+    if section
+      section.append(listEl)
 

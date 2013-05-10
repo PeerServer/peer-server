@@ -69,14 +69,14 @@ class window.WebRTC
       @connection.emit("sendICECandidate", socketID, event.candidate)
 
     peerConnection.ondatachannel = (evt) =>
-      console.log("data channel connecting " + socketID);
-      @addDataChannel(socketID, evt.channel);
+      console.log("data channel connecting " + socketID)
+      @addDataChannel(socketID, evt.channel)
 
     console.log("client joined", socketID)
 
   # Part of connection handshake
   receiveOffer: (socketID, sdp) =>
-    console.log("offer received from " + socketID);
+    console.log("offer received from " + socketID)
     pc = @browserConnections[socketID]
     pc.setRemoteDescription(new mozRTCSessionDescription(sdp))
     @sendAnswer(socketID)

@@ -34,7 +34,7 @@
   </head>
   <body>
 
-    <div id="client-server" class="container">
+    <div id="client-server" class="container-fluid">
       <div class="page-header">
         <button class="btn btn-large pull-right edit-server">Edit</button>
         <button class="btn btn-large pull-right edit-server-done" style="display: none;">Done</button>
@@ -43,7 +43,7 @@
       </div>
 
       <div id="file-collection-view">
-        <div class="row">
+        <div class="row-fluid">
           <div class="span12">
             <div class="file-drop well well-large">
               <h3>Drop files here</h3>
@@ -51,17 +51,28 @@
           </div>
         </div>
 
-        <div class="row">
+        <div class="row-fluid">
           <div class="span3">
-            <label>Landing page:</label>
-            <select class="landing-page"></select>
+            <div class="well" style="padding: 8px 0;">
+              <ul class="file-list required nav nav-list">
+              </ul>
+            </div>
 
             <div class="well" style="padding: 8px 0;">
-              <ul class="file-list nav nav-list">
-                <li class="nav-header html">HTML</li>
-                <li class="nav-header css">CSS</li>
-                <li class="nav-header js">JS</li>
-                <li class="nav-header img">Images</li>
+              <ul class="file-list html nav nav-list">
+                <li class="nav-header">HTML</li>
+              </ul>
+
+              <ul class="file-list css nav nav-list">
+                <li class="nav-header">CSS</li>
+              </ul>
+
+              <ul class="file-list js nav nav-list">
+                <li class="nav-header">JS</li>
+              </ul>
+
+              <ul class="file-list img nav nav-list">
+                <li class="nav-header">Images</li>
               </ul>
             </div>
           </div>
@@ -72,14 +83,18 @@
         </div>
       </div>
 
+      <script id="file-list-item-template" type="text/x-handlebars-template">
+        <li data-cid="{{cid}}"><a href='#'>{{name}}</a></li>
+      </script>
+
       <script id="source-code-template" type="text/x-handlebars-template">
-        <div class="row">
+        <div class="row-fluid">
           <div class="file-contents" style="height:600px;"></div>
         </div>
       </script>
 
       <script id="image-template" type="text/x-handlebars-template">
-        <div class="row">
+        <div class="row-fluid">
           <img src=""></img>
         </div>
       </script>

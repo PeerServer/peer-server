@@ -5,8 +5,8 @@ class window.ServerFile extends Backbone.Model
     contents: ""
     type: ""
     fileType: ""
-    isLandingPage: false
     isProductionVersion: false
+    isRequired: false
 
   fileTypeEnum:
     HTML: "HTML",
