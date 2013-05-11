@@ -13,6 +13,13 @@ var app = require('express')();
 /* Create the real server for the app */
 var server = require('http').createServer(app);
 var io = require('socket.io');
+
+// TODO condition on us being on heroku.
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});  // required for heroku
+
 var port = process.env.PORT || config.server.port || 5000;
 /* Start the server at the port. */
 server.listen(port, function() {
