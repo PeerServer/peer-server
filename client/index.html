@@ -8,12 +8,28 @@
 <script src="/client/compiled/html_processor.js"></script>
 <script src="/client/compiled/web_rtc.js"></script>
 <script src="/client/compiled/init.js"></script>
+
+<style>
+body, html {
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  padding:0;
+  margin:0;
+}
+#container {
+  border: 0px;
+  margin:0px;
+  padding:0px;
+  height: 100%;
+  width:100%;
+  overflow-y: scroll;
+  overflow-x: auto;
+}
+</style>
 </head>
 <body>
-
-<h1>Client Browser</h1>
-
-<iframe id="container" style="height:800px; width:95%"></iframe>
+<iframe id="container"></iframe>
 
 </body>
 </html>
