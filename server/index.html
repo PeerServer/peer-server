@@ -4,7 +4,9 @@
     <title>Server</title>
 
     <script src="/shared/lib/jquery-2.0.0.js"></script>
+    
     <script src="/shared/lib/bootstrap.js"></script>
+
     <script src="/shared/lib/json2.js"></script>
     <script src="/shared/lib/underscore.js"></script>
     <script src="/shared/lib/backbone.js"></script>
@@ -34,25 +36,52 @@
   </head>
   <body>
 
-    <div id="client-server" class="container-fluid">
-      <div class="page-header">
-        <button class="btn btn-large pull-right edit-server">Edit</button>
-        <button class="btn btn-large pull-right edit-server-done" style="display: none;">Done</button>
-        <h1>Peer-To-Peer Server</h1>
-        <h4>Serves content at <a href="#" target="_blank" class="browser-link">loading...</a>
+        <!-- <button class="btn btn&#45;large pull&#45;right edit&#45;server">Edit</button> -->
+        <!-- <button class="btn btn&#45;large pull&#45;right edit&#45;server&#45;done" style="display: none;">Done</button> -->
+
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          
+          <a class="brand" href="#">Client Server</a>
+          
+          <ul class="nav pull-right">
+            <li><a>Help</a></li>
+            <li><a>Settings</a></li>
+          </ul>
+
+        </div>
       </div>
+    </div>
+
+
+    <div id="client-server" class="container-fluid">
+
+<h4>Serves content at <a href="#" target="_blank" class="browser-link">loading...</a></h4>
 
       <div id="file-collection-view">
         <div class="row-fluid">
-          <div class="span12">
-            <div class="file-drop well well-large">
-              <h3>Drop files here</h3>
-            </div>
-          </div>
-        </div>
-
-        <div class="row-fluid">
           <div class="span3">
+
+            <ul class="nav nav-tabs nav-stacked">
+              <li class="disabled save-changes"><a href="#">Save Changes</a></li>
+
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Create <b class="caret"></b></a>
+                <ul class="dropdown-menu create-menu">
+                  <li class="html"><a href="#">HTML</a></li>
+                  <li class="css"><a href="#">CSS</a></li>
+                  <li class="js"><a href="#">JS</a></li>
+                  <li class="divider"></li>
+                  <li class="dynamic"><a href="#">Dynamic Path</a></li>
+                  <li class="template"><a href="#">Template</a></li>
+                </ul>
+              </li>
+
+              <li class="upload-files"><a href="#">Upload Files</a></li>
+
+            </ul>
+
             <div class="well" style="padding: 8px 0;">
               <ul class="file-list required nav nav-list">
               </ul>
@@ -75,21 +104,34 @@
                 <li class="nav-header">Images</li>
               </ul>
             </div>
+
           </div>
 
           <div class="span9">
-            <div id="file-view-container"></div>
+            <div id="file-view-container">
+            </div>
+
+            <div class="file-drop well well-large">
+              <div class="file-drop-inner">
+                <h3>Drop files here</h3>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
 
       <script id="file-list-item-template" type="text/x-handlebars-template">
-        <li data-cid="{{cid}}"><a href='#'>{{name}}</a></li>
+        <li data-cid="{{cid}}"><a href="#">{{name}}</a></li>
+      </script>
+
+      <script id="editable-file-list-item-template" type="text/x-handlebars-template">
+        <li data-cid="{{cid}}"><input type="text" value="{{name}}"></input></li>
       </script>
 
       <script id="source-code-template" type="text/x-handlebars-template">
         <div class="row-fluid">
-          <div class="file-contents" style="height:600px;"></div>
+          <div class="file-contents"></div>
         </div>
       </script>
 

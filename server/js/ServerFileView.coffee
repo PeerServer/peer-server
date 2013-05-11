@@ -5,7 +5,8 @@
 class window.ServerFileView extends Backbone.View
 
   initialize: (options) ->
-    @isEditable = options.isEditable
+    @tplSourceCode = Handlebars.compile($("#source-code-template").html())
+    @tplImage = Handlebars.compile($("#image-template").html())
 
   render: =>
     if @model.get("fileType") isnt ServerFile.prototype.fileTypeEnum.IMG
@@ -15,8 +16,7 @@ class window.ServerFileView extends Backbone.View
     return @
 
   renderAsSourceCode: =>
-    template = Handlebars.compile($("#source-code-template").html())
-    $(@el).html(template)
+    $(@el).html(@tplSourceCode)
     
     # Set up ACE editor
     fileContents = $(@el).find(".file-contents")
@@ -31,27 +31,12 @@ class window.ServerFileView extends Backbone.View
       when ServerFile.prototype.fileTypeEnum.JS   then editorMode = "ace/mode/javascript"
     @aceEditor.getSession().setMode(editorMode)
 
-    if @isEditable
-      @renderAsSourceCodeEditable()
-    else
-      @renderAsSourceCodeReadOnly()
-
-  renderAsSourceCodeEditable: =>
-      @aceEditor.on("change", @updateContents)
-
-  renderAsSourceCodeReadOnly: =>
-      @aceEditor.setReadOnly(true)
+    @aceEditor.on("change", @updateContents)
 
   renderAsImage: =>
-    template = Handlebars.compile($("#image-template").html())
-    $(@el).html(template)
+    $(@el).html(@tplImage)
     @$("img").attr("src", @model.get("contents"))
 
   updateContents: =>
     @model.save("contents", @aceEditor.getValue())
-
-  setIsEditable: (isEditable) =>
-    return if @isEditable is isEditable
-    @isEditable = isEditable
-    @render()
 
