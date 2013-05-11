@@ -10,14 +10,14 @@ class window.WebRTC
   constructor: (documentElement)->
     @documentElement = documentElement
     @connection = io.connect(window.location.origin)
-    desiredServer = @getDesiredServer()
-    @connection.emit("joinAsClientBrowser", {"desiredServer": desiredServer}) # Start becoming a clientBrowser
+    @desiredServer = @getDesiredServer()  # Used both as a socket id for joining up via webRTC, as well as in the url path
+    @connection.emit("joinAsClientBrowser", {"desiredServer": @desiredServer}) # Start becoming a clientBrowser
 
     # Handshake
     @serverRTCPC = null
     @createServerConnection()
     @createDataChannel()
-    @sendOffer(desiredServer)
+    @sendOffer(@desiredServer)
     @connection.on("receiveAnswer", @receiveAnswer)
     @connection.on("receiveICECandidate", @receiveICECandidate)
     # Store own socket id
@@ -30,11 +30,7 @@ class window.WebRTC
     @eventTransmitter = new EventTransmitter()
     @setUpReceiveEventCallbacks()
 
-    # TODO this is bad
-    contentWindow = document.getElementById("container").contentWindow
-    @history = contentWindow.history
-
-    contentWindow.onpopstate = (evt) =>
+    window.onpopstate = (evt) =>
       filename = evt.state.path
       @htmlProcessor.requestFile(filename, "backbutton")
 
@@ -42,7 +38,7 @@ class window.WebRTC
   getSocketId: =>
     return @socketId
 
-  # Finds the socket ID of the desired server through the path name.
+  # Finds the socket ID of the desired server through the url.
   getDesiredServer: =>
     pathname = window.location.pathname
     if (pathname.indexOf("connect") == -1)
@@ -112,10 +108,11 @@ class window.WebRTC
   setDocumentElementInnerHTML: (data, optionalInfo)=>
     html = data.fileContents
     path = data.filename
+    console.log path
     if optionalInfo isnt "backbutton"
-      @history.pushState({"path": path}, path)  # Passing in a third param for the url breaks since this is a frame with no src
-    console.log @history.state
-    @documentElement.innerHTML = "<img src='/client/loading.gif' />"
+      window.history.pushState({"path": path}, path, path)
+      console.log window.history.state
+    @documentElement.innerHTML = ""
     @htmlProcessor.processHTML html, (processedHTML, scriptMapping) =>
       @documentElement.innerHTML = processedHTML
       @executeScriptsCallback(scriptMapping)

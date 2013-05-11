@@ -45,7 +45,7 @@
       this.connection.on("setSocketId", function(socketId) {
         console.log("SERVER SOCKET ID: " + socketId);
         _this.socketId = socketId;
-        return _this.setClientBrowserLink(window.location.origin + "/connect/" + socketId);
+        return _this.setClientBrowserLink(window.location.origin + "/connect/" + socketId + "/");
       });
     }
 

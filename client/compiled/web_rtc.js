@@ -6,8 +6,7 @@
   window.WebRTC = (function() {
 
     function WebRTC(documentElement) {
-      var contentWindow, desiredServer,
-        _this = this;
+      var _this = this;
       this.executeScriptsCallback = function(scriptMapping) {
         return WebRTC.prototype.executeScriptsCallback.apply(_this, arguments);
       };
@@ -43,14 +42,14 @@
       };
       this.documentElement = documentElement;
       this.connection = io.connect(window.location.origin);
-      desiredServer = this.getDesiredServer();
+      this.desiredServer = this.getDesiredServer();
       this.connection.emit("joinAsClientBrowser", {
-        "desiredServer": desiredServer
+        "desiredServer": this.desiredServer
       });
       this.serverRTCPC = null;
       this.createServerConnection();
       this.createDataChannel();
-      this.sendOffer(desiredServer);
+      this.sendOffer(this.desiredServer);
       this.connection.on("receiveAnswer", this.receiveAnswer);
       this.connection.on("receiveICECandidate", this.receiveICECandidate);
       this.connection.on("setSocketId", function(socketId) {
@@ -59,9 +58,7 @@
       this.htmlProcessor = new HTMLProcessor(this.sendEvent, this.setDocumentElementInnerHTML, this.getSocketId);
       this.eventTransmitter = new EventTransmitter();
       this.setUpReceiveEventCallbacks();
-      contentWindow = document.getElementById("container").contentWindow;
-      this.history = contentWindow.history;
-      contentWindow.onpopstate = function(evt) {
+      window.onpopstate = function(evt) {
         var filename;
         filename = evt.state.path;
         return _this.htmlProcessor.requestFile(filename, "backbutton");
@@ -163,13 +160,14 @@
         _this = this;
       html = data.fileContents;
       path = data.filename;
+      console.log(path);
       if (optionalInfo !== "backbutton") {
-        this.history.pushState({
+        window.history.pushState({
           "path": path
-        }, path);
+        }, path, path);
+        console.log(window.history.state);
       }
-      console.log(this.history.state);
-      this.documentElement.innerHTML = "<img src='/client/loading.gif' />";
+      this.documentElement.innerHTML = "";
       return this.htmlProcessor.processHTML(html, function(processedHTML, scriptMapping) {
         _this.documentElement.innerHTML = processedHTML;
         return _this.executeScriptsCallback(scriptMapping);

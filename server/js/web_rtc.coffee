@@ -28,7 +28,7 @@ class window.WebRTC
     @connection.on "setSocketId", (socketId) =>
       console.log "SERVER SOCKET ID: " + socketId
       @socketId = socketId
-      @setClientBrowserLink(window.location.origin + "/connect/" + socketId)
+      @setClientBrowserLink(window.location.origin + "/connect/" + socketId + "/")
 
   # Returns the client-server's own socket id.
   getSocketId: =>
