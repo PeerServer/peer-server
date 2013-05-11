@@ -43,16 +43,20 @@ class window.ServerFileCollectionView extends Backbone.View
 
     headerToAppendAfter = null
     switch serverFile.get("fileType")
-      when ServerFile.prototype.fileTypeEnum.HTML then headerToAppendAfter = @$(".html")
-      when ServerFile.prototype.fileTypeEnum.CSS  then headerToAppendAfter = @$(".css")
-      when ServerFile.prototype.fileTypeEnum.JS   then headerToAppendAfter = @$(".js")
-      when ServerFile.prototype.fileTypeEnum.IMG  then headerToAppendAfter = @$(".img")
+      when ServerFile.prototype.fileTypeEnum.HTML then headerToAppendAfter = @$(".nav-header.html")
+      when ServerFile.prototype.fileTypeEnum.CSS  then headerToAppendAfter = @$(".nav-header.css")
+      when ServerFile.prototype.fileTypeEnum.JS   then headerToAppendAfter = @$(".nav-header.js")
+      when ServerFile.prototype.fileTypeEnum.IMG  then headerToAppendAfter = @$(".nav-header.img")
 
-    nextHeader = headerToAppendAfter.nextAll(".nav-header").first()
-    if nextHeader.length > 0
+    if headerToAppendAfter
+      nextHeader = headerToAppendAfter.nextAll(".nav-header").first()
+    else
+      nextHeader = null
+
+    if nextHeader and nextHeader.length > 0
       nextHeader.before(listEl)
-     else
-       @$(".file-list").append(listEl)
+    else
+      @$(".file-list").append(listEl)
 
     @addedServerFile(serverFile)
 
