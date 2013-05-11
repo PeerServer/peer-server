@@ -15,6 +15,9 @@
       this.receiveFile = function(data) {
         return HTMLProcessor.prototype.receiveFile.apply(_this, arguments);
       };
+      this.removeTrailingSlash = function(str) {
+        return HTMLProcessor.prototype.removeTrailingSlash.apply(_this, arguments);
+      };
       this.requestFile = function(filename, type) {
         return HTMLProcessor.prototype.requestFile.apply(_this, arguments);
       };
@@ -129,18 +132,23 @@
       return this.sendEvent("requestFile", data);
     };
 
+    HTMLProcessor.prototype.removeTrailingSlash = function(str) {
+      if (!str || str === "") {
+        return str;
+      }
+      if (str.charAt(str.length - 1) === "/") {
+        return str.substr(0, str.length - 1);
+      }
+      return str;
+    };
+
     HTMLProcessor.prototype.receiveFile = function(data) {
       var $element, fileContents, filename, type;
-      filename = data.filename;
+      filename = this.removeTrailingSlash(data.filename);
+      console.log("FILENAME: " + filename);
       fileContents = data.fileContents;
       type = data.type;
-      if (type === "alink") {
-        console.log("Is alink");
-        this.setDocumentElementInnerHTML({
-          "fileContents": data.fileContents,
-          "filename": filename
-        }, type);
-      } else if (type === "backbutton") {
+      if (type === "alink" || type === "backbutton" || type === "initialLoad") {
         this.setDocumentElementInnerHTML({
           "fileContents": data.fileContents,
           "filename": filename

@@ -6,14 +6,15 @@
   window.WebRTC = (function() {
 
     function WebRTC(documentElement) {
-      var _this = this;
+      var startPage, _ref,
+        _this = this;
       this.executeScriptsCallback = function(scriptMapping) {
         return WebRTC.prototype.executeScriptsCallback.apply(_this, arguments);
       };
       this.setDocumentElementInnerHTML = function(data, optionalInfo) {
         return WebRTC.prototype.setDocumentElementInnerHTML.apply(_this, arguments);
       };
-      this.setUpReceiveEventCallbacks = function() {
+      this.setUpReceiveEventCallbacks = function(startPage) {
         return WebRTC.prototype.setUpReceiveEventCallbacks.apply(_this, arguments);
       };
       this.sendEvent = function(eventName, data) {
@@ -34,18 +35,19 @@
       this.createDataChannel = function() {
         return WebRTC.prototype.createDataChannel.apply(_this, arguments);
       };
-      this.getDesiredServer = function() {
-        return WebRTC.prototype.getDesiredServer.apply(_this, arguments);
+      this.parseUrl = function(pathname) {
+        return WebRTC.prototype.parseUrl.apply(_this, arguments);
       };
       this.getSocketId = function() {
         return WebRTC.prototype.getSocketId.apply(_this, arguments);
       };
       this.documentElement = documentElement;
       this.connection = io.connect(window.location.origin);
-      this.desiredServer = this.getDesiredServer();
+      _ref = this.parseUrl(window.location.pathname), this.desiredServer = _ref[0], startPage = _ref[1];
       this.connection.emit("joinAsClientBrowser", {
         "desiredServer": this.desiredServer
       });
+      this.pathRoot = "/connect/" + this.desiredServer + "/";
       this.serverRTCPC = null;
       this.createServerConnection();
       this.createDataChannel();
@@ -57,7 +59,7 @@
       });
       this.htmlProcessor = new HTMLProcessor(this.sendEvent, this.setDocumentElementInnerHTML, this.getSocketId);
       this.eventTransmitter = new EventTransmitter();
-      this.setUpReceiveEventCallbacks();
+      this.setUpReceiveEventCallbacks(startPage);
       window.onpopstate = function(evt) {
         var filename;
         filename = evt.state.path;
@@ -69,17 +71,23 @@
       return this.socketId;
     };
 
-    WebRTC.prototype.getDesiredServer = function() {
-      var pathname, suffix;
-      pathname = window.location.pathname;
+    WebRTC.prototype.parseUrl = function(pathname) {
+      var serverId, slashIndex, startPage, suffix;
       if (pathname.indexOf("connect") === -1) {
         console.error("Error: pathname does not contain 'connect'");
       }
       suffix = pathname.substr("/connect/".length);
-      if (suffix.indexOf("/") !== -1) {
-        suffix = suffix.substr(0, suffix.indexOf("/"));
+      slashIndex = suffix.indexOf("/");
+      startPage = null;
+      if (slashIndex !== -1) {
+        serverId = suffix.substr(0, slashIndex);
+        if (slashIndex !== (suffix.length - 1)) {
+          startPage = suffix.substr(suffix.indexOf("/") + 1);
+        }
+      } else {
+        serverId = suffix;
       }
-      return suffix;
+      return [serverId, startPage];
     };
 
     WebRTC.prototype.createDataChannel = function() {
@@ -146,25 +154,31 @@
       return this.eventTransmitter.sendEvent(this.dataChannel, eventName, data);
     };
 
-    WebRTC.prototype.setUpReceiveEventCallbacks = function() {
+    WebRTC.prototype.setUpReceiveEventCallbacks = function(startPage) {
       var _this = this;
       this.eventTransmitter.addEventCallback("initialLoad", function(data) {
-        return _this.setDocumentElementInnerHTML(data, "initialLoad");
+        if (startPage) {
+          startPage = _this.htmlProcessor.removeTrailingSlash(startPage);
+          return _this.htmlProcessor.requestFile(startPage, "initialLoad");
+        } else {
+          return _this.setDocumentElementInnerHTML(data, "initialLoadDefault");
+        }
       });
       this.eventTransmitter.addEventCallback("textAreaValueChanged", this.setDocumentElementInnerHTML);
       return this.eventTransmitter.addEventCallback("receiveFile", this.htmlProcessor.receiveFile);
     };
 
     WebRTC.prototype.setDocumentElementInnerHTML = function(data, optionalInfo) {
-      var html, path,
+      var fullPath, html, path,
         _this = this;
       html = data.fileContents;
-      path = data.filename;
+      path = this.htmlProcessor.removeTrailingSlash(data.filename);
       console.log(path);
-      if (optionalInfo !== "backbutton") {
+      if (optionalInfo !== "backbutton" && optionalInfo !== "initialLoad") {
+        fullPath = this.pathRoot + path;
         window.history.pushState({
           "path": path
-        }, path, path);
+        }, fullPath, fullPath);
         console.log(window.history.state);
       }
       this.documentElement.innerHTML = "";

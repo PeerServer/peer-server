@@ -10,9 +10,11 @@ class window.WebRTC
   constructor: (documentElement)->
     @documentElement = documentElement
     @connection = io.connect(window.location.origin)
-    @desiredServer = @getDesiredServer()  # Used both as a socket id for joining up via webRTC, as well as in the url path
+    # Looks at the URL, which must be of the form [host]/connect/[serverSocketId]/[optionalStartPage]
+    # desired server is used both as a socket id for joining up via webRTC, as well as in the url path
+    [@desiredServer, startPage] = @parseUrl(window.location.pathname)
     @connection.emit("joinAsClientBrowser", {"desiredServer": @desiredServer}) # Start becoming a clientBrowser
-
+    @pathRoot = "/connect/" + @desiredServer + "/"
     # Handshake
     @serverRTCPC = null
     @createServerConnection()
@@ -28,7 +30,7 @@ class window.WebRTC
     
     # Event Transmission
     @eventTransmitter = new EventTransmitter()
-    @setUpReceiveEventCallbacks()
+    @setUpReceiveEventCallbacks(startPage)
 
     window.onpopstate = (evt) =>
       filename = evt.state.path
@@ -39,14 +41,19 @@ class window.WebRTC
     return @socketId
 
   # Finds the socket ID of the desired server through the url.
-  getDesiredServer: =>
-    pathname = window.location.pathname
+  parseUrl: (pathname) =>
     if (pathname.indexOf("connect") == -1)
       console.error "Error: pathname does not contain 'connect'"
     suffix = pathname.substr("/connect/".length)  # Get everything after "connect/"
-    if (suffix.indexOf("/") != -1)  # Strip out everything after the id if needed
-      suffix = suffix.substr(0, suffix.indexOf("/"))
-    return suffix
+    slashIndex = suffix.indexOf("/")
+    startPage = null  # Default start page, none specified
+    if slashIndex != -1  # Strip out everything after the id if needed
+      serverId = suffix.substr(0, slashIndex)
+      if slashIndex != (suffix.length - 1)  # i.e., if there are characters following the slash
+        startPage = suffix.substr(suffix.indexOf("/") + 1)
+    else
+      serverId = suffix
+    return [serverId, startPage]
 
   # Set up events for new data channel
   createDataChannel: =>
@@ -99,18 +106,23 @@ class window.WebRTC
   sendEvent: (eventName, data) =>
     @eventTransmitter.sendEvent(@dataChannel, eventName, data)
         
-  setUpReceiveEventCallbacks: =>
+  setUpReceiveEventCallbacks: (startPage) =>
     @eventTransmitter.addEventCallback "initialLoad", (data) =>
-      @setDocumentElementInnerHTML(data, "initialLoad")
+      if startPage  # Ignore the initial file and request the start page
+        startPage = @htmlProcessor.removeTrailingSlash(startPage)
+        @htmlProcessor.requestFile(startPage, "initialLoad")  # Same behavior as if user just clicked on the link
+      else  # Load in the default start page.
+        @setDocumentElementInnerHTML(data, "initialLoadDefault")
     @eventTransmitter.addEventCallback("textAreaValueChanged", @setDocumentElementInnerHTML)
     @eventTransmitter.addEventCallback("receiveFile", @htmlProcessor.receiveFile)
     
   setDocumentElementInnerHTML: (data, optionalInfo)=>
     html = data.fileContents
-    path = data.filename
+    path = @htmlProcessor.removeTrailingSlash(data.filename)
     console.log path
-    if optionalInfo isnt "backbutton"
-      window.history.pushState({"path": path}, path, path)
+    if optionalInfo isnt "backbutton" and optionalInfo isnt "initialLoad"  # still do it for initialLoadDefault
+      fullPath = @pathRoot + path
+      window.history.pushState({"path": path}, fullPath, fullPath)
       console.log window.history.state
     @documentElement.innerHTML = ""
     @htmlProcessor.processHTML html, (processedHTML, scriptMapping) =>

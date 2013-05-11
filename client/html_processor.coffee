@@ -86,9 +86,17 @@ class window.HTMLProcessor
       "type": type
     @sendEvent("requestFile", data)
 
+  #  For filenames, removes any trailing slash if it exists.
+  removeTrailingSlash: (str) =>
+    return str if not str or str is ""
+    if str.charAt(str.length - 1) is "/"
+      return str.substr(0, str.length - 1)
+    return str
+
   receiveFile: (data) =>
     #console.log("receive file", data)
-    filename = data.filename
+    filename = @removeTrailingSlash(data.filename)
+    console.log "FILENAME: " + filename
     fileContents = data.fileContents
     type = data.type  # Same as what we passed along in request file.
 
@@ -97,10 +105,7 @@ class window.HTMLProcessor
     #  to be the received html file. 
     # Setting the document inner HTML calls the webRTC method passed in, which initiates
     #   another round of setting up the HTML for the frame (with processing). 
-    if type is "alink"
-      console.log "Is alink"
-      @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename}, type)
-    else if type is "backbutton"
+    if type is "alink" or type is "backbutton" or type is "initialLoad"
       @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename}, type)
     else 
       $element = @requestedFilenamesToElement[filename]
