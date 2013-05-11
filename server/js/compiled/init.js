@@ -2,12 +2,12 @@
 (function() {
 
   $(document).ready(function() {
-    var serverFileCollection;
+    var appView, serverFileCollection;
     serverFileCollection = new ServerFileCollection();
-    new AppView({
+    appView = new AppView({
       collection: serverFileCollection
     });
-    return new WebRTC(serverFileCollection);
+    return new WebRTC(serverFileCollection, appView.setClientBrowserLink);
   });
 
 }).call(this);

@@ -14,6 +14,11 @@ class window.AppView extends Backbone.View
     "click .edit-server": "toggleIsEditable"
     "click .edit-server-done": "doneEditing"
 
+  setClientBrowserLink: (link) =>
+    clientBrowserLink = $(".browser-link")
+    clientBrowserLink.attr('href', link)
+    clientBrowserLink.html(link)
+
   toggleIsEditable: =>
     @editServerButton.toggle()
     @editServerDoneButton.toggle()

@@ -1,0 +1,59 @@
+<html>
+<head>
+  <title>Server in Browser</title>
+  <link href="/shared/css/bootstrap.min.css" rel="stylesheet">
+  <script src="/shared/lib/jquery-2.0.0.js"></script>
+  <script src="/shared/lib/bootstrap.js"></script>
+  <script src="/shared/lib/json2.js"></script>
+  <script src="/shared/lib/underscore.js"></script>
+  <script src="/shared/lib/backbone.js"></script>
+  <script src="/shared/lib/handlebars.js"></script>
+  <script src="/shared/lib/backbone.localStorage.js"></script>
+  <script src="/shared/lib/ace/ace.js"></script>
+  <script src="/shared/lib/ace/theme-tomorrow_night_eighties.js"></script>
+  <script src="/shared/lib/ace/mode-javascript.js"></script>
+  <script src="/shared/lib/ace/mode-html.js"></script>
+  <script src="/shared/lib/ace/mode-css.js"></script>
+
+  <style>
+    div.top-header {
+      background-color: rgb(255, 125, 39);
+      -moz-border-radius: 0px;
+      -webkit-border-radius: 0px;
+      border-radius: 0px;
+      padding: 60px;
+      padding-bottom: 30px;
+      margin-bottom: 40px;
+      line-height: 39px;
+      font-size: 18px;
+    }
+
+  </style>
+</head>
+<body>
+<div class="top-header">
+  <div class="container">
+    <h1>Peer-to-Peer Server <small>with WebRTC</small></h1>
+    <h4>Sophia, Brie, and Joe</h4>
+    <h5>Spring 2013, Stanford Senior Project</h5>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="span1">
+    </div>
+    <div class="span5">
+      <h3>About</h3>
+      <p>We have implemented a peer-to-peer client server using WebRTC, where one browser can act as a server for other browsers across WebRTC peer-to-peer data channels. Anyone can create a client-server within their browser tab, upload content, and even generate dynamic results. Any client browser that connects to that client server will behave as though the client server were a "real" server serving content.</p>
+      <p>The real server only connects the client-browsers with the client-server; from there, the connection will continue to work even if the real server goes down. Furthermore, this system allows for people to create decentralized web sites where all the content on the server lives within their browser, not on any external server.</p>
+      <p>Check it out!</p>
+    </div>
+    <div class="span5">
+      <h3>Try it</h3>
+      <h5><a class='btn btn-primary' target="_blank" href="/server/">Make a server</a></h5>
+      <p><small>(Use Firefox Nightly as of May 10, 2013)</small></p>
+    </div>
+  </div>
+</div>
+</body>
+</html>

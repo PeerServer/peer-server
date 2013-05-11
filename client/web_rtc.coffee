@@ -9,14 +9,15 @@ class window.WebRTC
   # Become a clientBrowser and set up events.
   constructor: (documentElement)->
     @documentElement = documentElement
-    @connection = io.connect(document.location.origin)
-    @connection.emit("joinAsClientBrowser") # Start becoming a clientServer
+    @connection = io.connect(window.location.origin)
+    desiredServer = @getDesiredServer()
+    @connection.emit("joinAsClientBrowser", {"desiredServer": desiredServer}) # Start becoming a clientBrowser
 
     # Handshake
     @serverRTCPC = null
     @createServerConnection()
     @createDataChannel()
-    @sendOffer()
+    @sendOffer(desiredServer)
     @connection.on("receiveAnswer", @receiveAnswer)
     @connection.on("receiveICECandidate", @receiveICECandidate)
     # Store own socket id
@@ -40,6 +41,16 @@ class window.WebRTC
   # Returns the client-server's own socket id. 
   getSocketId: =>
     return @socketId
+
+  # Finds the socket ID of the desired server through the path name.
+  getDesiredServer: =>
+    pathname = window.location.pathname
+    if (pathname.indexOf("connect") == -1)
+      console.error "Error: pathname does not contain 'connect'"
+    suffix = pathname.substr("/connect/".length)  # Get everything after "connect/"
+    if (suffix.indexOf("/") != -1)  # Strip out everything after the id if needed
+      suffix = suffix.substr(0, suffix.indexOf("/"))
+    return suffix
 
   # Set up events for new data channel
   createDataChannel: =>
@@ -73,10 +84,10 @@ class window.WebRTC
       @connection.emit("sendICECandidate", "server", event.candidate)
 
   # Part of connection handshake
-  sendOffer: =>
+  sendOffer: (desiredServer) =>
     @serverRTCPC.createOffer (sessionDescription) =>
       @serverRTCPC.setLocalDescription(sessionDescription)
-      @connection.emit("sendOffer", sessionDescription)
+      @connection.emit("sendOffer", sessionDescription, desiredServer)
 
   # Part of connection handshake
   receiveAnswer: (sessionDescription) =>
@@ -101,7 +112,6 @@ class window.WebRTC
   setDocumentElementInnerHTML: (data, optionalInfo)=>
     html = data.fileContents
     path = data.filename
-    console.log "PATH: " + path
     if optionalInfo isnt "backbutton"
       @history.pushState({"path": path}, path)  # Passing in a third param for the url breaks since this is a frame with no src
     console.log @history.state

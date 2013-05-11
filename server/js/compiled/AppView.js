@@ -17,6 +17,9 @@
       this.toggleIsEditable = function() {
         return AppView.prototype.toggleIsEditable.apply(_this, arguments);
       };
+      this.setClientBrowserLink = function(link) {
+        return AppView.prototype.setClientBrowserLink.apply(_this, arguments);
+      };
       return AppView.__super__.constructor.apply(this, arguments);
     }
 
@@ -34,6 +37,13 @@
     AppView.prototype.events = {
       "click .edit-server": "toggleIsEditable",
       "click .edit-server-done": "doneEditing"
+    };
+
+    AppView.prototype.setClientBrowserLink = function(link) {
+      var clientBrowserLink;
+      clientBrowserLink = $(".browser-link");
+      clientBrowserLink.attr('href', link);
+      return clientBrowserLink.html(link);
     };
 
     AppView.prototype.toggleIsEditable = function() {

@@ -7,7 +7,7 @@
 
 class window.WebRTC
   # Become a clientServer and set up events.
-  constructor: (@serverFileCollection) ->
+  constructor: (@serverFileCollection, @setClientBrowserLink) ->
     @browserConnections = {}
     @dataChannels = {}
 
@@ -26,7 +26,9 @@ class window.WebRTC
     @connection.on("receiveICECandidate", @receiveICECandidate)
     # Store own socket id
     @connection.on "setSocketId", (socketId) =>
+      console.log "SERVER SOCKET ID: " + socketId
       @socketId = socketId
+      @setClientBrowserLink(window.location.origin + "/connect/" + socketId)
 
   # Returns the client-server's own socket id.
   getSocketId: =>
@@ -57,6 +59,7 @@ class window.WebRTC
     @dataChannels[socketID] = channel
 
   # Make a peer connection with a data channel to the clientBrowser with the socketID
+  #  socketID: the socket ID of the client browser (not ourself)
   addBrowserConnection: (socketID) =>
     # Make a peer connection for a data channel (first arg is null ice server)
     peerConnection = new mozRTCPeerConnection(null, { "optional": [{ "RtpDataChannels": true }] })

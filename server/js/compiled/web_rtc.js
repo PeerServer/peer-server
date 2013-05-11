@@ -5,9 +5,10 @@
 
   window.WebRTC = (function() {
 
-    function WebRTC(serverFileCollection) {
+    function WebRTC(serverFileCollection, setClientBrowserLink) {
       var _this = this;
       this.serverFileCollection = serverFileCollection;
+      this.setClientBrowserLink = setClientBrowserLink;
       this.serveFile = function(data) {
         return WebRTC.prototype.serveFile.apply(_this, arguments);
       };
@@ -42,7 +43,9 @@
       this.connection.on("receiveOffer", this.receiveOffer);
       this.connection.on("receiveICECandidate", this.receiveICECandidate);
       this.connection.on("setSocketId", function(socketId) {
-        return _this.socketId = socketId;
+        console.log("SERVER SOCKET ID: " + socketId);
+        _this.socketId = socketId;
+        return _this.setClientBrowserLink(window.location.origin + "/connect/" + socketId);
       });
     }
 

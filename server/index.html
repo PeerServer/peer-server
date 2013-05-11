@@ -3,15 +3,13 @@
   <head>
     <title>Server</title>
 
-    <script src="/server/js/lib/jquery-2.0.0.js"></script>
-    
-    <script src="/server/js/lib/bootstrap.js"></script>
-
-    <script src="/server/js/lib/json2.js"></script>
-    <script src="/server/js/lib/underscore.js"></script>
-    <script src="/server/js/lib/backbone.js"></script>
-    <script src="/server/js/lib/handlebars.js"></script>
-    <script src="/server/js/lib/backbone.localStorage.js"></script>
+    <script src="/shared/lib/jquery-2.0.0.js"></script>
+    <script src="/shared/lib/bootstrap.js"></script>
+    <script src="/shared/lib/json2.js"></script>
+    <script src="/shared/lib/underscore.js"></script>
+    <script src="/shared/lib/backbone.js"></script>
+    <script src="/shared/lib/handlebars.js"></script>
+    <script src="/shared/lib/backbone.localStorage.js"></script>
 
     <script src="/server/js/compiled/ServerFile.js"></script>
     <script src="/server/js/compiled/ServerFileCollection.js"></script>
@@ -25,13 +23,13 @@
     <script src="/server/js/compiled/web_rtc.js"></script>
     <script src="/server/js/compiled/init.js"></script>
 
-    <script src="/server/js/lib/ace/ace.js"></script>
-    <script src="/server/js/lib/ace/theme-tomorrow_night_eighties.js"></script>
-    <script src="/server/js/lib/ace/mode-javascript.js"></script>
-    <script src="/server/js/lib/ace/mode-html.js"></script>
-    <script src="/server/js/lib/ace/mode-css.js"></script>
+    <script src="/shared/lib/ace/ace.js"></script>
+    <script src="/shared/lib/ace/theme-tomorrow_night_eighties.js"></script>
+    <script src="/shared/lib/ace/mode-javascript.js"></script>
+    <script src="/shared/lib/ace/mode-html.js"></script>
+    <script src="/shared/lib/ace/mode-css.js"></script>
 
-    <link href="/server/css/bootstrap.css" rel="stylesheet">
+    <link href="/shared/css/bootstrap.css" rel="stylesheet">
     <link href="/server/css/style.css" rel="stylesheet">
   </head>
   <body>
@@ -40,7 +38,8 @@
       <div class="page-header">
         <button class="btn btn-large pull-right edit-server">Edit</button>
         <button class="btn btn-large pull-right edit-server-done" style="display: none;">Done</button>
-        <h1>Client Server</h1>
+        <h1>Peer-To-Peer Server</h1>
+        <h4>Serves content at <a href="#" target="_blank" class="browser-link">loading...</a>
       </div>
 
       <div id="file-collection-view">

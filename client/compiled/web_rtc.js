@@ -6,7 +6,7 @@
   window.WebRTC = (function() {
 
     function WebRTC(documentElement) {
-      var contentWindow,
+      var contentWindow, desiredServer,
         _this = this;
       this.executeScriptsCallback = function(scriptMapping) {
         return WebRTC.prototype.executeScriptsCallback.apply(_this, arguments);
@@ -26,7 +26,7 @@
       this.receiveAnswer = function(sessionDescription) {
         return WebRTC.prototype.receiveAnswer.apply(_this, arguments);
       };
-      this.sendOffer = function() {
+      this.sendOffer = function(desiredServer) {
         return WebRTC.prototype.sendOffer.apply(_this, arguments);
       };
       this.createServerConnection = function() {
@@ -35,16 +35,22 @@
       this.createDataChannel = function() {
         return WebRTC.prototype.createDataChannel.apply(_this, arguments);
       };
+      this.getDesiredServer = function() {
+        return WebRTC.prototype.getDesiredServer.apply(_this, arguments);
+      };
       this.getSocketId = function() {
         return WebRTC.prototype.getSocketId.apply(_this, arguments);
       };
       this.documentElement = documentElement;
-      this.connection = io.connect(document.location.origin);
-      this.connection.emit("joinAsClientBrowser");
+      this.connection = io.connect(window.location.origin);
+      desiredServer = this.getDesiredServer();
+      this.connection.emit("joinAsClientBrowser", {
+        "desiredServer": desiredServer
+      });
       this.serverRTCPC = null;
       this.createServerConnection();
       this.createDataChannel();
-      this.sendOffer();
+      this.sendOffer(desiredServer);
       this.connection.on("receiveAnswer", this.receiveAnswer);
       this.connection.on("receiveICECandidate", this.receiveICECandidate);
       this.connection.on("setSocketId", function(socketId) {
@@ -64,6 +70,19 @@
 
     WebRTC.prototype.getSocketId = function() {
       return this.socketId;
+    };
+
+    WebRTC.prototype.getDesiredServer = function() {
+      var pathname, suffix;
+      pathname = window.location.pathname;
+      if (pathname.indexOf("connect") === -1) {
+        console.error("Error: pathname does not contain 'connect'");
+      }
+      suffix = pathname.substr("/connect/".length);
+      if (suffix.indexOf("/") !== -1) {
+        suffix = suffix.substr(0, suffix.indexOf("/"));
+      }
+      return suffix;
     };
 
     WebRTC.prototype.createDataChannel = function() {
@@ -106,11 +125,11 @@
       };
     };
 
-    WebRTC.prototype.sendOffer = function() {
+    WebRTC.prototype.sendOffer = function(desiredServer) {
       var _this = this;
       return this.serverRTCPC.createOffer(function(sessionDescription) {
         _this.serverRTCPC.setLocalDescription(sessionDescription);
-        return _this.connection.emit("sendOffer", sessionDescription);
+        return _this.connection.emit("sendOffer", sessionDescription, desiredServer);
       });
     };
 
@@ -144,7 +163,6 @@
         _this = this;
       html = data.fileContents;
       path = data.filename;
-      console.log("PATH: " + path);
       if (optionalInfo !== "backbutton") {
         this.history.pushState({
           "path": path
