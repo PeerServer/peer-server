@@ -14,12 +14,6 @@ var app = require('express')();
 var server = require('http').createServer(app);
 var io = require('socket.io');
 
-// TODO condition on us being on heroku.
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});  // required for heroku
-
 var port = process.env.PORT || config.server.port || 5000;
 /* Start the server at the port. */
 server.listen(port, function() {
@@ -73,6 +67,13 @@ app.get("/", function(req, res) {
      socket = a user connecting to our real server. May become either a 
      client server or client browser*/
 io = io.listen(server);
+
+// TODO condition on us being on heroku.
+// Heroku setting for long polling - assuming io is the Socket.IO server object
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+});// required for heroku
 io.sockets.on('connection', function(socket) {
   
   /* Add the socket to the client server pool */
