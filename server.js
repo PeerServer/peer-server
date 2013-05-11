@@ -68,12 +68,6 @@ app.get("/", function(req, res) {
      client server or client browser*/
 io = io.listen(server);
 
-// TODO condition on us being on heroku.
-// Heroku setting for long polling - assuming io is the Socket.IO server object
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});// required for heroku
 io.sockets.on('connection', function(socket) {
   
   /* Add the socket to the client server pool */
