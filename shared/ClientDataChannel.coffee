@@ -1,15 +1,21 @@
 class window.ClientDataChannel
 
-  constructor: ->
+  constructor: (@onOpenCallback, @onMessageCallback) ->
     @dataChannel = new DataChannel()
 
     # Get an ID from the server
     @socket = io.connect(document.location.origin)
     @socket.on("setID", @handleSetID)
 
+  send: (message) =>
+    @dataChannel.send(message)
+
+  getChannelByUserID: (userID) =>
+    return @dataChannel.channels[userID]
+
   handleSetID: (id) =>
     @id = id
-    console.log(id)
+    @dataChannel.userid = id
     @initDataChannelCallbacks()
     @dataChannelReady()
 
@@ -34,16 +40,15 @@ class window.ClientDataChannel
       config.callback(channelSocket) if config.callback
 
     channelSocket.send = (message) ->
-      console.log "send", { sender: sender, data: message }
       channelSocket.emit("message", { sender: sender, data: message })
 
     channelSocket.on("message", config.onmessage)
 
-  onMessage: (data) =>
-    # abstract method
-
   onOpen: =>
-    # abstract method
+    @onOpenCallback()
+
+  onMessage: (message) =>
+    @onMessageCallback(message)
 
   onFileProgress: =>
     # abstract method

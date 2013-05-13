@@ -8,40 +8,20 @@
 
     __extends(ClientServerDataChannel, _super);
 
-    function ClientServerDataChannel() {
-      this.onFileReceived = __bind(this.onFileReceived, this);
-
-      this.onFileSent = __bind(this.onFileSent, this);
-
-      this.onFileProgress = __bind(this.onFileProgress, this);
-
-      this.onOpen = __bind(this.onOpen, this);
-
-      this.onMessage = __bind(this.onMessage, this);
-
+    function ClientServerDataChannel(onOpenCallback, onMessageCallback, onReady) {
+      this.onOpenCallback = onOpenCallback;
+      this.onMessageCallback = onMessageCallback;
+      this.onReady = onReady;
       this.dataChannelReady = __bind(this.dataChannelReady, this);
-      ClientServerDataChannel.__super__.constructor.call(this);
+
+      ClientServerDataChannel.__super__.constructor.call(this, this.onOpenCallback, this.onMessageCallback);
       this.dataChannel.direction = "one-to-many";
     }
 
     ClientServerDataChannel.prototype.dataChannelReady = function() {
-      return this.dataChannel.open(this.id);
+      this.dataChannel.open(this.id);
+      return this.onReady();
     };
-
-    ClientServerDataChannel.prototype.onMessage = function(data) {
-      return console.log(data);
-    };
-
-    ClientServerDataChannel.prototype.onOpen = function() {
-      this.dataChannel.send("SERVER: " + this.id);
-      return console.log("onopen");
-    };
-
-    ClientServerDataChannel.prototype.onFileProgress = function() {};
-
-    ClientServerDataChannel.prototype.onFileSent = function() {};
-
-    ClientServerDataChannel.prototype.onFileReceived = function() {};
 
     return ClientServerDataChannel;
 

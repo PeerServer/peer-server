@@ -2,12 +2,12 @@
 (function() {
 
   $(document).ready(function() {
-    var appView, serverFileCollection;
+    var appView, clientServer, serverFileCollection;
     serverFileCollection = new ServerFileCollection();
     appView = new AppView({
       collection: serverFileCollection
     });
-    return new ClientServerDataChannel();
+    return clientServer = new ClientServer(serverFileCollection, appView);
   });
 
 }).call(this);

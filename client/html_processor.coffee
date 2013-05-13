@@ -63,7 +63,7 @@ class window.HTMLProcessor
         return
       else if @isInternalFile(href)
         $el.attr("onclick", @triggerOnParentString("relativeLinkClicked", href))
-      else 
+      else
         $el.attr("target", "_blank")
 
 
@@ -92,7 +92,7 @@ class window.HTMLProcessor
   #   handles a href tags being clicked.)  
   requestFile: (filename, type) =>
     console.log "sending socket id " + @socketIdFcn()
-    data = 
+    data =
       "filename": filename
       "socketId": @socketIdFcn()
       "type": type
@@ -120,10 +120,10 @@ class window.HTMLProcessor
     #   another round of setting up the HTML for the frame (with processing). 
     if type is "alink" or type is "backbutton" or type is "initialLoad"
       @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename, "fileType": fileType}, type)
-    else 
+    else
       $element = @requestedFilenamesToElement[filename]
-      if $element        
-        if $element.attr("src") and $element[0].tagName is "IMG" 
+      if $element
+        if $element.attr("src") and $element[0].tagName is "IMG"
           $element.attr("src", fileContents)
         else if $element.attr("src") and $element[0].tagName is "SCRIPT"
           $element.removeAttr("src")
@@ -133,13 +133,13 @@ class window.HTMLProcessor
           #   contents using the encoded file name we pull out when we execute the script. It would be safest to include a 
           #   unique ID with each file (perhaps imparted by the client-server filestore) that we can use instead. 
           #   Basically any unique ID here is fine.
-          $element.append(data.filename)  
+          $element.append(data.filename)
           # console.log "INDEX OF &AMP on insertion"
           # console.log fileContents.indexOf("&amp")
         else if $element[0].tagName is "LINK"
           $element.replaceWith("<style>" + fileContents + "</style>")
   #        @container.find("head").append($element)     
-        delete @requestedFilenamesToElement[filename]   
+        delete @requestedFilenamesToElement[filename]
     @checkForProcessCompletion()
 
   checkForProcessCompletion: =>

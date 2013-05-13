@@ -2,15 +2,13 @@
 
 
 $(document).ready ->
-
   document.getElementById("container").contentWindow.document.location.href = "/client/entryframe.html"
 
   # This is an onload because the iframe will be loading the dummy src,
   #   and it needs to finish doing that otherwise the src will overwrite our innerHTML.
   document.getElementById("container").onload = (evt) =>
     # Must be declared on the window so that the rest of the page can see it.
-    # window.webRTC = new WebRTC(document.getElementById("container").contentWindow.document.documentElement)
-    new ClientBrowserDataChannel()
+    window.clientBrowser = new ClientBrowser(document.getElementById("container").contentWindow.document.documentElement)
 
   # This event is triggered by the "onclick" of an a href tag pointing to some file
   #   on the server-browser. The onclick event trigger is set up in webRTC's html_processor 
@@ -22,4 +20,4 @@ $(document).ready ->
   #   file to simulate page navigation. 
   $(document).on "relativeLinkClicked", (evt, href) =>
     console.log "REQUESTING FILE " + href + "...."
-    window.webRTC.htmlProcessor.requestFile(href, "alink")
+    window.clientBrowser.htmlProcessor.requestFile(href, "alink")

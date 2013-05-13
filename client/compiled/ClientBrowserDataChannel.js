@@ -8,62 +8,17 @@
 
     __extends(ClientBrowserDataChannel, _super);
 
-    function ClientBrowserDataChannel() {
-      this.parseUrl = __bind(this.parseUrl, this);
-
-      this.onFileReceived = __bind(this.onFileReceived, this);
-
-      this.onFileSent = __bind(this.onFileSent, this);
-
-      this.onFileProgress = __bind(this.onFileProgress, this);
-
-      this.onOpen = __bind(this.onOpen, this);
-
-      this.onMessage = __bind(this.onMessage, this);
-
+    function ClientBrowserDataChannel(onOpenCallback, onMessageCallback, desiredServer) {
+      this.onOpenCallback = onOpenCallback;
+      this.onMessageCallback = onMessageCallback;
+      this.desiredServer = desiredServer;
       this.dataChannelReady = __bind(this.dataChannelReady, this);
 
-      var startPage, _ref;
-      ClientBrowserDataChannel.__super__.constructor.call(this);
-      _ref = this.parseUrl(window.location.pathname), this.desiredServer = _ref[0], startPage = _ref[1];
+      ClientBrowserDataChannel.__super__.constructor.call(this, this.onOpenCallback, this.onMessageCallback);
     }
 
     ClientBrowserDataChannel.prototype.dataChannelReady = function() {
       return this.dataChannel.connect(this.desiredServer);
-    };
-
-    ClientBrowserDataChannel.prototype.onMessage = function(data) {
-      return console.log(data);
-    };
-
-    ClientBrowserDataChannel.prototype.onOpen = function() {
-      console.log("onopen");
-      return this.dataChannel.send("CLIENT: " + this.id);
-    };
-
-    ClientBrowserDataChannel.prototype.onFileProgress = function() {};
-
-    ClientBrowserDataChannel.prototype.onFileSent = function() {};
-
-    ClientBrowserDataChannel.prototype.onFileReceived = function() {};
-
-    ClientBrowserDataChannel.prototype.parseUrl = function(pathname) {
-      var serverId, slashIndex, startPage, suffix;
-      if (pathname.indexOf("connect") === -1) {
-        console.error("Error: pathname does not contain 'connect'");
-      }
-      suffix = pathname.substr("/connect/".length);
-      slashIndex = suffix.indexOf("/");
-      startPage = null;
-      if (slashIndex !== -1) {
-        serverId = suffix.substr(0, slashIndex);
-        if (slashIndex !== (suffix.length - 1)) {
-          startPage = suffix.substr(suffix.indexOf("/") + 1);
-        }
-      } else {
-        serverId = suffix;
-      }
-      return [serverId, startPage];
     };
 
     return ClientBrowserDataChannel;

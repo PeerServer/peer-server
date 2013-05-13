@@ -5,3 +5,4 @@ $(document).ready ->
   serverFileCollection = new ServerFileCollection()
   routeCollection = new RouteCollection()
   appView = new AppView(serverFileCollection: serverFileCollection, routeCollection: routeCollection)
+  clientServer = new ClientServer(serverFileCollection, appView)

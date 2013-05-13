@@ -4,7 +4,9 @@
 
   window.ClientDataChannel = (function() {
 
-    function ClientDataChannel() {
+    function ClientDataChannel(onOpenCallback, onMessageCallback) {
+      this.onOpenCallback = onOpenCallback;
+      this.onMessageCallback = onMessageCallback;
       this.dataChannelReady = __bind(this.dataChannelReady, this);
 
       this.onFileReceived = __bind(this.onFileReceived, this);
@@ -13,23 +15,36 @@
 
       this.onFileProgress = __bind(this.onFileProgress, this);
 
-      this.onOpen = __bind(this.onOpen, this);
-
       this.onMessage = __bind(this.onMessage, this);
+
+      this.onOpen = __bind(this.onOpen, this);
 
       this.openSignalingChannel = __bind(this.openSignalingChannel, this);
 
       this.initDataChannelCallbacks = __bind(this.initDataChannelCallbacks, this);
 
       this.handleSetID = __bind(this.handleSetID, this);
+
+      this.getChannelByUserID = __bind(this.getChannelByUserID, this);
+
+      this.send = __bind(this.send, this);
+
       this.dataChannel = new DataChannel();
       this.socket = io.connect(document.location.origin);
       this.socket.on("setID", this.handleSetID);
     }
 
+    ClientDataChannel.prototype.send = function(message) {
+      return this.dataChannel.send(message);
+    };
+
+    ClientDataChannel.prototype.getChannelByUserID = function(userID) {
+      return this.dataChannel.channels[userID];
+    };
+
     ClientDataChannel.prototype.handleSetID = function(id) {
       this.id = id;
-      console.log(id);
+      this.dataChannel.userid = id;
       this.initDataChannelCallbacks();
       return this.dataChannelReady();
     };
@@ -59,10 +74,6 @@
         }
       });
       channelSocket.send = function(message) {
-        console.log("send", {
-          sender: sender,
-          data: message
-        });
         return channelSocket.emit("message", {
           sender: sender,
           data: message
@@ -71,9 +82,13 @@
       return channelSocket.on("message", config.onmessage);
     };
 
-    ClientDataChannel.prototype.onMessage = function(data) {};
+    ClientDataChannel.prototype.onOpen = function() {
+      return this.onOpenCallback();
+    };
 
-    ClientDataChannel.prototype.onOpen = function() {};
+    ClientDataChannel.prototype.onMessage = function(message) {
+      return this.onMessageCallback(message);
+    };
 
     ClientDataChannel.prototype.onFileProgress = function() {};
 
