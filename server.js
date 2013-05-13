@@ -1,13 +1,13 @@
 /* Set up bindings for real server. 
 
-  Handle handshake between clientServer and clientBrowser
-*/
+   Handle handshake between clientServer and clientBrowser
+   */
 
 /* Load in dependencies */
 var config = require('getconfig'),
-  uuid = require('node-uuid'),
-  http = require('http'),
-  fs = require('fs');
+    uuid = require('node-uuid'),
+    http = require('http'),
+    fs = require('fs');
 var app = require('express')();
 
 /* Create the real server for the app */
@@ -64,70 +64,42 @@ app.get("/", function(req, res) {
 })
 
 /* Real server is notified when a browser attaches to it. 
-     socket = a user connecting to our real server. May become either a 
-     client server or client browser*/
+   socket = a user connecting to our real server. May become either a 
+   client server or client browser*/
 io = io.listen(server);
 
-io.sockets.on('connection', function(socket) {
-  
-  /* Add the socket to the client server pool */
-  socket.on('joinAsClientServer', function () {
-    console.log("client server joined");
-    // socket.join("clientServer");
-    socket.emit("setSocketId", socket.id)
-  });
-
-  /* Add the socket to the client browser pool */
-  socket.on('joinAsClientBrowser', function (data) {
-    console.log("client browser joined");
-    var roomName = "client_" + data.desiredServer;
-    socket.join(roomName);
-    io.sockets.socket(data.desiredServer).emit("joined", socket.id);
-    // io.sockets.in("clientServer").emit('joined', socket.id);
-    socket.emit("setSocketId", socket.id)
-    socket.emit("joinedToServer");
-  });
-  
-  /* Next part of handshake -- client-browser sends offer, trigger a receive offer
-    on the client-server. */
-  socket.on("sendOffer", function(sessionDescription, desiredServer) {
-    io.sockets.socket(desiredServer).emit("receiveOffer", socket.id, sessionDescription);
-  });
-
-  /* Client-server acknowledges offer, trigger a receive answer on the client-browser. */
-  socket.on("sendAnswer", function(clientID, sessionDescription) {
-    io.sockets.socket(clientID).emit("receiveAnswer", sessionDescription);
-  });
-
-  /* Receive ICE candidates and send to the correct socket. 
-  ICE = Interactive Communication Establishment (google for details) */
-  socket.on('sendICECandidate', function(clientID, candidate) {
-    if (clientID == "server") {
-      // TODO MAY BE BROKEN :( socket.id may be incorrect, might have to pass in actual one (which might not exist right now)
-      io.sockets.socket(socket.id).emit("receiveICECandidate", socket.id, candidate);
-    } else {
-      io.sockets.socket(clientID).emit("receiveICECandidate", candidate);
-    }
-  });
-  
-  /* Disconnect client server and client browser 
-  TODO untested -- artifact from other code. */
-  // socket.on('disconnect', function () {
-  //   console.log("disconnect");
-  //   var rooms = io.sockets.manager.roomClients[socket.id];
-  //   for (var name in rooms) {
-  //     console.log(name);
-  //     if (name == "server") {
-  //       console.log("server disconnected");
-  //       io.sockets.in("clientBrowser").emit('serverDisconnected');
-  //     } else if (name == "client") {
-  //       console.log("client disconnected");
-  //       io.sockets.in("clientServer").emit('clientDisconnected', socket.id);
-  //     }
-  //   }
-  // });
-  
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
 });
+
+io.sockets.on("connection", function(socket) {
+
+  socket.emit("setID", uuid.v1());
+
+  socket.on("newDataChannel", function (data) {
+    console.log("NEW CHANNEL", data.channel);
+    onNewNamespace(socket, data.channel, data.sender);
+  });
+});
+
+function onNewNamespace(socket, channel, sender) {
+  io.of('/' + channel).on("connection", function (socket) {
+    console.log("CHANNEL", channel);
+
+    if (io.isConnected) {
+      io.isConnected = false;
+      socket.emit("connect", true);
+    }
+
+    socket.on("message", function (data) {
+      if (data.sender == sender)  {
+        console.log("MESSAGE", data);
+        socket.broadcast.emit("message", data.data);
+      }
+    });
+  });
+}
 
 /* Set UID of process from config if applicable */
 if (config.uid) {
