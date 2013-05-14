@@ -38,7 +38,7 @@ class window.ServerFileCollectionView extends Backbone.View
     "click .create-menu .html": "eventCreateHTML"
     "click .create-menu .js": "eventCreateJS"
     "click .create-menu .css": "eventCreateCSS"
-    # "click .create-menu .dynamic": "eventCreateDynamic"
+    "click .create-menu .dynamic": "eventCreateDynamic"
     # "click .create-menu .template": "eventCreateTemplate"
 
   addAll: =>
@@ -117,6 +117,10 @@ class window.ServerFileCollectionView extends Backbone.View
 
   eventCreateJS: =>
     serverFile = new ServerFile(type: "application/x-javascript")
+    @createFile(serverFile)
+  
+  eventCreateDynamic: =>
+    serverFile = new ServerFile(type: "application/dynamic")
     @createFile(serverFile)
 
   eventCreateCSS: =>

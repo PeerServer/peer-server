@@ -122,8 +122,25 @@ class window.WebRTC
       })
       return
 
+    responseContents = ""
+    if @serverFileCollection.isDynamic(filename)
+      responseContents = @evalDynamic(@serverFileCollection.getContents(filename))
+    else
+      responseContents = @serverFileCollection.getContents(filename)
+
     @sendEventTo(data.socketId, "receiveFile", {
       filename: filename,
-      fileContents: @serverFileCollection.getContents(filename),
+      fileContents: responseContents,
       type: data.type
     })
+
+
+  # This method allows us to present an API to dynamic code before evaluating it
+  # Currently, there is only 1 part of the API: the page's serverFileCollection
+  # is made available through a variable of that name.
+  evalDynamic: (js) =>
+    exe = =>
+      serverFileCollection = @serverFileCollection
+      eval(js)
+
+    return exe()

@@ -49,6 +49,9 @@ class window.ServerFileCollection extends Backbone.Collection
   hasFile: (filename) =>
     return @findWhere(name: filename)
 
+  isDynamic: (filename) =>
+    return @findWhere(name: filename).isDynamic()
+
   getContents: (filename) =>
     serverFile = @findWhere(name: filename, isProductionVersion: true)
     contents = ""
