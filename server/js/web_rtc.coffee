@@ -125,5 +125,6 @@ class window.WebRTC
     @sendEventTo(data.socketId, "receiveFile", {
       filename: filename,
       fileContents: @serverFileCollection.getContents(filename),
-      type: data.type
+      type: data.type,
+      fileType: @serverFileCollection.getFileType(filename)
     })

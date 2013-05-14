@@ -21,6 +21,19 @@ class window.HTMLProcessor
     # Ensure that this is called just in case there is nothing to be processed
     @checkForProcessCompletion()
 
+  # Returns HTML for displaying a "theserver.com/image.jpg" url page
+  processImageAsHTML: (html, completionCallback) =>
+    @completionCallback = completionCallback
+    container = document.createElement("html")
+    @container = $(container)
+    # Set the style so that the image is centered
+    # TODO: possibly soup this up with zooming in and out of images (just requires a script 
+    #  listening to the window size and resizing if needed, plus a zoom-in zoom-out cursor)
+    img = "<img style='text-align:center; position:absolute; margin:auto; top:0;right:0;bottom:0;left:0;' "
+    img += " src='" + html + "' />"
+    @container.append($(img))
+    @completionCallback(@container[0].outerHTML)
+
   processImages: =>
     @processElementsWithAttribute("img[src]", "src", "image")
         
@@ -99,6 +112,7 @@ class window.HTMLProcessor
     console.log "FILENAME: " + filename
     fileContents = data.fileContents
     type = data.type  # Same as what we passed along in request file.
+    fileType = data.fileType  # IMG, JS, CS, HTML, etc.
 
     # Handles an a href link file type being sent in. This should only occur when the user
     #  has clicked an "a href" tag, and so we change the entire frame's contents
@@ -106,7 +120,7 @@ class window.HTMLProcessor
     # Setting the document inner HTML calls the webRTC method passed in, which initiates
     #   another round of setting up the HTML for the frame (with processing). 
     if type is "alink" or type is "backbutton" or type is "initialLoad"
-      @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename}, type)
+      @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename, "fileType": fileType}, type)
     else 
       $element = @requestedFilenamesToElement[filename]
       if $element        

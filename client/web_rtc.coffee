@@ -125,9 +125,14 @@ class window.WebRTC
       window.history.pushState({"path": path}, fullPath, fullPath)
       console.log window.history.state
     @documentElement.innerHTML = ""
-    @htmlProcessor.processHTML html, (processedHTML, scriptMapping) =>
-      @documentElement.innerHTML = processedHTML
-      @executeScriptsCallback(scriptMapping)
+    if data.fileType is "IMG"
+      # Serve up a single image
+      @htmlProcessor.processImageAsHTML html, (processedHTML) =>
+        @documentElement.innerHTML = processedHTML
+    else 
+      @htmlProcessor.processHTML html, (processedHTML, scriptMapping) =>
+        @documentElement.innerHTML = processedHTML
+        @executeScriptsCallback(scriptMapping)
       
   # Needed since innerHTML does not run scripts.
   # Inspired by:
