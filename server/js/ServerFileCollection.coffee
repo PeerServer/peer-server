@@ -8,9 +8,6 @@ class window.ServerFileCollection extends Backbone.Collection
   localStorage: new Backbone.LocalStorage("ServerFileCollection")
 
   initialize: ->
-    # TODO remove
-    localStorage.clear()
-
     @fetch(success: @checkForNoFiles)
 
   checkForNoFiles: =>
@@ -22,6 +19,12 @@ class window.ServerFileCollection extends Backbone.Collection
     notFound = new ServerFile(name: "404.html", size: 0, type: "text/html", contents: @notFoundTemplate, isRequired: true)
     @add(index)
     @add(notFound)
+    
+    index.save()
+    notFound.save()
+
+    # Create an initial production version
+    @createProductionVersion()
 
   comparator: (serverFile) =>
     return serverFile.get("name")
@@ -65,6 +68,7 @@ class window.ServerFileCollection extends Backbone.Collection
        copy = new ServerFile(attrs)
        copy.set("isProductionVersion", true)
        @add(copy)
+       copy.save()
 
     # Iterates over the development files,
     # calling fn on each development file
