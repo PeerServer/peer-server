@@ -21,15 +21,14 @@
       this.serverFileCollectionView = new ServerFileCollectionView({
         collection: this.collection
       });
+      this.clientBrowserLink = $(".navbar .browse");
       return this.on("setServerID", this.setClientBrowserLink);
     };
 
     AppView.prototype.setClientBrowserLink = function(serverID) {
-      var clientBrowserLink, link;
+      var link;
       link = window.location.origin + "/connect/" + serverID + "/";
-      clientBrowserLink = $(".browser-link");
-      clientBrowserLink.attr('href', link);
-      return clientBrowserLink.html(link);
+      return this.clientBrowserLink.attr("href", link);
     };
 
     return AppView;

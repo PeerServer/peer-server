@@ -9,10 +9,10 @@ class window.AppView extends Backbone.View
 
     @routeCollectionView = new RouteCollectionView(collection: options.routeCollection)
 
+    @clientBrowserLink = $(".navbar .browse")
     @on("setServerID", @setClientBrowserLink)
 
   setClientBrowserLink: (serverID) =>
     link = window.location.origin + "/connect/" + serverID + "/"
-    clientBrowserLink = $(".browser-link")
-    clientBrowserLink.attr('href', link)
-    clientBrowserLink.html(link)
+    @clientBrowserLink.attr("href", link)
+    
