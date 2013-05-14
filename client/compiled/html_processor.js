@@ -30,6 +30,8 @@
 
       this.processImages = __bind(this.processImages, this);
 
+      this.processTitle = __bind(this.processTitle, this);
+
       this.processHTML = __bind(this.processHTML, this);
 
       this.requestedFilenamesToElement = {};
@@ -44,11 +46,23 @@
       container = document.createElement("html");
       container.innerHTML = html.replace(/<\/?html>/g, "");
       this.container = $(container);
+      this.processTitle();
       this.processImages();
       this.processScripts();
       this.processStyleSheets();
       this.processLinks();
       return this.checkForProcessCompletion();
+    };
+
+    HTMLProcessor.prototype.processTitle = function() {
+      var elements,
+        _this = this;
+      elements = this.container.find("title");
+      return elements.each(function(index, el) {
+        var $el;
+        $el = $(el);
+        return document.title = $el.text();
+      });
     };
 
     HTMLProcessor.prototype.processImages = function() {

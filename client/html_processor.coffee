@@ -13,6 +13,7 @@ class window.HTMLProcessor
     container.innerHTML = html.replace(/<\/?html>/g, "")
     @container = $(container)
     
+    @processTitle()
     @processImages()
     @processScripts()
     @processStyleSheets()
@@ -20,6 +21,12 @@ class window.HTMLProcessor
 
     # Ensure that this is called just in case there is nothing to be processed
     @checkForProcessCompletion()
+
+  processTitle: =>
+    elements = @container.find("title")
+    elements.each (index, el) =>
+      $el = $(el)
+      document.title = $el.text()
 
   # Returns HTML for displaying a "theserver.com/image.jpg" url page
   processImageAsHTML: (html, completionCallback) =>
