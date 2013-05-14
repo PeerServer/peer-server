@@ -9,7 +9,7 @@ class window.ServerFileView extends Backbone.View
     @tplImage = Handlebars.compile($("#image-template").html())
 
   render: =>
-    if @model.get("fileType") isnt ServerFile.prototype.fileTypeEnum.IMG
+    if @model.get("fileType") isnt ServerFile.fileTypeEnum.IMG
       @renderAsSourceCode()
     else
       @renderAsImage()
@@ -27,8 +27,8 @@ class window.ServerFileView extends Backbone.View
 
     editorMode = "ace/mode/html" # Default to HTML
     switch @model.get("fileType")
-      when ServerFile.prototype.fileTypeEnum.CSS  then editorMode = "ace/mode/css"
-      when ServerFile.prototype.fileTypeEnum.JS   then editorMode = "ace/mode/javascript"
+      when ServerFile.fileTypeEnum.CSS  then editorMode = "ace/mode/css"
+      when ServerFile.fileTypeEnum.JS   then editorMode = "ace/mode/javascript"
     @aceEditor.getSession().setMode(editorMode)
 
     @aceEditor.on("change", @updateContents)

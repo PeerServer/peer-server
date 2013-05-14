@@ -93,8 +93,8 @@ class window.ServerFileCollectionView extends Backbone.View
 
   handleFile: (file) =>
     reader = new FileReader()
-    fileType = ServerFile.prototype.rawTypeToFileType(file.type)
-    if fileType is ServerFile.prototype.fileTypeEnum.IMG
+    fileType = ServerFile.rawTypeToFileType(file.type)
+    if fileType is ServerFile.fileTypeEnum.IMG
       reader.readAsDataURL(file)
     else
       reader.readAsText(file)
@@ -167,10 +167,10 @@ class window.ServerFileCollectionView extends Backbone.View
       section = @$(".file-list.required")
     else
       switch serverFile.get("fileType")
-        when ServerFile.prototype.fileTypeEnum.HTML then section = @$(".file-list.html")
-        when ServerFile.prototype.fileTypeEnum.CSS  then section = @$(".file-list.css")
-        when ServerFile.prototype.fileTypeEnum.JS   then section = @$(".file-list.js")
-        when ServerFile.prototype.fileTypeEnum.IMG  then section = @$(".file-list.img")
+        when ServerFile.fileTypeEnum.HTML then section = @$(".file-list.html")
+        when ServerFile.fileTypeEnum.CSS  then section = @$(".file-list.css")
+        when ServerFile.fileTypeEnum.JS   then section = @$(".file-list.js")
+        when ServerFile.fileTypeEnum.IMG  then section = @$(".file-list.img")
 
     if section
       return section.append(listEl)

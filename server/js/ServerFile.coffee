@@ -10,7 +10,7 @@ class window.ServerFile extends Backbone.Model
 
   # TODO -- if these are updated to be static, note that there is a 
   #  dependency on the client-side at least for images.
-  fileTypeEnum:
+  @fileTypeEnum:
     HTML: "HTML",
     CSS: "CSS",
     JS: "JS",
@@ -23,22 +23,23 @@ class window.ServerFile extends Backbone.Model
     @updateFileType()
 
   updateFileType: =>
-    @set("fileType", @rawTypeToFileType(@get("type")))
+    @set("fileType", ServerFile.rawTypeToFileType(@get("type")))
 
-  rawTypeToFileType: (rawType) =>
+  @rawTypeToFileType: (rawType) =>
     if rawType in ["image/jpeg", "image/png"]
-      return @fileTypeEnum.IMG
+      return ServerFile.fileTypeEnum.IMG
     if rawType is "text/html"
-      return @fileTypeEnum.HTML
+      return ServerFile.fileTypeEnum.HTML
     if rawType is "text/css"
-      return @fileTypeEnum.CSS
+      return ServerFile.fileTypeEnum.CSS
     if rawType is "application/x-javascript"
-      return @fileTypeEnum.JS
+      return ServerFile.fileTypeEnum.JS
     if rawType is "application/dynamic"
       # This is a new made-up mime type indicating javascript to be evaluated
       # on the server side
-      return @fileTypeEnum.JS
-    return @fileTypeEnum.NONE
+      # TODO: change to DYNAMIC
+      return ServerFile.fileTypeEnum.JS
+    return ServerFile.fileTypeEnum.NONE
 
   # Files for which this evaluates to true should never be served in plain text
   isDynamic: =>
