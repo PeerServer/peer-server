@@ -22,9 +22,7 @@ class window.ClientServer
     @eventTransmitter.addEventCallback("requestFile", @serveFile)
 
   sendEventTo: (userID, eventName, data) =>
-    console.log @dataChannel.getChannelByUserID(userID)
-    channel = @dataChannel.getChannelByUserID(userID)
-    @eventTransmitter.sendEvent(channel, eventName, data)
+    @eventTransmitter.sendEvent(@dataChannel.getChannelByUserID(userID), eventName, data)
 
   serveFile: (data) =>
     # TODO handle leading slash and handle "./file" -- currently breaks

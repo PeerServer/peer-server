@@ -45,10 +45,7 @@
     };
 
     ClientServer.prototype.sendEventTo = function(userID, eventName, data) {
-      var channel;
-      console.log(this.dataChannel.getChannelByUserID(userID));
-      channel = this.dataChannel.getChannelByUserID(userID);
-      return this.eventTransmitter.sendEvent(channel, eventName, data);
+      return this.eventTransmitter.sendEvent(this.dataChannel.getChannelByUserID(userID), eventName, data);
     };
 
     ClientServer.prototype.serveFile = function(data) {

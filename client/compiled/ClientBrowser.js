@@ -22,13 +22,13 @@
 
       this.parseUrl = __bind(this.parseUrl, this);
 
-      this.getSocketId = __bind(this.getSocketId, this);
+      this.getID = __bind(this.getID, this);
 
       _ref = this.parseUrl(window.location.pathname), this.desiredServer = _ref[0], startPage = _ref[1];
       this.pathRoot = "/connect/" + this.desiredServer + "/";
       this.eventTransmitter = new EventTransmitter();
       this.dataChannel = new ClientBrowserDataChannel(this.channelOnOpen, this.channelOnMessage, this.desiredServer);
-      this.htmlProcessor = new HTMLProcessor(this.sendEvent, this.setDocumentElementInnerHTML, this.getSocketId);
+      this.htmlProcessor = new HTMLProcessor(this.sendEvent, this.setDocumentElementInnerHTML, this.getID);
       this.setUpReceiveEventCallbacks(startPage);
       window.onpopstate = function(evt) {
         var filename;
@@ -37,7 +37,7 @@
       };
     }
 
-    ClientBrowser.prototype.getSocketId = function() {
+    ClientBrowser.prototype.getID = function() {
       return this.dataChannel.id;
     };
 

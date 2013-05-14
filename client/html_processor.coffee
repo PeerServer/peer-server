@@ -1,6 +1,6 @@
 class window.HTMLProcessor
 
-  constructor: (@sendEvent, @setDocumentElementInnerHTML, @socketIdFcn) ->
+  constructor: (@sendEvent, @setDocumentElementInnerHTML, @getIDFn) ->
     @requestedFilenamesToElement = {}
     @container = null
     @completionCallback = null
@@ -91,10 +91,10 @@ class window.HTMLProcessor
   # Note that requestFile is also called externally (ie, by the global function that
   #   handles a href tags being clicked.)  
   requestFile: (filename, type) =>
-    console.log "sending socket id " + @socketIdFcn()
+    console.log "sending socket id " + @getIDFn()
     data =
       "filename": filename
-      "socketId": @socketIdFcn()
+      "socketId": @getIDFn()
       "type": type
     @sendEvent("requestFile", data)
 

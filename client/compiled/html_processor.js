@@ -4,10 +4,10 @@
 
   window.HTMLProcessor = (function() {
 
-    function HTMLProcessor(sendEvent, setDocumentElementInnerHTML, socketIdFcn) {
+    function HTMLProcessor(sendEvent, setDocumentElementInnerHTML, getIDFn) {
       this.sendEvent = sendEvent;
       this.setDocumentElementInnerHTML = setDocumentElementInnerHTML;
-      this.socketIdFcn = socketIdFcn;
+      this.getIDFn = getIDFn;
       this.checkForProcessCompletion = __bind(this.checkForProcessCompletion, this);
 
       this.receiveFile = __bind(this.receiveFile, this);
@@ -110,10 +110,10 @@
 
     HTMLProcessor.prototype.requestFile = function(filename, type) {
       var data;
-      console.log("sending socket id " + this.socketIdFcn());
+      console.log("sending socket id " + this.getIDFn());
       data = {
         "filename": filename,
-        "socketId": this.socketIdFcn(),
+        "socketId": this.getIDFn(),
         "type": type
       };
       return this.sendEvent("requestFile", data);

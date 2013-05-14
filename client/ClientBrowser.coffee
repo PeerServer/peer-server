@@ -9,7 +9,7 @@ class window.ClientBrowser
     @eventTransmitter = new EventTransmitter()
     @dataChannel = new ClientBrowserDataChannel(@channelOnOpen, @channelOnMessage, @desiredServer)
 
-    @htmlProcessor = new HTMLProcessor(@sendEvent, @setDocumentElementInnerHTML, @getSocketId)
+    @htmlProcessor = new HTMLProcessor(@sendEvent, @setDocumentElementInnerHTML, @getID)
 
     @setUpReceiveEventCallbacks(startPage)
 
@@ -17,8 +17,8 @@ class window.ClientBrowser
       filename = evt.state.path
       @htmlProcessor.requestFile(filename, "backbutton")
 
-  # Returns the client-server's own socket id.
-  getSocketId: =>
+  # Returns the client-server's own data channel id.
+  getID: =>
     return @dataChannel.id
 
   # Finds the socket ID of the desired server through the url.
