@@ -17,6 +17,7 @@
       this.eventDoneNamingFile = __bind(this.eventDoneNamingFile, this);
       this.createFile = __bind(this.createFile, this);
       this.eventCreateCSS = __bind(this.eventCreateCSS, this);
+      this.eventCreateDynamic = __bind(this.eventCreateDynamic, this);
       this.eventCreateJS = __bind(this.eventCreateJS, this);
       this.eventCreateHTML = __bind(this.eventCreateHTML, this);
       this.handleFileChanged = __bind(this.handleFileChanged, this);
@@ -59,7 +60,8 @@
       "click .upload-files": "eventUploadFiles",
       "click .create-menu .html": "eventCreateHTML",
       "click .create-menu .js": "eventCreateJS",
-      "click .create-menu .css": "eventCreateCSS"
+      "click .create-menu .css": "eventCreateCSS",
+      "click .create-menu .dynamic": "eventCreateDynamic"
     };
 
     ServerFileCollectionView.prototype.addAll = function() {
@@ -176,6 +178,15 @@
 
       serverFile = new ServerFile({
         type: "application/x-javascript"
+      });
+      return this.createFile(serverFile);
+    };
+
+    ServerFileCollectionView.prototype.eventCreateDynamic = function() {
+      var serverFile;
+
+      serverFile = new ServerFile({
+        type: "application/dynamic"
       });
       return this.createFile(serverFile);
     };

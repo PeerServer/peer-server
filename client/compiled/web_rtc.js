@@ -36,6 +36,7 @@
         return _this.socketId = socketId;
       });
       this.htmlProcessor = new HTMLProcessor(this.sendEvent, this.setDocumentElementInnerHTML, this.getSocketId);
+      this.ajaxClient = new AJAXClient(this.sendEvent, this.getSocketId);
       this.eventTransmitter = new EventTransmitter();
       this.setUpReceiveEventCallbacks(startPage);
       window.onpopstate = function(evt) {
@@ -151,7 +152,8 @@
         }
       });
       this.eventTransmitter.addEventCallback("textAreaValueChanged", this.setDocumentElementInnerHTML);
-      return this.eventTransmitter.addEventCallback("receiveFile", this.htmlProcessor.receiveFile);
+      this.eventTransmitter.addEventCallback("receiveFile", this.htmlProcessor.receiveFile);
+      return this.eventTransmitter.addEventCallback("receiveAjax", this.ajaxClient.receiveAjax);
     };
 
     WebRTC.prototype.setDocumentElementInnerHTML = function(data, optionalInfo) {

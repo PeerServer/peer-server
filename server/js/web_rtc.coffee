@@ -106,6 +106,39 @@ class window.WebRTC
 
   setUpReceiveEventCallbacks: =>
     @eventTransmitter.addEventCallback("requestFile", @serveFile)
+    @eventTransmitter.addEventCallback("requestAjax", @serveAjax)
+
+  serveAjax: (data) =>
+    console.log "Got an ajax request"
+    console.log data
+
+    if 'path' not of data
+      console.log "Received bad ajax request: no path requested"
+      return
+
+    path = data['path']
+
+    # Check for 404s
+    if not @serverFileCollection.hasFile(path)
+      # TODO: not just do nothing here
+      console.log "Path not found"
+      return
+
+    # Assemble a response
+    response = {}
+    if 'requestId' of data
+      response['requestId'] = data['requestId']
+
+    response['path'] = path
+
+    if @serverFileCollection.isDynamic(path)
+      response['contents'] = @evalDynamic(@serverFileCollection.getContents(path))
+    else
+      response['contents'] = @serverFileCollection.getContents(path)
+    
+    console.log "Transmitting ajax response"
+    console.log response
+    @sendEventTo(data.socketId, "receiveAjax", response)
 
   serveFile: (data) =>
     # TODO handle leading slash and  handle "./file" -- currently breaks

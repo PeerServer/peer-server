@@ -9,7 +9,9 @@
 
       this.serverFileCollection = serverFileCollection;
       this.setClientBrowserLink = setClientBrowserLink;
+      this.evalDynamic = __bind(this.evalDynamic, this);
       this.serveFile = __bind(this.serveFile, this);
+      this.serveAjax = __bind(this.serveAjax, this);
       this.setUpReceiveEventCallbacks = __bind(this.setUpReceiveEventCallbacks, this);
       this.sendEventTo = __bind(this.sendEventTo, this);
       this.sendEvent = __bind(this.sendEvent, this);
@@ -135,11 +137,41 @@
     };
 
     WebRTC.prototype.setUpReceiveEventCallbacks = function() {
-      return this.eventTransmitter.addEventCallback("requestFile", this.serveFile);
+      this.eventTransmitter.addEventCallback("requestFile", this.serveFile);
+      return this.eventTransmitter.addEventCallback("requestAjax", this.serveAjax);
+    };
+
+    WebRTC.prototype.serveAjax = function(data) {
+      var path, response;
+
+      console.log("Got an ajax request");
+      console.log(data);
+      if (!('path' in data)) {
+        console.log("Received bad ajax request: no path requested");
+        return;
+      }
+      path = data['path'];
+      if (!this.serverFileCollection.hasFile(path)) {
+        console.log("Path not found");
+        return;
+      }
+      response = {};
+      if ('requestId' in data) {
+        response['requestId'] = data['requestId'];
+      }
+      response['path'] = path;
+      if (this.serverFileCollection.isDynamic(path)) {
+        response['contents'] = this.evalDynamic(this.serverFileCollection.getContents(path));
+      } else {
+        response['contents'] = this.serverFileCollection.getContents(path);
+      }
+      console.log("Transmitting ajax response");
+      console.log(response);
+      return this.sendEventTo(data.socketId, "receiveAjax", response);
     };
 
     WebRTC.prototype.serveFile = function(data) {
-      var filename;
+      var filename, responseContents;
 
       filename = data.filename;
       console.log("FILENAME: " + filename);
@@ -152,11 +184,30 @@
         });
         return;
       }
+      responseContents = "";
+      if (this.serverFileCollection.isDynamic(filename)) {
+        responseContents = this.evalDynamic(this.serverFileCollection.getContents(filename));
+      } else {
+        responseContents = this.serverFileCollection.getContents(filename);
+      }
       return this.sendEventTo(data.socketId, "receiveFile", {
         filename: filename,
-        fileContents: this.serverFileCollection.getContents(filename),
+        fileContents: responseContents,
         type: data.type
       });
+    };
+
+    WebRTC.prototype.evalDynamic = function(js) {
+      var exe,
+        _this = this;
+
+      exe = function() {
+        var serverFileCollection;
+
+        serverFileCollection = _this.serverFileCollection;
+        return eval(js);
+      };
+      return exe();
     };
 
     return WebRTC;
