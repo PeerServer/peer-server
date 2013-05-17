@@ -20,6 +20,9 @@
       this.getContents = function(filename) {
         return ServerFileCollection.prototype.getContents.apply(_this, arguments);
       };
+      this.isDynamic = function(filename) {
+        return ServerFileCollection.prototype.isDynamic.apply(_this, arguments);
+      };
       this.getFileType = function(filename) {
         return ServerFileCollection.prototype.getFileType.apply(_this, arguments);
       };
@@ -40,7 +43,6 @@
     ServerFileCollection.prototype.localStorage = new Backbone.LocalStorage("ServerFileCollection");
 
     ServerFileCollection.prototype.initialize = function() {
-      localStorage.clear();
       return this.fetch({
         success: this.checkForNoFiles
       });
@@ -66,7 +68,10 @@
         isRequired: true
       });
       this.add(index);
-      return this.add(notFound);
+      this.add(notFound);
+      index.save();
+      notFound.save();
+      return this.createProductionVersion();
     };
 
     ServerFileCollection.prototype.comparator = function(serverFile) {
@@ -113,6 +118,12 @@
       return fileType;
     };
 
+    ServerFileCollection.prototype.isDynamic = function(filename) {
+      return this.findWhere({
+        name: filename
+      }).isDynamic();
+    };
+
     ServerFileCollection.prototype.getContents = function(filename) {
       var contents, serverFile;
       serverFile = this.findWhere({
@@ -144,7 +155,8 @@
         attrs.id = null;
         copy = new ServerFile(attrs);
         copy.set("isProductionVersion", true);
-        return _this.add(copy);
+        _this.add(copy);
+        return copy.save();
       });
     };
 

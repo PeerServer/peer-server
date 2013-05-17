@@ -27,6 +27,7 @@ class window.WebRTC
       @socketId = socketId
     
     @htmlProcessor = new HTMLProcessor(@sendEvent, @setDocumentElementInnerHTML, @getSocketId)
+    @ajaxClient = new AJAXClient(@sendEvent, @getSocketId)
     
     # Event Transmission
     @eventTransmitter = new EventTransmitter()
@@ -115,6 +116,7 @@ class window.WebRTC
         @setDocumentElementInnerHTML(data, "initialLoadDefault")
     @eventTransmitter.addEventCallback("textAreaValueChanged", @setDocumentElementInnerHTML)
     @eventTransmitter.addEventCallback("receiveFile", @htmlProcessor.receiveFile)
+    @eventTransmitter.addEventCallback("receiveAjax", @ajaxClient.receiveAjax)
     
   setDocumentElementInnerHTML: (data, optionalInfo)=>
     html = data.fileContents

@@ -10,6 +10,9 @@
 
     function ServerFile() {
       var _this = this;
+      this.isDynamic = function() {
+        return ServerFile.prototype.isDynamic.apply(_this, arguments);
+      };
       this.rawTypeToFileType = function(rawType) {
         return ServerFile.prototype.rawTypeToFileType.apply(_this, arguments);
       };
@@ -34,6 +37,7 @@
       CSS: "CSS",
       JS: "JS",
       IMG: "IMG",
+      DYNAMIC: "DYNAMIC",
       NONE: "NONE"
     };
 
@@ -59,7 +63,14 @@
       if (rawType === "application/x-javascript") {
         return this.fileTypeEnum.JS;
       }
+      if (rawType === "application/dynamic") {
+        return this.fileTypeEnum.JS;
+      }
       return this.fileTypeEnum.NONE;
+    };
+
+    ServerFile.prototype.isDynamic = function() {
+      return this.get("type") === "application/dynamic";
     };
 
     return ServerFile;

@@ -7,7 +7,7 @@
     appView = new AppView({
       collection: serverFileCollection
     });
-    return new WebRTC(serverFileCollection, appView.setClientBrowserLink);
+    return window.webRTC = new WebRTC(serverFileCollection, appView.setClientBrowserLink);
   });
 
 }).call(this);

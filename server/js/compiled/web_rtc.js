@@ -9,8 +9,14 @@
       var _this = this;
       this.serverFileCollection = serverFileCollection;
       this.setClientBrowserLink = setClientBrowserLink;
+      this.evalDynamic = function(js) {
+        return WebRTC.prototype.evalDynamic.apply(_this, arguments);
+      };
       this.serveFile = function(data) {
         return WebRTC.prototype.serveFile.apply(_this, arguments);
+      };
+      this.serveAjax = function(data) {
+        return WebRTC.prototype.serveAjax.apply(_this, arguments);
       };
       this.setUpReceiveEventCallbacks = function() {
         return WebRTC.prototype.setUpReceiveEventCallbacks.apply(_this, arguments);
@@ -145,11 +151,40 @@
     };
 
     WebRTC.prototype.setUpReceiveEventCallbacks = function() {
-      return this.eventTransmitter.addEventCallback("requestFile", this.serveFile);
+      this.eventTransmitter.addEventCallback("requestFile", this.serveFile);
+      return this.eventTransmitter.addEventCallback("requestAjax", this.serveAjax);
+    };
+
+    WebRTC.prototype.serveAjax = function(data) {
+      var path, response;
+      console.log("Got an ajax request");
+      console.log(data);
+      if (!('path' in data)) {
+        console.log("Received bad ajax request: no path requested");
+        return;
+      }
+      path = data['path'];
+      if (!this.serverFileCollection.hasFile(path)) {
+        console.log("Path not found");
+        return;
+      }
+      response = {};
+      if ('requestId' in data) {
+        response['requestId'] = data['requestId'];
+      }
+      response['path'] = path;
+      if (this.serverFileCollection.isDynamic(path)) {
+        response['contents'] = this.evalDynamic(this.serverFileCollection.getContents(path));
+      } else {
+        response['contents'] = this.serverFileCollection.getContents(path);
+      }
+      console.log("Transmitting ajax response");
+      console.log(response);
+      return this.sendEventTo(data.socketId, "receiveAjax", response);
     };
 
     WebRTC.prototype.serveFile = function(data) {
-      var filename;
+      var filename, responseContents;
       filename = data.filename;
       console.log("FILENAME: " + filename);
       if (!this.serverFileCollection.hasFile(filename)) {
@@ -161,12 +196,29 @@
         });
         return;
       }
+      responseContents = "";
+      if (this.serverFileCollection.isDynamic(filename)) {
+        responseContents = this.evalDynamic(this.serverFileCollection.getContents(filename));
+      } else {
+        responseContents = this.serverFileCollection.getContents(filename);
+      }
       return this.sendEventTo(data.socketId, "receiveFile", {
         filename: filename,
-        fileContents: this.serverFileCollection.getContents(filename),
+        fileContents: responseContents,
         type: data.type,
         fileType: this.serverFileCollection.getFileType(filename)
       });
+    };
+
+    WebRTC.prototype.evalDynamic = function(js) {
+      var exe,
+        _this = this;
+      exe = function() {
+        var serverFileCollection;
+        serverFileCollection = _this.serverFileCollection;
+        return eval(js);
+      };
+      return exe();
     };
 
     return WebRTC;

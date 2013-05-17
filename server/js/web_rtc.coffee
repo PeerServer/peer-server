@@ -106,6 +106,39 @@ class window.WebRTC
 
   setUpReceiveEventCallbacks: =>
     @eventTransmitter.addEventCallback("requestFile", @serveFile)
+    @eventTransmitter.addEventCallback("requestAjax", @serveAjax)
+
+  serveAjax: (data) =>
+    console.log "Got an ajax request"
+    console.log data
+
+    if 'path' not of data
+      console.log "Received bad ajax request: no path requested"
+      return
+
+    path = data['path']
+
+    # Check for 404s
+    if not @serverFileCollection.hasFile(path)
+      # TODO: not just do nothing here
+      console.log "Path not found"
+      return
+
+    # Assemble a response
+    response = {}
+    if 'requestId' of data
+      response['requestId'] = data['requestId']
+
+    response['path'] = path
+
+    if @serverFileCollection.isDynamic(path)
+      response['contents'] = @evalDynamic(@serverFileCollection.getContents(path))
+    else
+      response['contents'] = @serverFileCollection.getContents(path)
+    
+    console.log "Transmitting ajax response"
+    console.log response
+    @sendEventTo(data.socketId, "receiveAjax", response)
 
   serveFile: (data) =>
     # TODO handle leading slash and  handle "./file" -- currently breaks
@@ -122,9 +155,26 @@ class window.WebRTC
       })
       return
 
+    responseContents = ""
+    if @serverFileCollection.isDynamic(filename)
+      responseContents = @evalDynamic(@serverFileCollection.getContents(filename))
+    else
+      responseContents = @serverFileCollection.getContents(filename)
+
     @sendEventTo(data.socketId, "receiveFile", {
       filename: filename,
-      fileContents: @serverFileCollection.getContents(filename),
-      type: data.type,
+      fileContents: responseContents,
+      type: data.type
       fileType: @serverFileCollection.getFileType(filename)
     })
+
+
+  # This method allows us to present an API to dynamic code before evaluating it
+  # Currently, there is only 1 part of the API: the page's serverFileCollection
+  # is made available through a variable of that name.
+  evalDynamic: (js) =>
+    exe = =>
+      serverFileCollection = @serverFileCollection
+      eval(js)
+
+    return exe()

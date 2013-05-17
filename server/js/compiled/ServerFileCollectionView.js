@@ -32,6 +32,9 @@
       this.eventCreateCSS = function() {
         return ServerFileCollectionView.prototype.eventCreateCSS.apply(_this, arguments);
       };
+      this.eventCreateDynamic = function() {
+        return ServerFileCollectionView.prototype.eventCreateDynamic.apply(_this, arguments);
+      };
       this.eventCreateJS = function() {
         return ServerFileCollectionView.prototype.eventCreateJS.apply(_this, arguments);
       };
@@ -98,7 +101,8 @@
       "click .upload-files": "eventUploadFiles",
       "click .create-menu .html": "eventCreateHTML",
       "click .create-menu .js": "eventCreateJS",
-      "click .create-menu .css": "eventCreateCSS"
+      "click .create-menu .css": "eventCreateCSS",
+      "click .create-menu .dynamic": "eventCreateDynamic"
     };
 
     ServerFileCollectionView.prototype.addAll = function() {
@@ -207,6 +211,14 @@
       var serverFile;
       serverFile = new ServerFile({
         type: "application/x-javascript"
+      });
+      return this.createFile(serverFile);
+    };
+
+    ServerFileCollectionView.prototype.eventCreateDynamic = function() {
+      var serverFile;
+      serverFile = new ServerFile({
+        type: "application/dynamic"
       });
       return this.createFile(serverFile);
     };

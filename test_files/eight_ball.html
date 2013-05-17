@@ -1,0 +1,23 @@
+<!--
+    To use see this demo, load eight_ball.html, eight_ball.js, ajax_patch.js
+    and jquery.js into the server.
+    Then create a dynamic path at "magic_eight_ball" with the contents of the
+    magic_eight_ball file.
+    Now browse to eight_ball.html
+-->
+<html>
+    <head>
+        <script src="jquery.js"></script>
+        <script src="ajax_patch.js"></script>
+        <title>Ask the Eigtht Ball!</title>
+        <script src="eight_ball.js"></script>
+    </head>
+    <body>
+        <h2>Ask the magic eight ball your important questions and receive guaranteed answers!</h2>
+        Oh magic eight ball, tell me <input type="text">.
+        <br />
+        <button onClick="fetchAnswer()">Ask</button>
+        <br />
+        <h2>Definitive answer: <span id="answer"></span></h2>
+    </body>
+</html>
