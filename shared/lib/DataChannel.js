@@ -217,7 +217,7 @@
             // for non-firebase clients
             if (isNonFirebaseClient) setTimeout(function () {
                     self.openNewSession(true);
-                }, 5000);
+                }, 1000);
         };
 
         if (self.automatic) {
@@ -529,7 +529,7 @@
                     if (!root.transmitRoomOnce && !that.leaving) {
                         if (root.direction === 'one-to-one') {
                             if (!window.isFirstConnectionOpened) setTimeout(transmit, 3000);
-                        } else setTimeout(transmit, 3000);
+                        } else setTimeout(transmit, 500);
                     }
                 })();
             },
@@ -655,7 +655,7 @@
                 if (textToTransfer.length)
                     setTimeout(function () {
                         onReadAsDataURL(null, textToTransfer);
-                    }, 500);
+                    }, 100);
             }
         }
     };
@@ -763,7 +763,7 @@
                 if (textToTransfer.length)
                     setTimeout(function () {
                         sendText(null, textToTransfer);
-                    }, 500);
+                    }, 100);
             }
         }
     };
