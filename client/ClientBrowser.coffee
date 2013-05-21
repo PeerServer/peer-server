@@ -22,7 +22,9 @@ class window.ClientBrowser
     return @dataChannel.id
 
   # Finds the socket ID of the desired server through the url.
-  parseUrl: (pathname) =>
+  parseUrl: (locationObj) =>
+    pathname = locationObj.pathname
+    queryStr = locationObj.search
     if (pathname.indexOf("connect") == -1)
       console.error "Error: pathname does not contain 'connect'"
     suffix = pathname.substr("/connect/".length) # Get everything after "connect/"
@@ -34,7 +36,14 @@ class window.ClientBrowser
         startPage = suffix.substr(suffix.indexOf("/") + 1)
     else
       serverId = suffix
-    return [serverId, startPage]
+    result = startPage
+    if queryStr
+      result += queryStr
+    result = startPage + queryStr
+    if not result or result == "null"
+      result = ""
+    console.log "result: " + result
+    return [serverId, result]
 
   sendEvent: (eventName, data) =>
     @eventTransmitter.sendEvent(@dataChannel, eventName, data)
@@ -50,12 +59,14 @@ class window.ClientBrowser
     @eventTransmitter.addEventCallback "initialLoad", (data) =>
       if startPage # Ignore the initial file and request the start page
         startPage = @htmlProcessor.removeTrailingSlash(startPage)
-        @htmlProcessor.requestFile(startPage, "initialLoad") # Same behavior as if user just clicked on the link
+        # Same behavior as if user just clicked on the link
+        @htmlProcessor.requestFile(startPage, "initialLoad")
       else # Load in the default start page.
-        console.log "no start", data
         @setDocumentElementInnerHTML(data, "initialLoadDefault")
 
-    @eventTransmitter.addEventCallback("receiveFile", @htmlProcessor.receiveFile)
+    @eventTransmitter.addEventCallback("receiveFile",
+      @htmlProcessor.receiveFile)
+    @eventTransmitter.addEventCallback("receiveAjax", @ajaxClient.receiveAjax)
     
   setDocumentElementInnerHTML: (data, optionalInfo)=>
     html = data.fileContents
@@ -66,9 +77,14 @@ class window.ClientBrowser
       window.history.pushState({"path": path}, fullPath, fullPath)
       console.log window.history.state
     @documentElement.innerHTML = ""
-    @htmlProcessor.processHTML html, (processedHTML, scriptMapping) =>
-      @documentElement.innerHTML = processedHTML
-      @executeScriptsCallback(scriptMapping)
+    if data.fileType is "IMG"
+      # Serve up a single image
+      @htmlProcessor.processImageAsHTML html, (processedHTML) =>
+        @documentElement.innerHTML = processedHTML
+    else
+      @htmlProcessor.processHTML html, (processedHTML, scriptMapping) =>
+        @documentElement.innerHTML = processedHTML
+        @executeScriptsCallback(scriptMapping)
       
   # Needed since innerHTML does not run scripts.
   # Inspired by:
