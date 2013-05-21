@@ -74,7 +74,7 @@
     };
 
     WebRTC.prototype.parseUrl = function(locationObj) {
-      var pathname, queryStr, serverId, slashIndex, startPage, suffix;
+      var pathname, queryStr, result, serverId, slashIndex, startPage, suffix;
       pathname = locationObj.pathname;
       queryStr = locationObj.search;
       if (pathname.indexOf("connect") === -1) {
@@ -91,7 +91,16 @@
       } else {
         serverId = suffix;
       }
-      return [serverId, startPage + queryStr];
+      result = startPage;
+      if (queryStr) {
+        result += queryStr;
+      }
+      result = startPage + queryStr;
+      if (!result || result === "null") {
+        result = "";
+      }
+      console.log("result: " + result);
+      return [serverId, result];
     };
 
     WebRTC.prototype.createDataChannel = function() {

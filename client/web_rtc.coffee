@@ -57,7 +57,14 @@ class window.WebRTC
         startPage = suffix.substr(suffix.indexOf("/") + 1)
     else
       serverId = suffix
-    return [serverId, startPage + queryStr]
+    result = startPage
+    if queryStr
+      result += queryStr
+    result = startPage + queryStr
+    if not result or result == "null"
+      result = ""
+    console.log "result: " + result
+    return [serverId, result]
 
   # Set up events for new data channel
   createDataChannel: =>

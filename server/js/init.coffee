@@ -3,6 +3,8 @@
 $(document).ready ->
   # Initialize global state
   serverFileCollection = new ServerFileCollection()
-  appView = new AppView(collection: serverFileCollection)
-  window.webRTC = new WebRTC(serverFileCollection, appView.setClientBrowserLink)
+  routeCollection = new RouteCollection()
+
+  appView = new AppView(serverFileCollection: serverFileCollection, routeCollection: routeCollection)
+  window.webRTC = new WebRTC(serverFileCollection, routeCollection, appView.setClientBrowserLink)
 

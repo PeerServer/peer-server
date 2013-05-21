@@ -7,7 +7,7 @@
 
 class window.WebRTC
   # Become a clientServer and set up events.
-  constructor: (@serverFileCollection, @setClientBrowserLink) ->
+  constructor: (@serverFileCollection, @routeCollection, @setClientBrowserLink) ->
     @browserConnections = {}
     @dataChannels = {}
 
@@ -116,15 +116,16 @@ class window.WebRTC
       console.log "Received bad ajax request: no path requested"
       return
 
-    path = data['path']
+    path = data['path'] || ""
     paramData = data.options.data
     if typeof(paramData) is "string"
       paramData = URI.parseQuery(paramData)  # TODO test
 
     console.log paramData
+    route = "/" + path
 
     # Check for 404s
-    if not @serverFileCollection.hasFile(path)
+    if not @serverFileCollection.hasFile(path) and not @routeCollection.hasRoute(route)
       # TODO: not just do nothing here
       console.log "Path not found"
       return
@@ -135,7 +136,7 @@ class window.WebRTC
       response['requestId'] = data['requestId']
 
     response['path'] = path
-    response['contents'] = @getContentsForPath(path)
+    response['contents'] = @getContentsForPath(path, paramData)
     
     console.log "Transmitting ajax response"
     console.log response
@@ -143,13 +144,13 @@ class window.WebRTC
 
   serveFile: (data) =>
     console.log "FILENAME: " + data.filename
-    rawPath = data.filename
-    [path, params] = @parsePath(rawPath)
+    rawPath = data.filename || ""
+    [path, paramData] = @parsePath(rawPath)
     console.log "Parsed path: " + path
     console.log "PARAMS: "
-    console.log params
-
-    if not @serverFileCollection.hasFile(path)
+    console.log paramData
+    route = "/" + path
+    if not @serverFileCollection.hasFile(path) and not @routeCollection.hasRoute(route)
       page404 = @serverFileCollection.get404Page()
       console.error "Error: Client requested " + rawPath + " which does not exist on server."
       @sendEventTo(data.socketId, "receiveFile", {
@@ -162,20 +163,31 @@ class window.WebRTC
 
     @sendEventTo(data.socketId, "receiveFile", {
       filename: rawPath,
-      fileContents: @getContentsForPath(path),
+      fileContents: @getContentsForPath(path, paramData),
       type: data.type,
       fileType: @serverFileCollection.getFileType(path)
     })
 
   parsePath: (fullPath) =>
+    if not fullPath or fullPath == ""
+      return ["", {}]
     pathDetails = URI.parse(fullPath)
     params = URI.parseQuery(pathDetails.query)
     console.log params
     return [pathDetails.path, params]
 
   # TODO handle leading slash and  handle "./file" -- currently breaks
-  getContentsForPath: (path) =>
-    if @serverFileCollection.isDynamic(path)
+  getContentsForPath: (path, paramData) =>
+    route = "/" + path
+    if @routeCollection.hasRoute(route)
+      # TODO flesh out with params, etc.
+      results = 
+      runRoute = =>
+        serverFileCollection = @serverFileCollection
+        params = paramData
+        eval(@routeCollection.getRouteCode(route))
+      return runRoute()
+    if @serverFileCollection.isDynamic(path)  # TODO replace with routecollection
       return @evalDynamic(@serverFileCollection.getContents(path))
     return @serverFileCollection.getContents(path)
 
@@ -185,7 +197,6 @@ class window.WebRTC
   evalDynamic: (js) =>
     console.log "evalDynamic"
     exe = =>
-      serverFileCollection = @serverFileCollection
       eval(js)
 
     return exe()

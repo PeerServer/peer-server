@@ -5,14 +5,15 @@
 
   window.WebRTC = (function() {
 
-    function WebRTC(serverFileCollection, setClientBrowserLink) {
+    function WebRTC(serverFileCollection, routeCollection, setClientBrowserLink) {
       var _this = this;
       this.serverFileCollection = serverFileCollection;
+      this.routeCollection = routeCollection;
       this.setClientBrowserLink = setClientBrowserLink;
       this.evalDynamic = function(js) {
         return WebRTC.prototype.evalDynamic.apply(_this, arguments);
       };
-      this.getContentsForPath = function(path) {
+      this.getContentsForPath = function(path, paramData) {
         return WebRTC.prototype.getContentsForPath.apply(_this, arguments);
       };
       this.parsePath = function(fullPath) {
@@ -162,20 +163,21 @@
     };
 
     WebRTC.prototype.serveAjax = function(data) {
-      var paramData, path, response;
+      var paramData, path, response, route;
       console.log("Got an ajax request");
       console.log(data);
       if (!('path' in data)) {
         console.log("Received bad ajax request: no path requested");
         return;
       }
-      path = data['path'];
+      path = data['path'] || "";
       paramData = data.options.data;
       if (typeof paramData === "string") {
         paramData = URI.parseQuery(paramData);
       }
       console.log(paramData);
-      if (!this.serverFileCollection.hasFile(path)) {
+      route = "/" + path;
+      if (!this.serverFileCollection.hasFile(path) && !this.routeCollection.hasRoute(route)) {
         console.log("Path not found");
         return;
       }
@@ -184,21 +186,22 @@
         response['requestId'] = data['requestId'];
       }
       response['path'] = path;
-      response['contents'] = this.getContentsForPath(path);
+      response['contents'] = this.getContentsForPath(path, paramData);
       console.log("Transmitting ajax response");
       console.log(response);
       return this.sendEventTo(data.socketId, "receiveAjax", response);
     };
 
     WebRTC.prototype.serveFile = function(data) {
-      var page404, params, path, rawPath, _ref;
+      var page404, paramData, path, rawPath, route, _ref;
       console.log("FILENAME: " + data.filename);
-      rawPath = data.filename;
-      _ref = this.parsePath(rawPath), path = _ref[0], params = _ref[1];
+      rawPath = data.filename || "";
+      _ref = this.parsePath(rawPath), path = _ref[0], paramData = _ref[1];
       console.log("Parsed path: " + path);
       console.log("PARAMS: ");
-      console.log(params);
-      if (!this.serverFileCollection.hasFile(path)) {
+      console.log(paramData);
+      route = "/" + path;
+      if (!this.serverFileCollection.hasFile(path) && !this.routeCollection.hasRoute(route)) {
         page404 = this.serverFileCollection.get404Page();
         console.error("Error: Client requested " + rawPath + " which does not exist on server.");
         this.sendEventTo(data.socketId, "receiveFile", {
@@ -211,7 +214,7 @@
       }
       return this.sendEventTo(data.socketId, "receiveFile", {
         filename: rawPath,
-        fileContents: this.getContentsForPath(path),
+        fileContents: this.getContentsForPath(path, paramData),
         type: data.type,
         fileType: this.serverFileCollection.getFileType(path)
       });
@@ -219,13 +222,28 @@
 
     WebRTC.prototype.parsePath = function(fullPath) {
       var params, pathDetails;
+      if (!fullPath || fullPath === "") {
+        return ["", {}];
+      }
       pathDetails = URI.parse(fullPath);
       params = URI.parseQuery(pathDetails.query);
       console.log(params);
       return [pathDetails.path, params];
     };
 
-    WebRTC.prototype.getContentsForPath = function(path) {
+    WebRTC.prototype.getContentsForPath = function(path, paramData) {
+      var results, route, runRoute,
+        _this = this;
+      route = "/" + path;
+      if (this.routeCollection.hasRoute(route)) {
+        results = runRoute = function() {
+          var params, serverFileCollection;
+          serverFileCollection = _this.serverFileCollection;
+          params = paramData;
+          return eval(_this.routeCollection.getRouteCode(route));
+        };
+        return runRoute();
+      }
       if (this.serverFileCollection.isDynamic(path)) {
         return this.evalDynamic(this.serverFileCollection.getContents(path));
       }
@@ -237,8 +255,6 @@
         _this = this;
       console.log("evalDynamic");
       exe = function() {
-        var serverFileCollection;
-        serverFileCollection = _this.serverFileCollection;
         return eval(js);
       };
       return exe();

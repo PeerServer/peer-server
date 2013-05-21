@@ -19,9 +19,12 @@
 
     AppView.prototype.el = "#client-server";
 
-    AppView.prototype.initialize = function() {
-      return this.serverFileCollectionView = new ServerFileCollectionView({
-        collection: this.collection
+    AppView.prototype.initialize = function(options) {
+      this.serverFileCollectionView = new ServerFileCollectionView({
+        collection: options.serverFileCollection
+      });
+      return this.routeCollectionView = new RouteCollectionView({
+        collection: options.routeCollection
       });
     };
 

@@ -2,12 +2,14 @@
 (function() {
 
   $(document).ready(function() {
-    var appView, serverFileCollection;
+    var appView, routeCollection, serverFileCollection;
     serverFileCollection = new ServerFileCollection();
+    routeCollection = new RouteCollection();
     appView = new AppView({
-      collection: serverFileCollection
+      serverFileCollection: serverFileCollection,
+      routeCollection: routeCollection
     });
-    return window.webRTC = new WebRTC(serverFileCollection, appView.setClientBrowserLink);
+    return window.webRTC = new WebRTC(serverFileCollection, routeCollection, appView.setClientBrowserLink);
   });
 
 }).call(this);
