@@ -12,7 +12,8 @@ class window.WebRTC
     @connection = io.connect(window.location.origin)
     # Looks at the URL, which must be of the form [host]/connect/[serverSocketId]/[optionalStartPage]
     # desired server is used both as a socket id for joining up via webRTC, as well as in the url path
-    [@desiredServer, startPage] = @parseUrl(window.location.pathname)
+    [@desiredServer, startPage] = @parseUrl(window.location)
+    console.log "START PAGE: " + startPage
     @connection.emit("joinAsClientBrowser", {"desiredServer": @desiredServer}) # Start becoming a clientBrowser
     @pathRoot = "/connect/" + @desiredServer + "/"
     # Handshake
@@ -42,7 +43,9 @@ class window.WebRTC
     return @socketId
 
   # Finds the socket ID of the desired server through the url.
-  parseUrl: (pathname) =>
+  parseUrl: (locationObj) =>
+    pathname = locationObj.pathname
+    queryStr = locationObj.search
     if (pathname.indexOf("connect") == -1)
       console.error "Error: pathname does not contain 'connect'"
     suffix = pathname.substr("/connect/".length)  # Get everything after "connect/"
@@ -54,7 +57,7 @@ class window.WebRTC
         startPage = suffix.substr(suffix.indexOf("/") + 1)
     else
       serverId = suffix
-    return [serverId, startPage]
+    return [serverId, startPage + queryStr]
 
   # Set up events for new data channel
   createDataChannel: =>

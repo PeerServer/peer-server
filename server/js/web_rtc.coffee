@@ -117,6 +117,11 @@ class window.WebRTC
       return
 
     path = data['path']
+    paramData = data.options.data
+    if typeof(paramData) is "string"
+      paramData = URI.parseQuery(paramData)  # TODO test
+
+    console.log paramData
 
     # Check for 404s
     if not @serverFileCollection.hasFile(path)
@@ -130,7 +135,6 @@ class window.WebRTC
       response['requestId'] = data['requestId']
 
     response['path'] = path
-
     response['contents'] = @getContentsForPath(path)
     
     console.log "Transmitting ajax response"
@@ -139,11 +143,15 @@ class window.WebRTC
 
   serveFile: (data) =>
     console.log "FILENAME: " + data.filename
-    path = data.filename
+    rawPath = data.filename
+    [path, params] = @parsePath(rawPath)
+    console.log "Parsed path: " + path
+    console.log "PARAMS: "
+    console.log params
 
     if not @serverFileCollection.hasFile(path)
       page404 = @serverFileCollection.get404Page()
-      console.error "Error: Client requested " + path + " which does not exist on server."
+      console.error "Error: Client requested " + rawPath + " which does not exist on server."
       @sendEventTo(data.socketId, "receiveFile", {
         filename: page404.filename,
         fileContents: page404.fileContents,
@@ -153,19 +161,23 @@ class window.WebRTC
       return
 
     @sendEventTo(data.socketId, "receiveFile", {
-      filename: path,
+      filename: rawPath,
       fileContents: @getContentsForPath(path),
       type: data.type,
       fileType: @serverFileCollection.getFileType(path)
     })
 
+  parsePath: (fullPath) =>
+    pathDetails = URI.parse(fullPath)
+    params = URI.parseQuery(pathDetails.query)
+    console.log params
+    return [pathDetails.path, params]
+
   # TODO handle leading slash and  handle "./file" -- currently breaks
   getContentsForPath: (path) =>
-    contents = ""
     if @serverFileCollection.isDynamic(path)
-      contents = @evalDynamic(@serverFileCollection.getContents(path))
-    else
-       contents = @serverFileCollection.getContents(path)
+      return @evalDynamic(@serverFileCollection.getContents(path))
+    return @serverFileCollection.getContents(path)
 
   # This method allows us to present an API to dynamic code before evaluating it
   # Currently, there is only 1 part of the API: the page's serverFileCollection

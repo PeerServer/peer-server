@@ -7,7 +7,8 @@ class window.FakeAjax
       @failure = options["failure"]
 
     console.log "success is now:" + @success
-    top.window.webRTC.ajaxClient.requestAjax(path, @success)
+    # TODO handle more of the ajax options specified at http://api.jquery.com/jQuery.ajax/
+    top.window.webRTC.ajaxClient.requestAjax(path, options, @success)
 
 
 # This code patches jquery so that the $.ajax method is redirected to the

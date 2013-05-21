@@ -35,7 +35,7 @@
       this.createDataChannel = function() {
         return WebRTC.prototype.createDataChannel.apply(_this, arguments);
       };
-      this.parseUrl = function(pathname) {
+      this.parseUrl = function(locationObj) {
         return WebRTC.prototype.parseUrl.apply(_this, arguments);
       };
       this.getSocketId = function() {
@@ -43,7 +43,8 @@
       };
       this.documentElement = documentElement;
       this.connection = io.connect(window.location.origin);
-      _ref = this.parseUrl(window.location.pathname), this.desiredServer = _ref[0], startPage = _ref[1];
+      _ref = this.parseUrl(window.location), this.desiredServer = _ref[0], startPage = _ref[1];
+      console.log("START PAGE: " + startPage);
       this.connection.emit("joinAsClientBrowser", {
         "desiredServer": this.desiredServer
       });
@@ -72,8 +73,10 @@
       return this.socketId;
     };
 
-    WebRTC.prototype.parseUrl = function(pathname) {
-      var serverId, slashIndex, startPage, suffix;
+    WebRTC.prototype.parseUrl = function(locationObj) {
+      var pathname, queryStr, serverId, slashIndex, startPage, suffix;
+      pathname = locationObj.pathname;
+      queryStr = locationObj.search;
       if (pathname.indexOf("connect") === -1) {
         console.error("Error: pathname does not contain 'connect'");
       }
@@ -88,7 +91,7 @@
       } else {
         serverId = suffix;
       }
-      return [serverId, startPage];
+      return [serverId, startPage + queryStr];
     };
 
     WebRTC.prototype.createDataChannel = function() {

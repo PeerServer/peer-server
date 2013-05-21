@@ -11,13 +11,13 @@
       this.receiveAjax = function(data) {
         return AJAXClient.prototype.receiveAjax.apply(_this, arguments);
       };
-      this.requestAjax = function(path, callback) {
+      this.requestAjax = function(path, options, callback) {
         return AJAXClient.prototype.requestAjax.apply(_this, arguments);
       };
       this.outstandingRequests = {};
     }
 
-    AJAXClient.prototype.requestAjax = function(path, callback) {
+    AJAXClient.prototype.requestAjax = function(path, options, callback) {
       var data, requestId;
       console.log("sending ajax request for path: " + path + " on socket id " + this.socketIdFcn());
       requestId = Math.random().toString(36).substr(2, 10);
@@ -33,7 +33,8 @@
       data = {
         "path": path,
         "socketId": this.socketIdFcn(),
-        "requestId": requestId
+        "requestId": requestId,
+        "options": options
       };
       console.log("sending ajax request:");
       console.log(data);

@@ -19,7 +19,7 @@
         this.failure = options["failure"];
       }
       console.log("success is now:" + this.success);
-      return top.window.webRTC.ajaxClient.requestAjax(path, this.success);
+      return top.window.webRTC.ajaxClient.requestAjax(path, options, this.success);
     };
 
     return FakeAjax;

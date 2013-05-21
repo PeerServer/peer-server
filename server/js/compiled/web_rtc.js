@@ -15,6 +15,9 @@
       this.getContentsForPath = function(path) {
         return WebRTC.prototype.getContentsForPath.apply(_this, arguments);
       };
+      this.parsePath = function(fullPath) {
+        return WebRTC.prototype.parsePath.apply(_this, arguments);
+      };
       this.serveFile = function(data) {
         return WebRTC.prototype.serveFile.apply(_this, arguments);
       };
@@ -159,7 +162,7 @@
     };
 
     WebRTC.prototype.serveAjax = function(data) {
-      var path, response;
+      var paramData, path, response;
       console.log("Got an ajax request");
       console.log(data);
       if (!('path' in data)) {
@@ -167,6 +170,11 @@
         return;
       }
       path = data['path'];
+      paramData = data.options.data;
+      if (typeof paramData === "string") {
+        paramData = URI.parseQuery(paramData);
+      }
+      console.log(paramData);
       if (!this.serverFileCollection.hasFile(path)) {
         console.log("Path not found");
         return;
@@ -183,12 +191,16 @@
     };
 
     WebRTC.prototype.serveFile = function(data) {
-      var page404, path;
+      var page404, params, path, rawPath, _ref;
       console.log("FILENAME: " + data.filename);
-      path = data.filename;
+      rawPath = data.filename;
+      _ref = this.parsePath(rawPath), path = _ref[0], params = _ref[1];
+      console.log("Parsed path: " + path);
+      console.log("PARAMS: ");
+      console.log(params);
       if (!this.serverFileCollection.hasFile(path)) {
         page404 = this.serverFileCollection.get404Page();
-        console.error("Error: Client requested " + path + " which does not exist on server.");
+        console.error("Error: Client requested " + rawPath + " which does not exist on server.");
         this.sendEventTo(data.socketId, "receiveFile", {
           filename: page404.filename,
           fileContents: page404.fileContents,
@@ -198,21 +210,26 @@
         return;
       }
       return this.sendEventTo(data.socketId, "receiveFile", {
-        filename: path,
+        filename: rawPath,
         fileContents: this.getContentsForPath(path),
         type: data.type,
         fileType: this.serverFileCollection.getFileType(path)
       });
     };
 
+    WebRTC.prototype.parsePath = function(fullPath) {
+      var params, pathDetails;
+      pathDetails = URI.parse(fullPath);
+      params = URI.parseQuery(pathDetails.query);
+      console.log(params);
+      return [pathDetails.path, params];
+    };
+
     WebRTC.prototype.getContentsForPath = function(path) {
-      var contents;
-      contents = "";
       if (this.serverFileCollection.isDynamic(path)) {
-        return contents = this.evalDynamic(this.serverFileCollection.getContents(path));
-      } else {
-        return contents = this.serverFileCollection.getContents(path);
+        return this.evalDynamic(this.serverFileCollection.getContents(path));
       }
+      return this.serverFileCollection.getContents(path);
     };
 
     WebRTC.prototype.evalDynamic = function(js) {

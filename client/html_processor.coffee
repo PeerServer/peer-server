@@ -51,6 +51,7 @@ class window.HTMLProcessor
   #   External anchor tags are handled by having them open in a new window ("_blank"). Another option
   #   here would be to have them open in the top window (ie, the main actual window rather than the frame)
   #   by using "target='_top'.
+  # TODO it might be worth making this more robust with identifying internal files.
   processLinks: =>
     elements = @container.find("a[href]")
     elements.each (index, el) =>

@@ -3,7 +3,7 @@ class window.AJAXClient
     # Do nothing
     @outstandingRequests = {}
   
-  requestAjax: (path, callback) =>
+  requestAjax: (path, options, callback) =>
     console.log "sending ajax request for path: " + path + " on socket id " + @socketIdFcn()
     requestId = Math.random().toString(36).substr(2,10)
 
@@ -20,6 +20,7 @@ class window.AJAXClient
       "path": path,
       "socketId": @socketIdFcn(),
       "requestId": requestId
+      "options": options
     }
 
     console.log "sending ajax request:"
