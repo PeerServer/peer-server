@@ -131,9 +131,12 @@ class window.WebRTC
 
     response['path'] = path
 
+
     if @serverFileCollection.isDynamic(path)
+      console.log "Is dynamic! " 
       response['contents'] = @evalDynamic(@serverFileCollection.getContents(path))
     else
+      console.log "not dynamic"
       response['contents'] = @serverFileCollection.getContents(path)
     
     console.log "Transmitting ajax response"
@@ -156,6 +159,7 @@ class window.WebRTC
       return
 
     responseContents = ""
+
     if @serverFileCollection.isDynamic(filename)
       responseContents = @evalDynamic(@serverFileCollection.getContents(filename))
     else
@@ -173,6 +177,7 @@ class window.WebRTC
   # Currently, there is only 1 part of the API: the page's serverFileCollection
   # is made available through a variable of that name.
   evalDynamic: (js) =>
+    console.log "evalDynamic"
     exe = =>
       serverFileCollection = @serverFileCollection
       eval(js)

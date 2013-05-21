@@ -57,6 +57,9 @@ class window.ServerFileCollection extends Backbone.Collection
     return fileType
 
   isDynamic: (filename) =>
+    # TODO direct comparison on filename is a temporary hack until the dynamic
+    #  file store is created and the isDynamic routine actually works.
+    return true if filename is "magic_eight_ball"
     return @findWhere(name: filename).isDynamic()
 
   getContents: (filename) =>

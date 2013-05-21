@@ -119,6 +119,9 @@
     };
 
     ServerFileCollection.prototype.isDynamic = function(filename) {
+      if (filename === "magic_eight_ball") {
+        return true;
+      }
       return this.findWhere({
         name: filename
       }).isDynamic();

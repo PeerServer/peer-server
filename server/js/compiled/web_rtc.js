@@ -174,8 +174,10 @@
       }
       response['path'] = path;
       if (this.serverFileCollection.isDynamic(path)) {
+        console.log("Is dynamic! ");
         response['contents'] = this.evalDynamic(this.serverFileCollection.getContents(path));
       } else {
+        console.log("not dynamic");
         response['contents'] = this.serverFileCollection.getContents(path);
       }
       console.log("Transmitting ajax response");
@@ -213,6 +215,7 @@
     WebRTC.prototype.evalDynamic = function(js) {
       var exe,
         _this = this;
+      console.log("evalDynamic");
       exe = function() {
         var serverFileCollection;
         serverFileCollection = _this.serverFileCollection;
