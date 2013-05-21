@@ -29,6 +29,9 @@
       this.hasFile = function(filename) {
         return ServerFileCollection.prototype.hasFile.apply(_this, arguments);
       };
+      this.get404Page = function() {
+        return ServerFileCollection.prototype.get404Page.apply(_this, arguments);
+      };
       this.comparator = function(serverFile) {
         return ServerFileCollection.prototype.comparator.apply(_this, arguments);
       };
@@ -64,7 +67,7 @@
         name: "404.html",
         size: 0,
         type: "text/html",
-        contents: this.notFoundTemplate,
+        contents: this.template404,
         isRequired: true
       });
       this.add(index);
@@ -90,10 +93,34 @@
           type: "text/html"
         };
       } else {
+        console.error("ERROR: No index.html file exists in the file collection, may break when trying to use getters.");
         data = {
           fileContents: this.indexTemplate,
           filename: "index.html",
           type: "text/html"
+        };
+      }
+      return data;
+    };
+
+    ServerFileCollection.prototype.get404Page = function() {
+      var data, page;
+      page = this.find(function(serverFile) {
+        return serverFile.get("name") === "404.html" && serverFile.get("isProductionVersion");
+      });
+      console.log("get 404 page");
+      if (page) {
+        data = {
+          fileContents: page.get("contents"),
+          filename: page.get("name"),
+          type: page.get("fileType")
+        };
+      } else {
+        console.error("ERROR: No 404 file exists in the file collection, may break when trying to use getters.");
+        data = {
+          fileContents: this.template404,
+          filename: "404.html",
+          type: "HTML"
         };
       }
       return data;
@@ -173,7 +200,7 @@
 
     ServerFileCollection.prototype.indexTemplate = "<html>\n  <body>\n    Hello, world.\n  </body>\n</html>";
 
-    ServerFileCollection.prototype.notFoundTemplate = "<html>\n  <body>\n    404 - page not found\n  </body>\n</html>";
+    ServerFileCollection.prototype.template404 = "<html>\n  <body>\n    404 - page not found\n  </body>\n</html>";
 
     return ServerFileCollection;
 

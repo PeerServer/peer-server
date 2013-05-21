@@ -131,47 +131,41 @@ class window.WebRTC
 
     response['path'] = path
 
-
-    if @serverFileCollection.isDynamic(path)
-      console.log "Is dynamic! " 
-      response['contents'] = @evalDynamic(@serverFileCollection.getContents(path))
-    else
-      console.log "not dynamic"
-      response['contents'] = @serverFileCollection.getContents(path)
+    response['contents'] = @getContentsForPath(path)
     
     console.log "Transmitting ajax response"
     console.log response
     @sendEventTo(data.socketId, "receiveAjax", response)
 
   serveFile: (data) =>
-    # TODO handle leading slash and  handle "./file" -- currently breaks
-    filename = data.filename
+    console.log "FILENAME: " + data.filename
+    path = data.filename
 
-    console.log "FILENAME: " + filename
-
-    if not @serverFileCollection.hasFile(filename)
-      console.error "Error: Client requested " + filename + " which does not exist on server."
+    if not @serverFileCollection.hasFile(path)
+      page404 = @serverFileCollection.get404Page()
+      console.error "Error: Client requested " + path + " which does not exist on server."
       @sendEventTo(data.socketId, "receiveFile", {
-        filename: filename,
-        fileContents: "",
-        type: ""
+        filename: page404.filename,
+        fileContents: page404.fileContents,
+        fileType: page404.type,
+        type: data.type
       })
       return
 
-    responseContents = ""
-
-    if @serverFileCollection.isDynamic(filename)
-      responseContents = @evalDynamic(@serverFileCollection.getContents(filename))
-    else
-      responseContents = @serverFileCollection.getContents(filename)
-
     @sendEventTo(data.socketId, "receiveFile", {
-      filename: filename,
-      fileContents: responseContents,
-      type: data.type
-      fileType: @serverFileCollection.getFileType(filename)
+      filename: path,
+      fileContents: @getContentsForPath(path),
+      type: data.type,
+      fileType: @serverFileCollection.getFileType(path)
     })
 
+  # TODO handle leading slash and  handle "./file" -- currently breaks
+  getContentsForPath: (path) =>
+    contents = ""
+    if @serverFileCollection.isDynamic(path)
+      contents = @evalDynamic(@serverFileCollection.getContents(path))
+    else
+       contents = @serverFileCollection.getContents(path)
 
   # This method allows us to present an API to dynamic code before evaluating it
   # Currently, there is only 1 part of the API: the page's serverFileCollection

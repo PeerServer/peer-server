@@ -16,7 +16,7 @@ class window.ServerFileCollection extends Backbone.Collection
     # Initialize the collection with a index and 404 page (both required),
     # if the user's file collection is empty
     index = new ServerFile(name: "index.html", size: 0, type: "text/html", contents: @indexTemplate, isRequired: true)
-    notFound = new ServerFile(name: "404.html", size: 0, type: "text/html", contents: @notFoundTemplate, isRequired: true)
+    notFound = new ServerFile(name: "404.html", size: 0, type: "text/html", contents: @template404, isRequired: true)
     @add(index)
     @add(notFound)
     
@@ -39,11 +39,30 @@ class window.ServerFileCollection extends Backbone.Collection
         filename: landingPage.get("name"),
         type: "text/html"
     else
+      console.error("ERROR: No index.html file exists in the file collection, may break when trying to use getters.")
       data =
         fileContents: @indexTemplate,
         filename: "index.html",
         type: "text/html"
+    return data
 
+  get404Page: =>
+    # TODO -- getContents and getFileType etc depend on the 404.html page actually existing
+    #  in the file collection, which they always should.
+    page = @find (serverFile) ->
+      return serverFile.get("name") is "404.html" and serverFile.get("isProductionVersion")
+    console.log "get 404 page"
+    if page
+      data =
+        fileContents: page.get("contents"),
+        filename: page.get("name"),
+        type: page.get("fileType")
+    else
+      console.error("ERROR: No 404 file exists in the file collection, may break when trying to use getters.")
+      data =
+        fileContents: @template404,
+        filename: "404.html",
+        type: "HTML"
     return data
 
   hasFile: (filename) =>
@@ -100,7 +119,7 @@ class window.ServerFileCollection extends Backbone.Collection
       </html>
       """
 
-    notFoundTemplate: """
+    template404: """
       <html>
         <body>
           404 - page not found

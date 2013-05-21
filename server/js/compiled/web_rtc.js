@@ -12,6 +12,9 @@
       this.evalDynamic = function(js) {
         return WebRTC.prototype.evalDynamic.apply(_this, arguments);
       };
+      this.getContentsForPath = function(path) {
+        return WebRTC.prototype.getContentsForPath.apply(_this, arguments);
+      };
       this.serveFile = function(data) {
         return WebRTC.prototype.serveFile.apply(_this, arguments);
       };
@@ -173,43 +176,43 @@
         response['requestId'] = data['requestId'];
       }
       response['path'] = path;
-      if (this.serverFileCollection.isDynamic(path)) {
-        console.log("Is dynamic! ");
-        response['contents'] = this.evalDynamic(this.serverFileCollection.getContents(path));
-      } else {
-        console.log("not dynamic");
-        response['contents'] = this.serverFileCollection.getContents(path);
-      }
+      response['contents'] = this.getContentsForPath(path);
       console.log("Transmitting ajax response");
       console.log(response);
       return this.sendEventTo(data.socketId, "receiveAjax", response);
     };
 
     WebRTC.prototype.serveFile = function(data) {
-      var filename, responseContents;
-      filename = data.filename;
-      console.log("FILENAME: " + filename);
-      if (!this.serverFileCollection.hasFile(filename)) {
-        console.error("Error: Client requested " + filename + " which does not exist on server.");
+      var page404, path;
+      console.log("FILENAME: " + data.filename);
+      path = data.filename;
+      if (!this.serverFileCollection.hasFile(path)) {
+        page404 = this.serverFileCollection.get404Page();
+        console.error("Error: Client requested " + path + " which does not exist on server.");
         this.sendEventTo(data.socketId, "receiveFile", {
-          filename: filename,
-          fileContents: "",
-          type: ""
+          filename: page404.filename,
+          fileContents: page404.fileContents,
+          fileType: page404.type,
+          type: data.type
         });
         return;
       }
-      responseContents = "";
-      if (this.serverFileCollection.isDynamic(filename)) {
-        responseContents = this.evalDynamic(this.serverFileCollection.getContents(filename));
-      } else {
-        responseContents = this.serverFileCollection.getContents(filename);
-      }
       return this.sendEventTo(data.socketId, "receiveFile", {
-        filename: filename,
-        fileContents: responseContents,
+        filename: path,
+        fileContents: this.getContentsForPath(path),
         type: data.type,
-        fileType: this.serverFileCollection.getFileType(filename)
+        fileType: this.serverFileCollection.getFileType(path)
       });
+    };
+
+    WebRTC.prototype.getContentsForPath = function(path) {
+      var contents;
+      contents = "";
+      if (this.serverFileCollection.isDynamic(path)) {
+        return contents = this.evalDynamic(this.serverFileCollection.getContents(path));
+      } else {
+        return contents = this.serverFileCollection.getContents(path);
+      }
     };
 
     WebRTC.prototype.evalDynamic = function(js) {
