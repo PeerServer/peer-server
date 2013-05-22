@@ -27,6 +27,7 @@
       this.eventUploadFiles = __bind(this.eventUploadFiles, this);
       this.preventDefault = __bind(this.preventDefault, this);
       this.eventSaveChanges = __bind(this.eventSaveChanges, this);
+      this.eventKeyDown = __bind(this.eventKeyDown, this);
       this.eventDeleteFileConfirmed = __bind(this.eventDeleteFileConfirmed, this);
       this.eventDeleteFile = __bind(this.eventDeleteFile, this);
       this.eventRenameFile = __bind(this.eventRenameFile, this);
@@ -51,7 +52,8 @@
       this.collection.bind("add", this.addOne);
       this.collection.bind("reset", this.addAll);
       this.collection.bind("change", this.handleFileChanged);
-      return this.collection.bind("destroy", this.handleFileDeleted);
+      this.collection.bind("destroy", this.handleFileDeleted);
+      return $(window).keydown(this.eventKeyDown);
     };
 
     ServerFileCollectionView.prototype.events = {
@@ -150,6 +152,13 @@
         this.activeServerFileView.remove();
       }
       return this.activeServerFileView = null;
+    };
+
+    ServerFileCollectionView.prototype.eventKeyDown = function(event) {
+      if (event.which === 83 && (event.ctrlKey || event.metaKey)) {
+        this.eventSaveChanges();
+        return false;
+      }
     };
 
     ServerFileCollectionView.prototype.eventSaveChanges = function() {

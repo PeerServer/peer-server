@@ -26,6 +26,8 @@ class window.ServerFileCollectionView extends Backbone.View
     @collection.bind("change", @handleFileChanged)
     @collection.bind("destroy", @handleFileDeleted)
 
+    $(window).keydown(@eventKeyDown)
+
   events:
     "dragover .file-drop": "preventDefault"
     "drop .file-drop": "eventDropFiles"
@@ -107,6 +109,13 @@ class window.ServerFileCollectionView extends Backbone.View
     serverFile.destroy()
     @activeServerFileView.remove() if @activeServerFileView
     @activeServerFileView = null
+
+  eventKeyDown: (event) =>
+    # This condition evaluates to true if CTRL-s or CMD-s are pressed.
+    # (83 is the keyCode for "s")
+    if event.which is 83 and (event.ctrlKey or event.metaKey)
+      @eventSaveChanges()
+      return false
 
   eventSaveChanges: =>
     @collection.createProductionVersion()
