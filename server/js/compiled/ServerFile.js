@@ -56,7 +56,7 @@
         return ServerFile.fileTypeEnum.JS;
       }
       if (rawType === "application/dynamic") {
-        return ServerFile.fileTypeEnum.JS;
+        return ServerFile.fileTypeEnum.DYNAMIC;
       }
       return ServerFile.fileTypeEnum.NONE;
     };
@@ -70,3 +70,7 @@
   }).call(this, Backbone.Model);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFile.map
+*/

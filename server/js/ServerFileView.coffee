@@ -27,8 +27,9 @@ class window.ServerFileView extends Backbone.View
 
     editorMode = "ace/mode/html" # Default to HTML
     switch @model.get("fileType")
-      when ServerFile.fileTypeEnum.CSS  then editorMode = "ace/mode/css"
-      when ServerFile.fileTypeEnum.JS   then editorMode = "ace/mode/javascript"
+      when ServerFile.fileTypeEnum.CSS then editorMode = "ace/mode/css"
+      when ServerFile.fileTypeEnum.JS, \
+        ServerFile.fileTypeEnum.DYNAMIC then editorMode = "ace/mode/javascript"
     @aceEditor.getSession().setMode(editorMode)
 
     @aceEditor.on("change", @updateContents)

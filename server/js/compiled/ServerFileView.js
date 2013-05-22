@@ -46,6 +46,7 @@
           editorMode = "ace/mode/css";
           break;
         case ServerFile.fileTypeEnum.JS:
+        case ServerFile.fileTypeEnum.DYNAMIC:
           editorMode = "ace/mode/javascript";
       }
       this.aceEditor.getSession().setMode(editorMode);
@@ -66,3 +67,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFileView.map
+*/

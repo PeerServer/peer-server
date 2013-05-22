@@ -306,6 +306,9 @@
             break;
           case ServerFile.fileTypeEnum.IMG:
             section = this.$(".file-list.img");
+            break;
+          case ServerFile.fileTypeEnum.DYNAMIC:
+            section = this.$(".file-list.dynamic");
         }
       }
       if (section) {

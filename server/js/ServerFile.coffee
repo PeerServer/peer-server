@@ -37,8 +37,7 @@ class window.ServerFile extends Backbone.Model
     if rawType is "application/dynamic"
       # This is a new made-up mime type indicating javascript to be evaluated
       # on the server side
-      # TODO: change to DYNAMIC
-      return ServerFile.fileTypeEnum.JS
+      return ServerFile.fileTypeEnum.DYNAMIC
     return ServerFile.fileTypeEnum.NONE
 
   # Files for which this evaluates to true should never be served in plain text

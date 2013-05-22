@@ -205,10 +205,11 @@ class window.ServerFileCollectionView extends Backbone.View
       section = @$(".file-list.required")
     else
       switch serverFile.get("fileType")
-        when ServerFile.fileTypeEnum.HTML then section = @$(".file-list.html")
-        when ServerFile.fileTypeEnum.CSS  then section = @$(".file-list.css")
-        when ServerFile.fileTypeEnum.JS   then section = @$(".file-list.js")
-        when ServerFile.fileTypeEnum.IMG  then section = @$(".file-list.img")
+        when ServerFile.fileTypeEnum.HTML     then section = @$(".file-list.html")
+        when ServerFile.fileTypeEnum.CSS      then section = @$(".file-list.css")
+        when ServerFile.fileTypeEnum.JS       then section = @$(".file-list.js")
+        when ServerFile.fileTypeEnum.IMG      then section = @$(".file-list.img")
+        when ServerFile.fileTypeEnum.DYNAMIC  then section = @$(".file-list.dynamic")
 
     if section
       return section.append(listEl)
