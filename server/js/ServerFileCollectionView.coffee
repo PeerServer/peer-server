@@ -103,6 +103,10 @@ class window.ServerFileCollectionView extends Backbone.View
     return false
 
   eventUploadFiles: =>
+    @activeServerFileView.remove() if @activeServerFileView
+    @activeServerFileView = null
+    @fileLists.find(".dropdown-menu").hide()
+    @fileLists.find(".caret").hide()
     @$(".file-list li").removeClass("active")
     @fileViewContainer.hide()
     @uploadFilesRegion.show()

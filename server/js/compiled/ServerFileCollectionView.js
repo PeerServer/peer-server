@@ -145,6 +145,12 @@
     };
 
     ServerFileCollectionView.prototype.eventUploadFiles = function() {
+      if (this.activeServerFileView) {
+        this.activeServerFileView.remove();
+      }
+      this.activeServerFileView = null;
+      this.fileLists.find(".dropdown-menu").hide();
+      this.fileLists.find(".caret").hide();
       this.$(".file-list li").removeClass("active");
       this.fileViewContainer.hide();
       return this.uploadFilesRegion.show();
