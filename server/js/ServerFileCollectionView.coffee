@@ -1,5 +1,5 @@
-''' 
-  Display and organization of the user-uploaded file collection. 
+'''
+  Display and organization of the user-uploaded file collection.
   Edit/Done modes for saving.
 '''
 
@@ -8,18 +8,21 @@ class window.ServerFileCollectionView extends Backbone.View
   el: "#file-collection-view"
 
   initialize: (options) ->
-    @previousServerFileView = null
+    @activeServerFileView = null
 
     @fileViewContainer = @$("#file-view-container")
     @uploadFilesRegion = @$(".file-drop")
+    @fileLists = @$(".file-list")
     @saveChangesButton = @$(".save-changes")
     @tmplFileListItem = Handlebars.compile($("#file-list-item-template").html())
-    @tmplEditableFileListItem = Handlebars.compile($("#editable-file-list-item-template").html())
+    @tmplEditableFileListItem = Handlebars.compile(
+      $("#editable-file-list-item-template").html())
 
     @addAll()
     @collection.bind("add", @addOne)
     @collection.bind("reset", @addAll)
     @collection.bind("change", @handleFileChanged)
+    @collection.bind("destroy", @handleFileDeleted)
 
   events:
     "dragover .file-drop": "preventDefault"
@@ -30,7 +33,9 @@ class window.ServerFileCollectionView extends Backbone.View
     "keypress .file-list li[data-cid] input": "eventKeypressWhileRenaming"
     
     "click .file-list li[data-cid]": "eventSelectFile"
-    "dblclick .file-list li[data-cid]": "eventDoubleClickFile"
+    "click .file-list li[data-cid] .dropdown-menu .rename": "eventRenameFile"
+    "click .file-list li[data-cid] .dropdown-menu .delete": "eventDeleteFile"
+    "click .file-list .file-delete-confirmation .deletion-confirmed": "eventDeleteFileConfirmed"
     
     "click .save-changes": "eventSaveChanges"
     "click .upload-files": "eventUploadFiles"
@@ -39,14 +44,17 @@ class window.ServerFileCollectionView extends Backbone.View
     "click .create-menu .js": "eventCreateJS"
     "click .create-menu .css": "eventCreateCSS"
     "click .create-menu .dynamic": "eventCreateDynamic"
-    # "click .create-menu .template": "eventCreateTemplate"
-
+    # TODO "click .create-menu .template": "eventCreateTemplate"
+    
   addAll: =>
     @collection.each(@addOne)
 
   addOne: (serverFile) =>
     return if serverFile.get("isProductionVersion")
-    listEl = @tmplFileListItem(cid: serverFile.cid, name:serverFile.get("name"))
+    listEl = @tmplFileListItem(
+      cid: serverFile.cid,
+      name: serverFile.get("name"),
+      isRequired: serverFile.get("isRequired"))
     @appendItemToFileList(serverFile, listEl)
 
   eventSelectFile: (event) =>
@@ -54,18 +62,36 @@ class window.ServerFileCollectionView extends Backbone.View
     cid = target.attr("data-cid")
     serverFile = @collection.get(cid)
 
-    @uploadFilesRegion.hide()
-    @fileViewContainer.show()
+    if @activeServerFileView and @activeServerFileView.model is serverFile
+      target.find(".dropdown-menu").removeAttr("style")
+      target.addClass("open")
+    else
+      @fileLists.find(".dropdown-menu").hide()
+      @fileLists.find(".caret").hide()
 
-    @selectFile(serverFile, target)
+      @uploadFilesRegion.hide()
+      @fileViewContainer.show()
+
+      @selectFile(serverFile, target)
 
     return false
 
-  eventDoubleClickFile: (event) =>
-    target = $(event.currentTarget)
+  eventRenameFile: (event) =>
+    target = $(event.currentTarget).parents("li[data-cid]")
     serverFile = @collection.get(target.attr("data-cid"))
-    return if serverFile.get("isRequired")
     @editableFileName(serverFile, target)
+
+  eventDeleteFile: (event) =>
+    target = $(event.currentTarget).parents("li[data-cid]")
+    serverFile = @collection.get(target.attr("data-cid"))
+    @$(".file-delete-confirmation[data-cid=#{serverFile.cid}]").modal("show")
+
+  eventDeleteFileConfirmed: (event) =>
+    target = $(event.currentTarget)
+      .parents(".file-delete-confirmation[data-cid]")
+    serverFile = @collection.get(target.attr("data-cid"))
+    @$(".file-delete-confirmation[data-cid=#{serverFile.cid}]").modal("hide")
+    serverFile.destroy()
 
   eventSaveChanges: =>
     @collection.createProductionVersion()
@@ -101,13 +127,17 @@ class window.ServerFileCollectionView extends Backbone.View
 
     reader.onload = (evt) =>
       contents = evt.target.result  # Result of the text file.
-      serverFile = new ServerFile(name: file.name, size: file.size, type: file.type, contents: contents)
+      serverFile = new ServerFile(
+        name: file.name, size: file.size, type: file.type, contents: contents)
       @collection.add(serverFile)
       serverFile.save()
 
   handleFileChanged: =>
     @saveChangesButton.removeClass("disabled")
     @saveChangesButton.find("a").text("Save Changes")
+
+  handleFileDeleted: (deletedServerFile) =>
+    @$("[data-cid=#{deletedServerFile.cid}]").remove()
 
   # --- CREATION METHODS ---
   
@@ -141,7 +171,10 @@ class window.ServerFileCollectionView extends Backbone.View
     # TODO validate name
     serverFile.save(name: target.val())
     
-    newListEl = @tmplFileListItem(cid: serverFile.cid, name:serverFile.get("name"))
+    newListEl = @tmplFileListItem(
+      cid: serverFile.cid,
+      name: serverFile.get("name"),
+      isRequired: serverFile.get("isRequired"))
     newListEl = $($.parseHTML(newListEl))
     listEl.replaceWith(newListEl)
     @selectFile(serverFile, newListEl)
@@ -151,7 +184,8 @@ class window.ServerFileCollectionView extends Backbone.View
       @eventDoneNamingFile(event)
 
   editableFileName: (serverFile, listElToReplace) =>
-    listEl = @tmplEditableFileListItem(cid: serverFile.cid, name:serverFile.get("name"))
+    listEl = @tmplEditableFileListItem(
+      cid: serverFile.cid, name:serverFile.get("name"))
     if listElToReplace
       listEl = $($.parseHTML(listEl))
       listElToReplace.replaceWith(listEl)
@@ -180,10 +214,14 @@ class window.ServerFileCollectionView extends Backbone.View
     @$(".file-list li").removeClass("active")
     listEl.addClass("active")
 
-    @previousServerFileView.remove() if @previousServerFileView
+    caret = listEl.find(".caret")
+    caret.show()
+
+    @activeServerFileView.remove() if @activeServerFileView
     serverFileView = new ServerFileView(model: serverFile)
     @fileViewContainer.append(serverFileView.render().el)
-    @previousServerFileView = serverFileView
+    @activeServerFileView = serverFileView
 
-    @fileViewContainer.height($(window).height() - @fileViewContainer.offset().top)
+    @fileViewContainer.height(
+      $(window).height() - @fileViewContainer.offset().top)
 

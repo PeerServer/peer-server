@@ -4,7 +4,7 @@
     <title>Server</title>
 
     <script src="/shared/lib/jquery-2.0.0.js"></script>
-    
+
     <script src="/shared/lib/bootstrap.js"></script>
 
     <script src="/shared/lib/json2.js"></script>
@@ -47,9 +47,9 @@
     <div class="navbar">
       <div class="navbar-inner">
         <div class="container-fluid">
-          
+
           <a class="brand" href="#">Client Server</a>
-          
+
           <ul class="nav pull-right">
             <li><a class="browse" target="_blank">Browse</a></li>
             <li><a>Help</a></li>
@@ -74,7 +74,9 @@
               <li class="disabled save-changes"><a href="#">Save Changes</a></li>
 
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Create <b class="caret"></b></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  Create <b class="caret"></b>
+                </a>
                 <ul class="dropdown-menu create-menu">
                   <li class="html"><a href="#">HTML</a></li>
                   <li class="css"><a href="#">CSS</a></li>
@@ -133,7 +135,32 @@
       </script>
 
       <script id="file-list-item-template" type="text/x-handlebars-template">
-        <li data-cid="{{cid}}"><a href="#">{{name}}</a></li>
+        {{#if isRequired}}
+          <li data-cid="{{cid}}"><a href="#">{{name}}</a></li>
+        {{else}}
+          <li class="dropdown" data-cid="{{cid}}">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              {{name}} <b class="caret pull-right" style="display: none;"></b>
+            </a>
+            <ul class="dropdown-menu" style="display: none;">
+              <li class="rename"><a href="#">Rename</a></li>
+              <li class="delete"><a href="#">Delete</a></li>
+            </ul>
+            </li>
+
+            <div class="file-delete-confirmation modal hide" data-cid="{{cid}}">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>Are you sure that you want to delete {{name}}?</h3>
+              </div>
+              <div class="modal-body">
+              </div>
+              <div class="modal-footer">
+                <a href="#" class="btn" data-dismiss="modal">Cancel</a>
+                <a href="#" class="btn btn-danger deletion-confirmed">Delete {{name}}</a>
+              </div>
+            </div>
+          {{/if}}
       </script>
 
       <script id="editable-file-list-item-template" type="text/x-handlebars-template">
