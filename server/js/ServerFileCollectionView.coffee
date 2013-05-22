@@ -15,6 +15,8 @@ class window.ServerFileCollectionView extends Backbone.View
     @fileLists = @$(".file-list")
     @saveChangesButton = @$(".save-changes")
     @tmplFileListItem = Handlebars.compile($("#file-list-item-template").html())
+    @tmplFileDeleteConfirmation = Handlebars.compile(
+      $("#file-delete-confirmation-template").html())
     @tmplEditableFileListItem = Handlebars.compile(
       $("#editable-file-list-item-template").html())
 
@@ -35,7 +37,7 @@ class window.ServerFileCollectionView extends Backbone.View
     "click .file-list li[data-cid]": "eventSelectFile"
     "click .file-list li[data-cid] .dropdown-menu .rename": "eventRenameFile"
     "click .file-list li[data-cid] .dropdown-menu .delete": "eventDeleteFile"
-    "click .file-list .file-delete-confirmation .deletion-confirmed": "eventDeleteFileConfirmed"
+    "click .file-delete-confirmation .deletion-confirmed": "eventDeleteFileConfirmed"
     
     "click .save-changes": "eventSaveChanges"
     "click .upload-files": "eventUploadFiles"
@@ -84,14 +86,27 @@ class window.ServerFileCollectionView extends Backbone.View
   eventDeleteFile: (event) =>
     target = $(event.currentTarget).parents("li[data-cid]")
     serverFile = @collection.get(target.attr("data-cid"))
-    @$(".file-delete-confirmation[data-cid=#{serverFile.cid}]").modal("show")
+    
+    modal = @tmplFileDeleteConfirmation(
+      cid: serverFile.cid, name: serverFile.get("name"))
+    modal = $($.parseHTML(modal))
+    modal.appendTo(@el)
+
+    modal.modal(backdrop: true, show:true)
+    
+    modal.on "hide", () ->
+      modal.data("modal", null)
+      modal.remove()
+      $(".modal-backdrop").remove()
 
   eventDeleteFileConfirmed: (event) =>
     target = $(event.currentTarget)
       .parents(".file-delete-confirmation[data-cid]")
+    target.modal("hide")
     serverFile = @collection.get(target.attr("data-cid"))
-    @$(".file-delete-confirmation[data-cid=#{serverFile.cid}]").modal("hide")
     serverFile.destroy()
+    @activeServerFileView.remove() if @activeServerFileView
+    @activeServerFileView = null
 
   eventSaveChanges: =>
     @collection.createProductionVersion()

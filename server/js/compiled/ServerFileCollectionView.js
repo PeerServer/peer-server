@@ -45,6 +45,7 @@
       this.fileLists = this.$(".file-list");
       this.saveChangesButton = this.$(".save-changes");
       this.tmplFileListItem = Handlebars.compile($("#file-list-item-template").html());
+      this.tmplFileDeleteConfirmation = Handlebars.compile($("#file-delete-confirmation-template").html());
       this.tmplEditableFileListItem = Handlebars.compile($("#editable-file-list-item-template").html());
       this.addAll();
       this.collection.bind("add", this.addOne);
@@ -62,7 +63,7 @@
       "click .file-list li[data-cid]": "eventSelectFile",
       "click .file-list li[data-cid] .dropdown-menu .rename": "eventRenameFile",
       "click .file-list li[data-cid] .dropdown-menu .delete": "eventDeleteFile",
-      "click .file-list .file-delete-confirmation .deletion-confirmed": "eventDeleteFileConfirmed",
+      "click .file-delete-confirmation .deletion-confirmed": "eventDeleteFileConfirmed",
       "click .save-changes": "eventSaveChanges",
       "click .upload-files": "eventUploadFiles",
       "click .create-menu .html": "eventCreateHTML",
@@ -117,20 +118,38 @@
     };
 
     ServerFileCollectionView.prototype.eventDeleteFile = function(event) {
-      var serverFile, target;
+      var modal, serverFile, target;
 
       target = $(event.currentTarget).parents("li[data-cid]");
       serverFile = this.collection.get(target.attr("data-cid"));
-      return this.$(".file-delete-confirmation[data-cid=" + serverFile.cid + "]").modal("show");
+      modal = this.tmplFileDeleteConfirmation({
+        cid: serverFile.cid,
+        name: serverFile.get("name")
+      });
+      modal = $($.parseHTML(modal));
+      modal.appendTo(this.el);
+      modal.modal({
+        backdrop: true,
+        show: true
+      });
+      return modal.on("hide", function() {
+        modal.data("modal", null);
+        modal.remove();
+        return $(".modal-backdrop").remove();
+      });
     };
 
     ServerFileCollectionView.prototype.eventDeleteFileConfirmed = function(event) {
       var serverFile, target;
 
       target = $(event.currentTarget).parents(".file-delete-confirmation[data-cid]");
+      target.modal("hide");
       serverFile = this.collection.get(target.attr("data-cid"));
-      this.$(".file-delete-confirmation[data-cid=" + serverFile.cid + "]").modal("hide");
-      return serverFile.destroy();
+      serverFile.destroy();
+      if (this.activeServerFileView) {
+        this.activeServerFileView.remove();
+      }
+      return this.activeServerFileView = null;
     };
 
     ServerFileCollectionView.prototype.eventSaveChanges = function() {
