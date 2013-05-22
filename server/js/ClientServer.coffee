@@ -35,7 +35,7 @@ class window.ClientServer
     console.log "PARAMS: "
     console.log paramData
     route = "/" + path
-    if not @serverFileCollection.hasFile(path) and
+    if not @serverFileCollection.hasProductionFile(path) and
     not @routeCollection.hasRoute(route)
       page404 = @serverFileCollection.get404Page()
       console.error "Error: Client requested " + rawPath +
@@ -72,7 +72,7 @@ class window.ClientServer
     route = "/" + path
 
     # Check for 404s
-    if not @serverFileCollection.hasFile(path) and
+    if not @serverFileCollection.hasProductionFile(path) and
     not @routeCollection.hasRoute(route)
       # TODO: not just do nothing here
       console.log "Path not found"

@@ -21,7 +21,8 @@
       type: "",
       fileType: "",
       isProductionVersion: false,
-      isRequired: false
+      isRequired: false,
+      dateCreated: null
     };
 
     ServerFile.fileTypeEnum = {
@@ -35,7 +36,10 @@
 
     ServerFile.prototype.initialize = function() {
       this.on("change:type", this.updateFileType);
-      return this.updateFileType();
+      this.updateFileType();
+      if (this.get("dateCreated") === null) {
+        return this.set("dateCreated", new Date());
+      }
     };
 
     ServerFile.prototype.updateFileType = function() {

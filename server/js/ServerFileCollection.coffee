@@ -8,7 +8,40 @@ class window.ServerFileCollection extends Backbone.Collection
   localStorage: new Backbone.LocalStorage("ServerFileCollection")
 
   initialize: ->
+    @on("add", @onServerFileAdded)
     @fetch(success: @checkForNoFiles)
+
+  onServerFileAdded: (serverFile) =>
+    serverFilesWithName = @filter (otherServerFile) ->
+      return serverFile.get("name") is otherServerFile.get("name") \
+        and not serverFile.get("isProductionVersion") \
+        and not otherServerFile.get("isProductionVersion")
+
+    _.sortBy serverFilesWithName, (otherServerFile) ->
+      return otherServerFile.get("dateCreated")
+
+    numToAppend = 1
+    index = 1
+    while index < serverFilesWithName.length
+      filenameAndExtension = @filenameAndExtension(serverFile.get("name"))
+      newName = filenameAndExtension.filename +
+        "-" + numToAppend + filenameAndExtension.ext
+      if not @isFilenameInUse(newName)
+        serverFile.save("name", newName)
+        index++
+      numToAppend++
+      
+  isFilenameInUse: (filename) =>
+    result = @find (serverFile) ->
+      return serverFile.get("name") is filename \
+        and not serverFile.get("isProductionVersion")
+    return result isnt undefined
+
+  filenameAndExtension: (filename) =>
+    match = filename.match(/(.*)(\..*)$/)
+    if match isnt null and match.length is 3
+      return { filename: match[1], ext: match[2] }
+    return { filename: filename, ext: "" }
 
   checkForNoFiles: =>
     return if @length > 0
@@ -27,7 +60,8 @@ class window.ServerFileCollection extends Backbone.Collection
     @createProductionVersion()
 
   comparator: (serverFile) =>
-    return serverFile.get("name")
+    filenameAndExtension = @filenameAndExtension(serverFile.get("name"))
+    return filenameAndExtension.filename
 
   getLandingPage: ->
     landingPage = @find (serverFile) ->
@@ -65,8 +99,8 @@ class window.ServerFileCollection extends Backbone.Collection
         type: "HTML"
     return data
 
-  hasFile: (filename) =>
-    return @findWhere(name: filename)
+  hasProductionFile: (filename) =>
+    return @findWhere(name: filename, isProductionVersion: true)
 
   getFileType: (filename) =>
     serverFile = @findWhere(name: filename, isProductionVersion: true)

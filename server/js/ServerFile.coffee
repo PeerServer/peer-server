@@ -7,6 +7,7 @@ class window.ServerFile extends Backbone.Model
     fileType: ""
     isProductionVersion: false
     isRequired: false
+    dateCreated: null
 
   # TODO -- if these are updated to be static, note that there is a
   #  dependency on the client-side at least for images.
@@ -21,6 +22,9 @@ class window.ServerFile extends Backbone.Model
   initialize: ->
     @on("change:type", @updateFileType)
     @updateFileType()
+
+    if @get("dateCreated") is null
+      @set("dateCreated", new Date())
 
   updateFileType: =>
     @set("fileType", ServerFile.rawTypeToFileType(@get("type")))

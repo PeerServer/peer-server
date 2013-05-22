@@ -58,7 +58,7 @@
       console.log("PARAMS: ");
       console.log(paramData);
       route = "/" + path;
-      if (!this.serverFileCollection.hasFile(path) && !this.routeCollection.hasRoute(route)) {
+      if (!this.serverFileCollection.hasProductionFile(path) && !this.routeCollection.hasRoute(route)) {
         page404 = this.serverFileCollection.get404Page();
         console.error("Error: Client requested " + rawPath + " which does not exist on server.");
         this.sendEventTo(data.socketId, "receiveFile", {
@@ -93,7 +93,7 @@
       }
       console.log(paramData);
       route = "/" + path;
-      if (!this.serverFileCollection.hasFile(path) && !this.routeCollection.hasRoute(route)) {
+      if (!this.serverFileCollection.hasProductionFile(path) && !this.routeCollection.hasRoute(route)) {
         console.log("Path not found");
         return;
       }
