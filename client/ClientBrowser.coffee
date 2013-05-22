@@ -1,15 +1,20 @@
 class window.ClientBrowser
 
   constructor: (@documentElement) ->
-    # Looks at the URL, which must be of the form [host]/connect/[serverSocketId]/[optionalStartPage]
-    # desired server is used both as a socket id for joining up via webRTC, as well as in the url path
-    [@desiredServer, startPage] = @parseUrl(window.location.pathname)
+    # Looks at the URL, which must be of the form
+    # [host]/connect/[serverSocketId]/[optionalStartPage]
+    # desired server is used both as a socket id for joining up via webRTC,
+    # as well as in the url path
+    [@desiredServer, startPage] = @parseUrl(window.location)
     @pathRoot = "/connect/" + @desiredServer + "/"
 
     @eventTransmitter = new EventTransmitter()
-    @dataChannel = new ClientBrowserDataChannel(@channelOnOpen, @channelOnMessage, @desiredServer)
+    @dataChannel = new ClientBrowserDataChannel(
+      @channelOnOpen, @channelOnMessage, @desiredServer)
 
-    @htmlProcessor = new HTMLProcessor(@sendEvent, @setDocumentElementInnerHTML, @getID)
+    @htmlProcessor = new HTMLProcessor(
+      @sendEvent, @setDocumentElementInnerHTML, @getID)
+    @ajaxClient = new AJAXClient(@sendEvent, @getSocketId)
 
     @setUpReceiveEventCallbacks(startPage)
 
@@ -27,12 +32,14 @@ class window.ClientBrowser
     queryStr = locationObj.search
     if (pathname.indexOf("connect") == -1)
       console.error "Error: pathname does not contain 'connect'"
-    suffix = pathname.substr("/connect/".length) # Get everything after "connect/"
+    # Get everything after "connect/"
+    suffix = pathname.substr("/connect/".length)
     slashIndex = suffix.indexOf("/")
     startPage = null # Default start page, none specified
     if slashIndex != -1 # Strip out everything after the id if needed
       serverId = suffix.substr(0, slashIndex)
-      if slashIndex != (suffix.length - 1) # i.e., if there are characters following the slash
+      # i.e., if there are characters following the slash
+      if slashIndex != (suffix.length - 1)
         startPage = suffix.substr(suffix.indexOf("/") + 1)
     else
       serverId = suffix

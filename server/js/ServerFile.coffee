@@ -8,7 +8,7 @@ class window.ServerFile extends Backbone.Model
     isProductionVersion: false
     isRequired: false
 
-  # TODO -- if these are updated to be static, note that there is a 
+  # TODO -- if these are updated to be static, note that there is a
   #  dependency on the client-side at least for images.
   @fileTypeEnum:
     HTML: "HTML",
