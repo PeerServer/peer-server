@@ -5,12 +5,15 @@
 
 /* Load in dependencies */
 var config = require('getconfig'),
-    uuid = require('node-uuid'),
     http = require('http'),
     fs = require('fs');
 var app = require('express')();
 
-/* Create the real server for the app */
+/* Create the peer server for the app */
+var PeerServer = require('peer').PeerServer;
+var peerServer = new PeerServer({ port: 9000 });
+
+/* Create the file server for the app */
 var server = require('http').createServer(app);
 
 var port = process.env.PORT || config.server.port || 5000;
@@ -22,7 +25,7 @@ server.listen(port, function() {
 /* Static file mappings */
 app.param('filename');
 
-app.get('/server/', function(req, res) {
+app.get('/server', function(req, res) {
   res.sendfile(__dirname + '/server/index.html');
 });
 
@@ -59,27 +62,9 @@ app.get('/shared/:filename(*)', function(req, res) {
 //   res.sendfile(__dirname + '/test_files/bootstrap-example/' + filename);
 // });
 
-var PeerServer = require('peer').PeerServer;
-var server = new PeerServer({ port: 9000 });
-
 app.get("/", function(req, res) {
   res.sendfile(__dirname + '/home/index.html');
 })
-
-function onNewNamespace(socket, channel, sender) {
-  io.of('/' + channel).on("connection", function (socket) {
-    if (io.isConnected) {
-      io.isConnected = false;
-      socket.emit("connect", true);
-    }
-
-    socket.on("message", function (data) {
-      if (data.sender == sender)  {
-        socket.broadcast.emit("message", data.data);
-      }
-    });
-  });
-}
 
 /* Set UID of process from config if applicable */
 if (config.uid) {
