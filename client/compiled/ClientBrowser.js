@@ -12,14 +12,13 @@
       this.setDocumentElementInnerHTML = __bind(this.setDocumentElementInnerHTML, this);
       this.setUpReceiveEventCallbacks = __bind(this.setUpReceiveEventCallbacks, this);
       this.channelOnMessage = __bind(this.channelOnMessage, this);
-      this.channelOnOpen = __bind(this.channelOnOpen, this);
       this.sendEvent = __bind(this.sendEvent, this);
       this.parseUrl = __bind(this.parseUrl, this);
       this.getID = __bind(this.getID, this);
       _ref = this.parseUrl(window.location), this.desiredServer = _ref[0], startPage = _ref[1];
       this.pathRoot = "/connect/" + this.desiredServer + "/";
       this.eventTransmitter = new EventTransmitter();
-      this.dataChannel = new ClientBrowserDataChannel(this.channelOnOpen, this.channelOnMessage, this.desiredServer);
+      this.dataChannel = new ClientBrowserDataChannel(this.channelOnMessage, this.desiredServer);
       this.htmlProcessor = new HTMLProcessor(this.sendEvent, this.setDocumentElementInnerHTML, this.getID);
       this.ajaxClient = new AJAXClient(this.sendEvent, this.getSocketId);
       this.setUpReceiveEventCallbacks(startPage);
@@ -70,12 +69,7 @@
       return this.eventTransmitter.sendEvent(this.dataChannel, eventName, data);
     };
 
-    ClientBrowser.prototype.channelOnOpen = function() {
-      return console.log("channelOnOpen");
-    };
-
     ClientBrowser.prototype.channelOnMessage = function(message) {
-      console.log("channelOnMessage", message);
       return this.eventTransmitter.receiveEvent(message);
     };
 

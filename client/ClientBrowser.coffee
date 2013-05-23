@@ -10,7 +10,7 @@ class window.ClientBrowser
 
     @eventTransmitter = new EventTransmitter()
     @dataChannel = new ClientBrowserDataChannel(
-      @channelOnOpen, @channelOnMessage, @desiredServer)
+      @channelOnMessage, @desiredServer)
 
     @htmlProcessor = new HTMLProcessor(
       @sendEvent, @setDocumentElementInnerHTML, @getID)
@@ -55,11 +55,7 @@ class window.ClientBrowser
   sendEvent: (eventName, data) =>
     @eventTransmitter.sendEvent(@dataChannel, eventName, data)
 
-  channelOnOpen: =>
-    console.log "channelOnOpen"
-
   channelOnMessage: (message) =>
-    console.log "channelOnMessage", message
     @eventTransmitter.receiveEvent(message)
 
   setUpReceiveEventCallbacks: (startPage) =>

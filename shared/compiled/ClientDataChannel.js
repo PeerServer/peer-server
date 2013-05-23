@@ -3,92 +3,46 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   window.ClientDataChannel = (function() {
-    function ClientDataChannel(onOpenCallback, onMessageCallback) {
-      this.onOpenCallback = onOpenCallback;
+    function ClientDataChannel(onConnectionCallback, onMessageCallback) {
+      this.onConnectionCallback = onConnectionCallback;
       this.onMessageCallback = onMessageCallback;
-      this.dataChannelReady = __bind(this.dataChannelReady, this);
-      this.onFileReceived = __bind(this.onFileReceived, this);
-      this.onFileSent = __bind(this.onFileSent, this);
-      this.onFileProgress = __bind(this.onFileProgress, this);
-      this.onMessage = __bind(this.onMessage, this);
+      this.onData = __bind(this.onData, this);
+      this.onConnection = __bind(this.onConnection, this);
       this.onOpen = __bind(this.onOpen, this);
-      this.openSignalingChannel = __bind(this.openSignalingChannel, this);
-      this.initDataChannelCallbacks = __bind(this.initDataChannelCallbacks, this);
-      this.handleSetID = __bind(this.handleSetID, this);
-      this.getChannelByUserID = __bind(this.getChannelByUserID, this);
-      this.send = __bind(this.send, this);
-      this.dataChannel = new DataChannel();
-      this.socket = io.connect(document.location.origin);
-      this.socket.on("setID", this.handleSetID);
+      this.peer = new Peer({
+        key: 'rrvwvw4tuyxpqfr'
+      });
+      this.peer.on("open", this.onOpen);
+      this.peer.on("connection", this.onConnection);
     }
 
-    ClientDataChannel.prototype.send = function(message) {
-      return this.dataChannel.send(message);
-    };
-
-    ClientDataChannel.prototype.getChannelByUserID = function(userID) {
-      return this.dataChannel.channels[userID];
-    };
-
-    ClientDataChannel.prototype.handleSetID = function(id) {
+    ClientDataChannel.prototype.onOpen = function(id) {
       this.id = id;
-      this.dataChannel.userid = id;
-      this.initDataChannelCallbacks();
       return this.dataChannelReady();
     };
 
-    ClientDataChannel.prototype.initDataChannelCallbacks = function() {
-      this.dataChannel.openSignalingChannel = this.openSignalingChannel;
-      this.dataChannel.onmessage = this.onMessage;
-      this.dataChannel.onopen = this.onOpen;
-      this.dataChannel.onFileProgress = this.onFileProgress;
-      this.dataChannel.onFileSent = this.onFileSent;
-      return this.dataChannel.onFileReceived = this.onFileReceived;
-    };
+    ClientDataChannel.prototype.onConnection = function(connection) {
+      var _this = this;
 
-    ClientDataChannel.prototype.openSignalingChannel = function(config) {
-      var channel, channelSocket, sender;
-
-      channel = config.channel || this.dataChannel.channel;
-      sender = this.id;
-      io.connect(document.location.origin).emit("newDataChannel", {
-        channel: channel,
-        sender: sender
+      connection.on("open", function() {
+        return _this.onConnectionCallback(connection);
       });
-      channelSocket = io.connect(document.location.origin + "/" + channel);
-      channelSocket.channel = channel;
-      channelSocket.on("connect", function() {
-        if (config.callback) {
-          return config.callback(channelSocket);
-        }
+      return connection.on("data", function(data) {
+        return _this.onData(connection, data);
       });
-      channelSocket.send = function(message) {
-        return channelSocket.emit("message", {
-          sender: sender,
-          data: message
-        });
-      };
-      return channelSocket.on("message", config.onmessage);
     };
 
-    ClientDataChannel.prototype.onOpen = function() {
-      return this.onOpenCallback();
+    ClientDataChannel.prototype.onData = function(connection, data) {
+      console.log(connection, data);
+      return this.onMessageCallback(connection, data);
     };
-
-    ClientDataChannel.prototype.onMessage = function(message) {
-      return this.onMessageCallback(message);
-    };
-
-    ClientDataChannel.prototype.onFileProgress = function() {};
-
-    ClientDataChannel.prototype.onFileSent = function() {};
-
-    ClientDataChannel.prototype.onFileReceived = function() {};
-
-    ClientDataChannel.prototype.dataChannelReady = function() {};
 
     return ClientDataChannel;
 
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientDataChannel.map
+*/

@@ -1,10 +1,24 @@
-class window.ClientServerDataChannel extends ClientDataChannel
+class window.ClientServerDataChannel
 
-  constructor: (@onOpenCallback, @onMessageCallback, @onReady) ->
-    super(@onOpenCallback, @onMessageCallback)
-    @dataChannel.direction = "one-to-many"
+  constructor: (@onConnectionCallback, @onMessageCallback, @onReady) ->
+    @peer = new Peer(
+      host: location.hostname,
+      port: 9000,
+      config: { 'iceServers': [] })
+    
+    @peer.on("open", @onOpen)
+    @peer.on("connection", @onConnection)
 
-  dataChannelReady: =>
-    @dataChannel.open(@id)
+  onOpen: (id) =>
+    @id = id
     @onReady()
+
+  onConnection: (connection) =>
+    connection.on "open", () =>
+      @onConnectionCallback(connection)
+    connection.on "data", (data) =>
+      @onData(connection, data)
+
+  onData: (connection, data) =>
+    @onMessageCallback(connection, data)
 

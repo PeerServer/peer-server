@@ -63,25 +63,8 @@ app.get("/", function(req, res) {
   res.sendfile(__dirname + '/home/index.html');
 })
 
-/* Real server is notified when a browser attaches to it. 
-   socket = a user connecting to our real server. May become either a 
-   client server or client browser*/
-var io = require('socket.io');
-io = io.listen(server);
-
-io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});
-
-io.sockets.on("connection", function(socket) {
-
-  socket.emit("setID", uuid.v1());
-
-  socket.on("newDataChannel", function (data) {
-    onNewNamespace(socket, data.channel, data.sender);
-  });
-});
+var PeerServer = require('peer').PeerServer;
+var server = new PeerServer({ port: 9000 });
 
 function onNewNamespace(socket, channel, sender) {
   io.of('/' + channel).on("connection", function (socket) {

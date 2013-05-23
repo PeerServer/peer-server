@@ -14,29 +14,29 @@
       this.serveFile = __bind(this.serveFile, this);
       this.sendEventTo = __bind(this.sendEventTo, this);
       this.setUpReceiveEventCallbacks = __bind(this.setUpReceiveEventCallbacks, this);
-      this.channelOnMessage = __bind(this.channelOnMessage, this);
-      this.channelOnOpen = __bind(this.channelOnOpen, this);
+      this.channelConnectionOnData = __bind(this.channelConnectionOnData, this);
+      this.channelOnConnection = __bind(this.channelOnConnection, this);
       this.channelOnReady = __bind(this.channelOnReady, this);
       this.eventTransmitter = new EventTransmitter();
-      this.dataChannel = new ClientServerDataChannel(this.channelOnOpen, this.channelOnMessage, this.channelOnReady);
+      this.dataChannel = new ClientServerDataChannel(this.channelOnConnection, this.channelConnectionOnData, this.channelOnReady);
       this.setUpReceiveEventCallbacks();
+      this.clientBrowserConnections = {};
     }
 
     ClientServer.prototype.channelOnReady = function() {
       return this.appView.trigger("setServerID", this.dataChannel.id);
     };
 
-    ClientServer.prototype.channelOnOpen = function() {
+    ClientServer.prototype.channelOnConnection = function(connection) {
       var landingPage;
 
-      console.log("channelOnOpen");
       landingPage = this.serverFileCollection.getLandingPage();
-      return this.eventTransmitter.sendEvent(this.dataChannel, "initialLoad", landingPage);
+      this.clientBrowserConnections[connection.peer] = connection;
+      return this.eventTransmitter.sendEvent(connection, "initialLoad", landingPage);
     };
 
-    ClientServer.prototype.channelOnMessage = function(message) {
-      console.log("channelOnMessage", message);
-      return this.eventTransmitter.receiveEvent(message);
+    ClientServer.prototype.channelConnectionOnData = function(connection, data) {
+      return this.eventTransmitter.receiveEvent(data);
     };
 
     ClientServer.prototype.setUpReceiveEventCallbacks = function() {
@@ -44,8 +44,11 @@
       return this.eventTransmitter.addEventCallback("requestAjax", this.serveAjax);
     };
 
-    ClientServer.prototype.sendEventTo = function(userID, eventName, data) {
-      return this.eventTransmitter.sendEvent(this.dataChannel.getChannelByUserID(userID), eventName, data);
+    ClientServer.prototype.sendEventTo = function(socketId, eventName, data) {
+      var connection;
+
+      connection = this.clientBrowserConnections[socketId];
+      return this.eventTransmitter.sendEvent(connection, eventName, data);
     };
 
     ClientServer.prototype.serveFile = function(data) {

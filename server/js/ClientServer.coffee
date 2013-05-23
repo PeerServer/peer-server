@@ -3,29 +3,33 @@ class window.ClientServer
   constructor: (@serverFileCollection, @routeCollection, @appView) ->
     @eventTransmitter = new EventTransmitter()
     @dataChannel = new ClientServerDataChannel(
-      @channelOnOpen, @channelOnMessage, @channelOnReady)
-
+      @channelOnConnection, @channelConnectionOnData, @channelOnReady)
     @setUpReceiveEventCallbacks()
+
+    @clientBrowserConnections = {}
 
   channelOnReady: =>
     @appView.trigger("setServerID", @dataChannel.id)
 
-  channelOnOpen: =>
-    console.log "channelOnOpen"
+  channelOnConnection: (connection) =>
     landingPage = @serverFileCollection.getLandingPage()
-    @eventTransmitter.sendEvent(@dataChannel, "initialLoad", landingPage)
 
-  channelOnMessage: (message) =>
-    console.log "channelOnMessage", message
-    @eventTransmitter.receiveEvent(message)
+    # connection.peer is the id of the remote peer this connection
+    # is connected to
+    @clientBrowserConnections[connection.peer] = connection
+    
+    @eventTransmitter.sendEvent(connection, "initialLoad", landingPage)
+
+  channelConnectionOnData: (connection, data) =>
+    @eventTransmitter.receiveEvent(data)
 
   setUpReceiveEventCallbacks: =>
     @eventTransmitter.addEventCallback("requestFile", @serveFile)
     @eventTransmitter.addEventCallback("requestAjax", @serveAjax)
 
-  sendEventTo: (userID, eventName, data) =>
-    @eventTransmitter.sendEvent(@dataChannel.getChannelByUserID(userID),
-      eventName, data)
+  sendEventTo: (socketId, eventName, data) =>
+    connection = @clientBrowserConnections[socketId]
+    @eventTransmitter.sendEvent(connection, eventName, data)
 
   serveFile: (data) =>
     console.log "FILENAME: " + data.filename
