@@ -63,9 +63,6 @@ app.get("/", function(req, res) {
   res.sendfile(__dirname + '/home/index.html');
 })
 
-var PeerServer = require('peer').PeerServer;
-var server = new PeerServer({ port: 9000 });
-
 function onNewNamespace(socket, channel, sender) {
   io.of('/' + channel).on("connection", function (socket) {
     if (io.isConnected) {

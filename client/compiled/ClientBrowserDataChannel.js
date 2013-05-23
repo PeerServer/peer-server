@@ -10,10 +10,9 @@
       this.onData = __bind(this.onData, this);
       this.onOpen = __bind(this.onOpen, this);
       this.peer = new Peer({
-        host: location.hostname,
-        port: 9000,
+        key: "rrvwvw4tuyxpqfr",
         config: {
-          'iceServers': []
+          "iceServers": []
         }
       });
       this.peer.on("open", this.onOpen);

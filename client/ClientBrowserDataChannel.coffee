@@ -1,11 +1,7 @@
 class window.ClientBrowserDataChannel
 
   constructor: (@onMessageCallback, @desiredServer) ->
-    @peer = new Peer(
-      host: location.hostname,
-      port: 9000,
-      config: { 'iceServers': [] })
-    
+    @peer = new Peer(key: "rrvwvw4tuyxpqfr", config: { "iceServers": [] })
     @peer.on("open", @onOpen)
 
   onOpen: (id) =>
