@@ -60,7 +60,3 @@
   })(Backbone.View);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=RouteCollectionView.map
-*/

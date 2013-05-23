@@ -9,12 +9,22 @@
       this.send = __bind(this.send, this);
       this.onData = __bind(this.onData, this);
       this.onOpen = __bind(this.onOpen, this);
-      this.peer = new Peer({
-        key: "rrvwvw4tuyxpqfr",
-        config: {
-          "iceServers": []
-        }
-      });
+      if (isDevelopmentServer()) {
+        this.peer = new Peer({
+          host: location.hostname,
+          port: 9000,
+          config: {
+            'iceServers': []
+          }
+        });
+      } else {
+        this.peer = new Peer({
+          key: "rrvwvw4tuyxpqfr",
+          config: {
+            "iceServers": []
+          }
+        });
+      }
       this.peer.on("open", this.onOpen);
     }
 

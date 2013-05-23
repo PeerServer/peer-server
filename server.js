@@ -59,6 +59,9 @@ app.get('/shared/:filename(*)', function(req, res) {
 //   res.sendfile(__dirname + '/test_files/bootstrap-example/' + filename);
 // });
 
+var PeerServer = require('peer').PeerServer;
+var server = new PeerServer({ port: 9000 });
+
 app.get("/", function(req, res) {
   res.sendfile(__dirname + '/home/index.html');
 })

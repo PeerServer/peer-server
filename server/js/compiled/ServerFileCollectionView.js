@@ -368,7 +368,3 @@
   })(Backbone.View);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=ServerFileCollectionView.map
-*/

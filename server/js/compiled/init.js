@@ -13,7 +13,3 @@
   });
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=init.map
-*/
