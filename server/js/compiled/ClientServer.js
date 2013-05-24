@@ -35,7 +35,7 @@
       return this.eventTransmitter.sendEvent(connection, "initialLoad", landingPage);
     };
 
-    ClientServer.prototype.channelConnectionOnData = function(connection, data) {
+    ClientServer.prototype.channelConnectionOnData = function(data) {
       return this.eventTransmitter.receiveEvent(data);
     };
 
@@ -160,3 +160,7 @@
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServer.map
+*/
