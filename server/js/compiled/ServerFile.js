@@ -22,7 +22,8 @@
       fileType: "",
       isProductionVersion: false,
       isRequired: false,
-      dateCreated: null
+      dateCreated: null,
+      hasBeenEdited: false
     };
 
     ServerFile.fileTypeEnum = {
@@ -74,3 +75,7 @@
   }).call(this, Backbone.Model);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFile.map
+*/

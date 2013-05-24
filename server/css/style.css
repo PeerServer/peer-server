@@ -2,6 +2,19 @@ body {
   overflow: hidden;
 }
 
+#save-notification {
+  display: none;
+  position: fixed;
+  width: 600px;
+  margin-left: -300px;
+  left: 50%;
+  background: #FCEFD4;
+  text-align: center;
+  z-index: 9999;
+  border: 1px solid #FAE1C6;
+  border-radius: 0px 0px 10px 10px;
+}
+
 .main-pane {
   position: fixed;
   top: 40px;
