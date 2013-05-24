@@ -56,30 +56,27 @@
     </div>
 
 
-    <div id="client-server" class="container-fluid">
-
-      <div id="router-view">
-      </div>
+    <div id="client-server">
 
       <div id="file-collection-view">
-        <div class="row-fluid">
-          <div class="span3">
+        <div class="left-sidebar-container">
+          <div class="left-sidebar">
 
             <ul class="nav nav-tabs nav-stacked">
               <li class="disabled save-changes"><a href="#">Save Changes</a></li>
 
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                  Create <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu create-menu">
-                  <li class="html"><a href="#">HTML</a></li>
-                  <li class="css"><a href="#">CSS</a></li>
-                  <li class="js"><a href="#">JS</a></li>
-                  <li class="divider"></li>
-                  <li class="dynamic"><a href="#">Dynamic Path</a></li>
-                  <li class="template"><a href="#">Template</a></li>
-                </ul>
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                Create <b class="caret"></b>
+              </a>
+              <ul class="dropdown-menu create-menu">
+                <li class="html"><a href="#">HTML</a></li>
+                <li class="css"><a href="#">CSS</a></li>
+                <li class="js"><a href="#">JS</a></li>
+                <li class="divider"></li>
+                <li class="dynamic"><a href="#">Dynamic Path</a></li>
+                <li class="template"><a href="#">Template</a></li>
+              </ul>
               </li>
 
               <li class="upload-files"><a href="#">Upload Files</a></li>
@@ -122,19 +119,19 @@
             </div>
 
           </div>
+        </div>
 
-          <div class="span9">
-            <div id="file-view-container">
+        <div class="main-pane">
+          <div id="file-view-container">
+          </div>
+
+          <div class="file-drop well well-large">
+            <div class="file-drop-inner">
+              <h3>Drop files here</h3>
             </div>
-
-            <div class="file-drop well well-large">
-              <div class="file-drop-inner">
-                <h3>Drop files here</h3>
-              </div>
-            </div>
-
           </div>
         </div>
+
       </div>
 
       <script id="route-list-item-template" type="text/x-handlebars-template">
@@ -178,15 +175,11 @@
       </script>
 
       <script id="source-code-template" type="text/x-handlebars-template">
-        <div class="row-fluid">
-          <div class="file-contents"></div>
-        </div>
+        <div class="file-contents"></div>
       </script>
 
       <script id="image-template" type="text/x-handlebars-template">
-        <div class="row-fluid">
-          <img src=""></img>
-        </div>
+        <img src=""></img>
       </script>
 
     </div>

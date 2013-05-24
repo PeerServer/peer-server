@@ -27,6 +27,16 @@ class window.ServerFileCollectionView extends Backbone.View
     @collection.bind("destroy", @handleFileDeleted)
 
     $(window).keydown(@eventKeyDown)
+    $(window).resize(@render)
+
+    @render()
+
+  render: =>
+    @mainPane = @$(".main-pane")
+    @$(".left-sidebar-container").outerHeight($(window).height())
+    @$(".left-sidebar").outerHeight($(window).height())
+    @mainPane.height($(window).height() - @mainPane.position().top)
+    @mainPane.width($(window).width() - @mainPane.position().left)
 
   events:
     "dragover .file-drop": "preventDefault"
@@ -250,7 +260,4 @@ class window.ServerFileCollectionView extends Backbone.View
     serverFileView = new ServerFileView(model: serverFile)
     @fileViewContainer.append(serverFileView.render().el)
     @activeServerFileView = serverFileView
-
-    @fileViewContainer.height(
-      $(window).height() - @fileViewContainer.offset().top)
 

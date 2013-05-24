@@ -33,7 +33,8 @@
       this.eventRenameFile = __bind(this.eventRenameFile, this);
       this.eventSelectFile = __bind(this.eventSelectFile, this);
       this.addOne = __bind(this.addOne, this);
-      this.addAll = __bind(this.addAll, this);      _ref = ServerFileCollectionView.__super__.constructor.apply(this, arguments);
+      this.addAll = __bind(this.addAll, this);
+      this.render = __bind(this.render, this);      _ref = ServerFileCollectionView.__super__.constructor.apply(this, arguments);
       return _ref;
     }
 
@@ -53,7 +54,17 @@
       this.collection.bind("reset", this.addAll);
       this.collection.bind("change", this.handleFileChanged);
       this.collection.bind("destroy", this.handleFileDeleted);
-      return $(window).keydown(this.eventKeyDown);
+      $(window).keydown(this.eventKeyDown);
+      $(window).resize(this.render);
+      return this.render();
+    };
+
+    ServerFileCollectionView.prototype.render = function() {
+      this.mainPane = this.$(".main-pane");
+      this.$(".left-sidebar-container").outerHeight($(window).height());
+      this.$(".left-sidebar").outerHeight($(window).height());
+      this.mainPane.height($(window).height() - this.mainPane.position().top);
+      return this.mainPane.width($(window).width() - this.mainPane.position().left);
     };
 
     ServerFileCollectionView.prototype.events = {
@@ -359,8 +370,7 @@
         model: serverFile
       });
       this.fileViewContainer.append(serverFileView.render().el);
-      this.activeServerFileView = serverFileView;
-      return this.fileViewContainer.height($(window).height() - this.fileViewContainer.offset().top);
+      return this.activeServerFileView = serverFileView;
     };
 
     return ServerFileCollectionView;
@@ -368,3 +378,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFileCollectionView.map
+*/
