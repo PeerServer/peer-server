@@ -413,6 +413,9 @@
             break;
           case ServerFile.fileTypeEnum.IMG:
             section = this.imageFileList;
+            break;
+          default:
+            console.error("Error: Could not find proper place for file. " + serverFile.get("name"));
         }
       }
       if (section) {

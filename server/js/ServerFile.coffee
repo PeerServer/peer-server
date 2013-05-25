@@ -30,12 +30,13 @@ class window.ServerFile extends Backbone.Model
     @set("fileType", ServerFile.rawTypeToFileType(@get("type")))
 
   @rawTypeToFileType: (rawType) =>
-    if rawType in ["image/jpeg", "image/png"]
+    if rawType.indexOf("image") != -1
       return ServerFile.fileTypeEnum.IMG
-    if rawType is "text/html"
+    if rawType.indexOf("html") != -1 or rawType is "text/plain"
       return ServerFile.fileTypeEnum.HTML
-    if rawType is "text/css"
+    if rawType.indexOf("css") != -1
       return ServerFile.fileTypeEnum.CSS
-    if rawType is "application/x-javascript"
+    if rawType.indexOf("javascript") != -1
       return ServerFile.fileTypeEnum.JS
+    console.error "Unable to identify file type: " + rawType
 

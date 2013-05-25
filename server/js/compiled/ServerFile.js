@@ -46,18 +46,19 @@
     };
 
     ServerFile.rawTypeToFileType = function(rawType) {
-      if (rawType === "image/jpeg" || rawType === "image/png") {
+      if (rawType.indexOf("image") !== -1) {
         return ServerFile.fileTypeEnum.IMG;
       }
-      if (rawType === "text/html") {
+      if (rawType.indexOf("html") !== -1 || rawType === "text/plain") {
         return ServerFile.fileTypeEnum.HTML;
       }
-      if (rawType === "text/css") {
+      if (rawType.indexOf("css") !== -1) {
         return ServerFile.fileTypeEnum.CSS;
       }
-      if (rawType === "application/x-javascript") {
+      if (rawType.indexOf("javascript") !== -1) {
         return ServerFile.fileTypeEnum.JS;
       }
+      return console.error("Unable to identify file type: " + rawType);
     };
 
     return ServerFile;
