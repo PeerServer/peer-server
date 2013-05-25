@@ -31,6 +31,15 @@ class window.ClientServer
     connection = @clientBrowserConnections[socketId]
     @eventTransmitter.sendEvent(connection, eventName, data)
 
+  send404: (data) =>
+    page404 = @serverFileCollection.get404Page()
+    @sendEventTo(data.socketId, "receiveFile", {
+      filename: page404.filename,
+      fileContents: page404.fileContents,
+      fileType: page404.type,
+      type: data.type
+    })
+
   serveFile: (data) =>
     console.log "FILENAME: " + data.filename
     rawPath = data.filename || ""
@@ -40,26 +49,20 @@ class window.ClientServer
     console.log paramData
     slashedPath = "/" + path
     foundRoute = @routeCollection.findRouteForPath(slashedPath)  # Check if path mapping
-    console.log "FOUND ROUTE: "
-    console.log foundRoute
     if (foundRoute is null or foundRoute is undefined) and not @serverFileCollection.hasProductionFile(path)
-      page404 = @serverFileCollection.get404Page()
-      console.error "Error: Client requested " + rawPath +
-        " which does not exist on server."
-      @sendEventTo(data.socketId, "receiveFile", {
-        filename: page404.filename,
-        fileContents: page404.fileContents,
-        fileType: page404.type,
-        type: data.type
-      })
+      console.error "Error: Client requested " + rawPath + " which does not exist on server."
+      @send404(data, rawPath)
       return
-
     # TODO check if DYNAMIC is the right enum with serverfilecollection, which is being edited by brie now :)
     fileType = if foundRoute is null then @serverFileCollection.getFileType(path) else "DYNAMIC"
-
+    contents = @getContentsForPath(path, paramData, foundRoute)
+    if not contents or contents.length is 0
+      console.error "Error: Function evaluation for  " + rawPath + " generated an error, returning 404."
+      @send404(data, rawPath)
+      return
     @sendEventTo(data.socketId, "receiveFile", {
       filename: rawPath,
-      fileContents: @getContentsForPath(path, paramData, foundRoute),
+      fileContents: contents,
       type: data.type,
       fileType: fileType
     })
@@ -109,24 +112,32 @@ class window.ClientServer
     console.log params
     return [pathDetails.path, params]
 
+  # Returns the contents for the given path with the params. 
+  # foundRoute is an optional parameter that must be the corresponding dynamic path 
+  #   if the path is a dynamic path (ie, if the path is in the routecollection), or null 
+  #   if the path is a static file. 
+  # Returns either the html string, or null if none can be found.
+  #
   # TODO handle leading slash and handle "./file" -- currently breaks
   getContentsForPath: (path, paramData, foundRoute) =>
-    if foundRoute != null
-      slashedPath = "/" + path
-      # TODO flesh out with params, etc.
-      console.log "getting contents for path! "
-      console.log foundRoute.paramNames
-      match = slashedPath.match(foundRoute.pathRegex)
-      console.log "Matching given path " + slashedPath
-      console.log "with found path " + foundRoute.get("routePath")
-      console.log "and results are: " + match
-      runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), @serverFileCollection.getContents, @userDatabase.database)      
-      return runRoute()
+    if foundRoute is null or foundRoute is undefined
+      return @serverFileCollection.getContents(path)
+    # Otherwise, handle a dynamic path
+    slashedPath = "/" + path
+    # TODO flesh out with params, etc.
+    console.log "getting contents for path! "
+    console.log foundRoute.paramNames
+    match = slashedPath.match(foundRoute.pathRegex)
+    console.log "Matching given path " + slashedPath
+    console.log "with found path " + foundRoute.get("routePath")
+    console.log "and results are: " + match
+    runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), 
+      @serverFileCollection.getContents, @userDatabase.database)
+    return runRoute()
 
     # TODO replace this functionality (the code eval on ajax)
     # if @serverFileCollection.isDynamic(path) # TODO replace with routecollection
       # return @evalDynamic(@serverFileCollection.getContents(path))
-    return @serverFileCollection.getContents(path)
 
   # This method allows us to present an API to dynamic code before evaluating it
   # Currently, there is only 1 part of the API: the page's serverFileCollection

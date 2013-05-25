@@ -51,7 +51,11 @@ class window.Route extends Backbone.Model
       static_file = staticFileFcn
       render_template = (filename, context) =>
         return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context)
-      eval(text)
+      try
+        return eval(text)
+      catch error
+        console.log "Eval error: " + error
+        return null
     return fcn
 
   # Parses the route path into a list of ordered parameters.

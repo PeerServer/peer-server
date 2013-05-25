@@ -54,14 +54,20 @@
       text += JSON.stringify(urlParams) + ")";
       console.log("Function: " + text);
       fcn = function() {
-        var database, render_template, static_file;
+        var database, error, render_template, static_file;
 
         database = userDatabase;
         static_file = staticFileFcn;
         render_template = function(filename, context) {
           return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context);
         };
-        return eval(text);
+        try {
+          return eval(text);
+        } catch (_error) {
+          error = _error;
+          console.log("Eval error: " + error);
+          return null;
+        }
       };
       return fcn;
     };
