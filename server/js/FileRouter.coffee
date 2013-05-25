@@ -63,7 +63,7 @@ class window.Route extends Backbone.Model
       if isParamPart(part)
         paramNames.push(part.slice(1, -1))  # Remove start and end brackets
         regexParts.push("([^/]+)")  # Add a matching regex for this parameter
-      else 
+      else
         # TODO: Need to encode anything that is URL-safe but not regex-safe
         regexParts.push(part) # Add the part as a raw string to the regex
     @pathRegex = "^" + regexParts.join("/") + "/?$"  # Indifferent to trailing slash
@@ -83,12 +83,13 @@ class window.RouteCollection extends Backbone.Collection
   localStorage: new Backbone.LocalStorage("RouteCollection")
   
   initialize: ->
+    @fetch()
+
     indexRoute = new Route(name:"testing", routePath: "/test/<name>/<x>/<y>", routeCode: "var result = parseInt(x)+parseInt(y); return '<h1>hello ' + name + '!</h1><p> x= ' + x + ' plus y = ' + y + ' is ' + result + '</p><h2>' + params.animal + '!!</h2>'", isProductionVersion: true)
     @add(indexRoute)
     indexRouteDev = new Route(name:"testing", routePath: "/test/<name>/<x>/<y>", routeCode: "var result = parseInt(x)+parseInt(y); return '<h1>hello ' + name + '!</h1><p> x= ' + x + ' plus y = ' + y + ' is ' + result + '</p><h2>' + params.animal + '!!</h2>'", isProductionVersion: false)
     @add(indexRouteDev)
 
-    @fetch()
 
   comparator: (route) =>
     return route.get("routePath")
