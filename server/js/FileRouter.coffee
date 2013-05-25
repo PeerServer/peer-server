@@ -49,7 +49,8 @@ class window.Route extends Backbone.Model
     fcn = =>
       database = userDatabase
       static_file = staticFileFcn
-      # TODO expose database, templates when they exist.
+      render_template = (filename, context) =>
+        return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context)
       eval(text)
     return fcn
 
