@@ -15,8 +15,6 @@ class window.RouteCollectionView extends Backbone.View
     @collection.bind("add", @addOne)
     @collection.bind("reset", @addAll)
     @collection.bind("change", @handleFileChanged)
-    @collection.add(new Route(routePath: "/sth", routeCode: "(function() {return 'sth'})()", isRequired: true))
-
 
   addAll: =>
     @collection.each(@addOne)
