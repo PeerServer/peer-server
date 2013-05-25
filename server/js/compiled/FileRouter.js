@@ -14,11 +14,12 @@
     }
 
     Route.prototype.defaults = {
+      name: "",
       routePath: "",
       routeCode: "",
       options: {},
-      isRequired: false,
-      isProductionVersion: false
+      isProductionVersion: false,
+      hasBeenEdited: false
     };
 
     Route.prototype.initialize = function() {};
@@ -31,6 +32,7 @@
     __extends(RouteCollection, _super);
 
     function RouteCollection() {
+      this.createProductionVersion = __bind(this.createProductionVersion, this);
       this.getRouteCode = __bind(this.getRouteCode, this);
       this.hasRoute = __bind(this.hasRoute, this);
       this.comparator = __bind(this.comparator, this);      _ref1 = RouteCollection.__super__.constructor.apply(this, arguments);
@@ -39,15 +41,10 @@
 
     RouteCollection.prototype.model = Route;
 
-    RouteCollection.prototype.initialize = function() {
-      var indexRoute;
+    RouteCollection.prototype.localStorage = new Backbone.LocalStorage("RouteCollection");
 
-      indexRoute = new Route({
-        routePath: "/test",
-        routeCode: "'test page: ' + params.q",
-        isRequired: true
-      });
-      return this.add(indexRoute);
+    RouteCollection.prototype.initialize = function() {
+      return this.fetch();
     };
 
     RouteCollection.prototype.comparator = function(route) {
@@ -57,7 +54,8 @@
     RouteCollection.prototype.hasRoute = function(routePath) {
       console.log("route path: " + routePath);
       return this.findWhere({
-        routePath: routePath
+        routePath: routePath,
+        isProductionVersion: true
       });
     };
 
@@ -67,8 +65,37 @@
       }).get("routeCode");
     };
 
+    RouteCollection.prototype.createProductionVersion = function() {
+      var developmentFiles, productionFiles,
+        _this = this;
+
+      productionFiles = this.where({
+        isProductionVersion: true
+      });
+      _.each(productionFiles, function(route) {
+        return route.destroy();
+      });
+      developmentFiles = this.where({
+        isProductionVersion: false
+      });
+      return _.each(developmentFiles, function(route) {
+        var attrs, copy;
+
+        attrs = _.clone(route.attributes);
+        attrs.id = null;
+        copy = new Route(attrs);
+        copy.set("isProductionVersion", true);
+        _this.add(copy);
+        return copy.save();
+      });
+    };
+
     return RouteCollection;
 
   })(Backbone.Collection);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=FileRouter.map
+*/

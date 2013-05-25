@@ -17,7 +17,6 @@ class window.ServerFile extends Backbone.Model
     CSS: "CSS",
     JS: "JS",
     IMG: "IMG",
-    DYNAMIC: "DYNAMIC",
     NONE: "NONE"
 
   initialize: ->
@@ -39,13 +38,4 @@ class window.ServerFile extends Backbone.Model
       return ServerFile.fileTypeEnum.CSS
     if rawType is "application/x-javascript"
       return ServerFile.fileTypeEnum.JS
-    if rawType is "application/dynamic"
-      # This is a new made-up mime type indicating javascript to be evaluated
-      # on the server side
-      return ServerFile.fileTypeEnum.DYNAMIC
-    return ServerFile.fileTypeEnum.NONE
-
-  # Files for which this evaluates to true should never be served in plain text
-  isDynamic: =>
-    return @get("type") is "application/dynamic"
 

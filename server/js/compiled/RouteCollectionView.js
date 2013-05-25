@@ -16,7 +16,7 @@
       return _ref;
     }
 
-    RouteCollectionView.prototype.el = "#router-view";
+    RouteCollectionView.prototype.el = "#file-collection-view";
 
     RouteCollectionView.prototype.initialize = function(options) {
       $("#router-view").append("Routes:");
@@ -60,3 +60,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=RouteCollectionView.map
+*/

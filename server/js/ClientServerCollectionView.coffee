@@ -4,28 +4,49 @@
 '''
 
 
-class window.ServerFileCollectionView extends Backbone.View
-  el: "#file-collection-view"
+class window.ClientServerCollectionView extends Backbone.View
+  el: "#client-server-collection-view"
 
   initialize: (options) ->
-    @activeServerFileView = null
+    @serverFileCollection = options.serverFileCollection
+    @routeCollection = options.routeCollection
+
+    @activeView = null
 
     @fileViewContainer = @$("#file-view-container")
+    @routeViewContainer = @$("#route-view-container")
     @uploadFilesRegion = @$(".file-drop")
-    @fileLists = @$(".file-list")
     @saveNotification = $("#save-notification").miniNotification(show: false)
 
-    @tmplFileListItem = Handlebars.compile($("#file-list-item-template").html())
+    @fileLists = @$(".file-list")
+    @requiredFileList = @$(".file-list.required")
+    @htmlFileList = @$(".file-list.html")
+    @cssFileList = @$(".file-list.css")
+    @jsFileList = @$(".file-list.js")
+    @imageFileList = @$(".file-list.img")
+    @dynamicFileList = @$(".file-list.dynamic")
+
+    @tmplServerFileListItem = Handlebars.compile($("#file-list-item-template").html())
+    @tmplRouteListItem = Handlebars.compile($("#route-list-item-template").html())
     @tmplFileDeleteConfirmation = Handlebars.compile(
       $("#file-delete-confirmation-template").html())
     @tmplEditableFileListItem = Handlebars.compile(
       $("#editable-file-list-item-template").html())
 
     @addAll()
-    @collection.bind("add", @addOne)
-    @collection.bind("reset", @addAll)
-    @collection.bind("change:contents", @handleFileChanged)
-    @collection.bind("destroy", @handleFileDeleted)
+    
+    @serverFileCollection.bind("add", @addOneServerFile)
+    @serverFileCollection.bind("reset", @addAll)
+    @serverFileCollection.bind("change:contents", @handleFileChanged)
+    @serverFileCollection.bind("destroy", @handleFileDeleted)
+
+    @routeCollection.bind("add", @addOneRoute)
+    @routeCollection.bind("reset", @addAll)
+    @routeCollection.bind("change:routePath", @handleFileChanged)
+    @routeCollection.bind("change:routeCode", @handleFileChanged)
+    @routeCollection.bind("change:name", @handleFileChanged)
+    @routeCollection.bind("change:name", @handleRouteNameChange)
+    @routeCollection.bind("destroy", @handleFileDeleted)
 
     $(window).keydown(@eventKeyDown)
     $(window).resize(@render)
@@ -64,51 +85,70 @@ class window.ServerFileCollectionView extends Backbone.View
 
   showInitialSaveNotification: =>
     shouldShow = false
-    @collection.forEachDevelopmentFile (devFile) ->
+    @serverFileCollection.forEachDevelopmentFile (devFile) ->
       if devFile.get("hasBeenEdited")
         shouldShow = true
+
+    # TODO routes
 
     if shouldShow
       @saveNotification.show()
     
   addAll: =>
-    @collection.each(@addOne)
+    @serverFileCollection.each(@addOneServerFile)
+    @routeCollection.each(@addOneRoute)
 
-  addOne: (serverFile) =>
+  addOneServerFile: (serverFile) =>
     return if serverFile.get("isProductionVersion")
-    listEl = @tmplFileListItem(
+    listEl = @tmplServerFileListItem(
       cid: serverFile.cid,
       name: serverFile.get("name"),
       isRequired: serverFile.get("isRequired"))
-    @appendItemToFileList(serverFile, listEl)
+    @appendServerFileToFileList(serverFile, listEl)
+
+  addOneRoute: (route) =>
+    return if route.get("isProductionVersion")
+    listEl = @tmplRouteListItem(cid: route.cid, name: route.get("name"))
+    @dynamicFileList.append(listEl)
 
   eventSelectFile: (event) =>
     target = $(event.currentTarget)
     cid = target.attr("data-cid")
-    serverFile = @collection.get(cid)
 
-    if @activeServerFileView and @activeServerFileView.model is serverFile
-      target.find(".dropdown-menu").removeAttr("style")
-      target.addClass("open")
-    else
-      @fileLists.find(".dropdown-menu").hide()
-      @fileLists.find(".caret").hide()
+    serverFile = @serverFileCollection.get(cid)
+    route = @routeCollection.get(cid)
 
+    if serverFile
+      if @activeView and @activeView.model is serverFile
+        target.find(".dropdown-menu").removeAttr("style")
+        target.addClass("open")
+      else
+        @fileLists.find(".dropdown-menu").hide()
+        @fileLists.find(".caret").hide()
+
+        @uploadFilesRegion.hide()
+        @routeViewContainer.hide()
+        @fileViewContainer.show()
+
+        @selectServerFile(serverFile, target)
+
+    else if route
       @uploadFilesRegion.hide()
-      @fileViewContainer.show()
-
-      @selectFile(serverFile, target)
+      @fileViewContainer.hide()
+      @routeViewContainer.show()
+      @selectRoute(route, target)
 
     return false
 
   eventRenameFile: (event) =>
     target = $(event.currentTarget).parents("li[data-cid]")
-    serverFile = @collection.get(target.attr("data-cid"))
+    serverFile = @serverFileCollection.get(target.attr("data-cid"))
     @editableFileName(serverFile, target)
 
   eventDeleteFile: (event) =>
     target = $(event.currentTarget).parents("li[data-cid]")
-    serverFile = @collection.get(target.attr("data-cid"))
+    serverFile = @serverFileCollection.get(target.attr("data-cid"))
+    # TODO delete for route
     
     modal = @tmplFileDeleteConfirmation(
       cid: serverFile.cid, name: serverFile.get("name"))
@@ -126,10 +166,10 @@ class window.ServerFileCollectionView extends Backbone.View
     target = $(event.currentTarget)
       .parents(".file-delete-confirmation[data-cid]")
     target.modal("hide")
-    serverFile = @collection.get(target.attr("data-cid"))
+    serverFile = @serverFileCollection.get(target.attr("data-cid"))
     serverFile.destroy()
-    @activeServerFileView.remove() if @activeServerFileView
-    @activeServerFileView = null
+    @activeView.remove() if @activeView
+    @activeView = null
 
   eventKeyDown: (event) =>
     # This condition evaluates to true if CTRL-s or CMD-s are pressed.
@@ -139,18 +179,20 @@ class window.ServerFileCollectionView extends Backbone.View
       return false
 
   eventSaveChanges: =>
-    @collection.forEachDevelopmentFile (devFile) ->
+    @serverFileCollection.forEachDevelopmentFile (devFile) ->
       devFile.save(hasBeenEdited: false)
+    # TODO for routes
     @saveNotification.hide()
-    @collection.createProductionVersion()
+    @serverFileCollection.createProductionVersion()
+    @routeCollection.createProductionVersion()
 
   preventDefault: (event) =>
     event.preventDefault()
     return false
 
   eventUploadFiles: =>
-    @activeServerFileView.remove() if @activeServerFileView
-    @activeServerFileView = null
+    @activeView.remove() if @activeView
+    @activeView = null
     @fileLists.find(".dropdown-menu").hide()
     @fileLists.find(".caret").hide()
     @$(".file-list li").removeClass("active")
@@ -179,15 +221,18 @@ class window.ServerFileCollectionView extends Backbone.View
       contents = evt.target.result  # Result of the text file.
       serverFile = new ServerFile(
         name: file.name, size: file.size, type: file.type, contents: contents)
-      @collection.add(serverFile)
+      @serverFileCollection.add(serverFile)
       serverFile.save()
 
-  handleFileChanged: (serverFile) =>
-    serverFile.save(hasBeenEdited: true)
+  handleFileChanged: (model) =>
+    model.save(hasBeenEdited: true)
     @saveNotification.show()
 
-  handleFileDeleted: (deletedServerFile) =>
-    @$("[data-cid=#{deletedServerFile.cid}]").remove()
+  handleRouteNameChange: (route) =>
+    @$("li[data-cid=#{route.cid}] a").text(route.get("name"))
+
+  handleFileDeleted: (model) =>
+    @$("[data-cid=#{model.cid}]").remove()
 
   # --- CREATION METHODS ---
   
@@ -198,18 +243,17 @@ class window.ServerFileCollectionView extends Backbone.View
   eventCreateJS: =>
     serverFile = new ServerFile(type: "application/x-javascript")
     @createFile(serverFile)
-  
-  eventCreateDynamic: =>
-    serverFile = new ServerFile(type: "application/dynamic")
-    @createFile(serverFile)
 
   eventCreateCSS: =>
     serverFile = new ServerFile(type: "text/css")
     @createFile(serverFile)
 
   createFile: (serverFile) =>
-    @collection.add(serverFile, silent: true)
+    @serverFileCollection.add(serverFile, silent: true)
     @editableFileName(serverFile, null)
+
+  eventCreateDynamic: =>
+    @routeCollection.add(new Route())
 
   # --- EDITING METHODS ---
 
@@ -217,17 +261,17 @@ class window.ServerFileCollectionView extends Backbone.View
     target = $(event.currentTarget)
     listEl = target.parents("li[data-cid]")
 
-    serverFile = @collection.get(listEl.attr("data-cid"))
+    serverFile = @serverFileCollection.get(listEl.attr("data-cid"))
     # TODO validate name
     serverFile.save(name: target.val())
     
-    newListEl = @tmplFileListItem(
+    newListEl = @tmplServerFileListItem(
       cid: serverFile.cid,
       name: serverFile.get("name"),
       isRequired: serverFile.get("isRequired"))
     newListEl = $($.parseHTML(newListEl))
     listEl.replaceWith(newListEl)
-    @selectFile(serverFile, newListEl)
+    @selectServerFile(serverFile, newListEl)
 
   eventKeypressWhileRenaming: (event) =>
     if event.keyCode is 13
@@ -240,36 +284,41 @@ class window.ServerFileCollectionView extends Backbone.View
       listEl = $($.parseHTML(listEl))
       listElToReplace.replaceWith(listEl)
     else
-      listEl = @appendItemToFileList(serverFile, listEl)
+      listEl = @appendServerFileToFileList(serverFile, listEl)
     listEl.find("input").focus()
 
   # --- HELPER METHODS ---
   
-  appendItemToFileList: (serverFile, listEl) =>
+  appendServerFileToFileList: (serverFile, listEl) =>
     section = null
     if serverFile.get("isRequired")
-      section = @$(".file-list.required")
+      section = @requiredFileList
     else
       switch serverFile.get("fileType")
-        when ServerFile.fileTypeEnum.HTML     then section = @$(".file-list.html")
-        when ServerFile.fileTypeEnum.CSS      then section = @$(".file-list.css")
-        when ServerFile.fileTypeEnum.JS       then section = @$(".file-list.js")
-        when ServerFile.fileTypeEnum.IMG      then section = @$(".file-list.img")
-        when ServerFile.fileTypeEnum.DYNAMIC  then section = @$(".file-list.dynamic")
+        when ServerFile.fileTypeEnum.HTML     then section = @htmlFileList
+        when ServerFile.fileTypeEnum.CSS      then section = @cssFileList
+        when ServerFile.fileTypeEnum.JS       then section = @jsFileList
+        when ServerFile.fileTypeEnum.IMG      then section = @imageFileList
 
     if section
       return section.append(listEl)
     return null
 
-  selectFile: (serverFile, listEl) =>
+  select: (listEl, view) =>
     @$(".file-list li").removeClass("active")
     listEl.addClass("active")
+    listEl.find(".caret").show()
 
-    caret = listEl.find(".caret")
-    caret.show()
+    @activeView.remove() if @activeView
+    @activeView = view
 
-    @activeServerFileView.remove() if @activeServerFileView
+  selectServerFile: (serverFile, listEl) =>
     serverFileView = new ServerFileView(model: serverFile)
+    @select(listEl, serverFileView)
     @fileViewContainer.append(serverFileView.render().el)
-    @activeServerFileView = serverFileView
+
+  selectRoute: (route, listEl) =>
+    routeView = new RouteView(model: route)
+    @select(listEl, routeView)
+    @routeViewContainer.append(routeView.render().el)
 

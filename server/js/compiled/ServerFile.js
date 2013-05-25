@@ -9,7 +9,6 @@
     __extends(ServerFile, _super);
 
     function ServerFile() {
-      this.isDynamic = __bind(this.isDynamic, this);
       this.updateFileType = __bind(this.updateFileType, this);      _ref = ServerFile.__super__.constructor.apply(this, arguments);
       return _ref;
     }
@@ -31,7 +30,6 @@
       CSS: "CSS",
       JS: "JS",
       IMG: "IMG",
-      DYNAMIC: "DYNAMIC",
       NONE: "NONE"
     };
 
@@ -60,14 +58,6 @@
       if (rawType === "application/x-javascript") {
         return ServerFile.fileTypeEnum.JS;
       }
-      if (rawType === "application/dynamic") {
-        return ServerFile.fileTypeEnum.DYNAMIC;
-      }
-      return ServerFile.fileTypeEnum.NONE;
-    };
-
-    ServerFile.prototype.isDynamic = function() {
-      return this.get("type") === "application/dynamic";
     };
 
     return ServerFile;

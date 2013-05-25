@@ -36,7 +36,8 @@ body {
   width: 295px;  
 }
 
-#file-view-container {
+#file-view-container,
+#route-view-container {
   height: 100%;
 }
 
@@ -61,7 +62,10 @@ body {
 
 #file-view-container > div,
 #file-view-container .row-fluid, 
-#file-view-container .file-contents {
+#file-view-container .file-contents,
+#route-view-container > div,
+#route-view-container .row-fluid, 
+#route-view-container .code {
   height: 100%
 }
 
