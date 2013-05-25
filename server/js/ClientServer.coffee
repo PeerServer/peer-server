@@ -31,78 +31,69 @@ class window.ClientServer
     connection = @clientBrowserConnections[socketId]
     @eventTransmitter.sendEvent(connection, eventName, data)
 
-  send404: (data) =>
-    page404 = @serverFileCollection.get404Page()
-    @sendEventTo(data.socketId, "receiveFile", {
-      filename: page404.filename,
-      fileContents: page404.fileContents,
-      fileType: page404.type,
-      type: data.type
-    })
+  # The client-browser requested a file or path that resulted in an error. 
+  # The file might not exist, or evaluating the path may result in an error
+  #  due to the user writing broken server code for the path.
+  sendFailure: (data, errorMessage) =>
+    if data.type is "ajax"
+      response = {
+        fileContents: "",
+        type: data.type, 
+        textStatus: "error"
+        errorThrown: errorMessage
+        requestId: data.requestId
+      }
+    else
+      page404 = @serverFileCollection.get404Page()
+      response =  {
+        filename: page404.filename,
+        fileContents: page404.fileContents,
+        fileType: page404.type,
+        type: data.type
+        errorMessage: errorMessage
+      }
+    @sendEventTo(data.socketId, "receiveFile", response)
 
   serveFile: (data) =>
     console.log "FILENAME: " + data.filename
     rawPath = data.filename || ""
     [path, paramData] = @parsePath(rawPath)
+    if data.type is "ajax" and data.options.data
+      # Merge in any extra parameters passed with the ajax request. 
+      if typeof(data.options.data) is "string"
+        extraParams = URI.parseQuery(paramData) # TODO test, should return object mapping of get params in data.options.data
+      else 
+        extraParams = data.options.data
+      for name, val of extraParams
+        paramData[name] = val
     console.log "Parsed path: " + path
     console.log "PARAMS: "
     console.log paramData
     slashedPath = "/" + path
-    foundRoute = @routeCollection.findRouteForPath(slashedPath)  # Check if path mapping
+    foundRoute = @routeCollection.findRouteForPath(slashedPath)  
+    # Check if path mapping or a static file for this path exists -- otherwise send failure
     if (foundRoute is null or foundRoute is undefined) and not @serverFileCollection.hasProductionFile(path)
       console.error "Error: Client requested " + rawPath + " which does not exist on server."
-      @send404(data, rawPath)
+      @sendFailure(data, "Not found")
       return
     # TODO check if DYNAMIC is the right enum with serverfilecollection, which is being edited by brie now :)
     fileType = if foundRoute is null then @serverFileCollection.getFileType(path) else "DYNAMIC"
     contents = @getContentsForPath(path, paramData, foundRoute)
+    # Check if following the path results in valid contents -- otherwise send failure
     if not contents or contents.length is 0
       console.error "Error: Function evaluation for  " + rawPath + " generated an error, returning 404."
-      @send404(data, rawPath)
+      @sendFailure(data, "Internal server error")
       return
-    @sendEventTo(data.socketId, "receiveFile", {
+    # Construct the response to send with the contents
+    response = {
       filename: rawPath,
       fileContents: contents,
       type: data.type,
       fileType: fileType
-    })
-
-  # TODO handle all this code duplication. Especially since it is buggy from the AJAX.
-  # Make it basically identical to serve file / integrate the request id into serve file.
-  # serveAjax: (data) =>
-  #   console.log "Got an ajax request"
-  #   console.log data
-
-  #   if 'path' not of data
-  #     console.log "Received bad ajax request: no path requested"
-  #     return
-
-  #   path = data['path'] || ""
-  #   paramData = data.options.data
-  #   if typeof(paramData) is "string"
-  #     paramData = URI.parseQuery(paramData) # TODO test
-
-  #   console.log paramData
-  #   slashedPath = "/" + path
-  #   foundRoute = @routeCollection.findRouteForPath(slashedPath)
-
-  #   # Check for 404s
-  #   if not @serverFileCollection.hasProductionFile(path) and not foundRoute
-  #     # TODO: not just do nothing here
-  #     console.log "Path not found"
-  #     return
-
-  #   # Assemble a response
-  #   response = {}
-  #   if 'requestId' of data
-  #     response['requestId'] = data['requestId']
-
-  #   response['path'] = path
-  #   response['contents'] = @getContentsForPath(path, paramData, foundRoute)
-    
-  #   console.log "Transmitting ajax response"
-  #   console.log response
-  #   @sendEventTo(data.socketId, "receiveAjax", response)
+    }
+    if data.type is "ajax"
+      response.requestId = data.requestId
+    @sendEventTo(data.socketId, "receiveFile", response)
 
   parsePath: (fullPath) =>
     if not fullPath or fullPath == ""
@@ -134,17 +125,3 @@ class window.ClientServer
     runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), 
       @serverFileCollection.getContents, @userDatabase.database)
     return runRoute()
-
-    # TODO replace this functionality (the code eval on ajax)
-    # if @serverFileCollection.isDynamic(path) # TODO replace with routecollection
-      # return @evalDynamic(@serverFileCollection.getContents(path))
-
-  # This method allows us to present an API to dynamic code before evaluating it
-  # Currently, there is only 1 part of the API: the page's serverFileCollection
-  # is made available through a variable of that name.
-  evalDynamic: (js) =>
-    console.log "evalDynamic"
-    exe = =>
-      eval(js)
-
-    return exe()

@@ -154,11 +154,9 @@
         _this = this;
 
       matchedRoute = this.find(function(route) {
-        console.log("searching: ");
-        console.log(route);
-        console.log("matching: ");
-        console.log(routePath + " with " + route.pathRegex);
-        console.log(routePath.match(route.pathRegex));
+        if (routePath.match(route.pathRegex)) {
+          console.log("matched path: " + routePath + " with " + route.routePath);
+        }
         return route.get("isProductionVersion") && routePath.match(route.pathRegex) !== null;
       });
       return matchedRoute;

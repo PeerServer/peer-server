@@ -13,7 +13,6 @@
       this.forEachDevelopmentFile = __bind(this.forEachDevelopmentFile, this);
       this.createProductionVersion = __bind(this.createProductionVersion, this);
       this.getContents = __bind(this.getContents, this);
-      this.isDynamic = __bind(this.isDynamic, this);
       this.getFileType = __bind(this.getFileType, this);
       this.hasProductionFile = __bind(this.hasProductionFile, this);
       this.get404Page = __bind(this.get404Page, this);
@@ -187,15 +186,6 @@
       return fileType;
     };
 
-    ServerFileCollection.prototype.isDynamic = function(filename) {
-      if (filename === "magic_eight_ball") {
-        return true;
-      }
-      return this.findWhere({
-        name: filename
-      }).isDynamic();
-    };
-
     ServerFileCollection.prototype.getContents = function(filename) {
       var contents, serverFile;
 
@@ -229,6 +219,7 @@
         attrs = _.clone(serverFile.attributes);
         attrs.id = null;
         copy = new ServerFile(attrs);
+        console.log("creating production version: " + copy.get("name"));
         copy.set("isProductionVersion", true);
         _this.add(copy);
         return copy.save();

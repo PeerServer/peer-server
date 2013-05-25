@@ -109,12 +109,6 @@ class window.ServerFileCollection extends Backbone.Collection
       fileType = serverFile.get("fileType")
     return fileType
 
-  isDynamic: (filename) =>
-    # TODO direct comparison on filename is a temporary hack until the dynamic
-    #  file store is created and the isDynamic routine actually works.
-    return true if filename is "magic_eight_ball"
-    return @findWhere(name: filename).isDynamic()
-
   getContents: (filename) =>
     serverFile = @findWhere(name: filename, isProductionVersion: true)
     contents = ""
@@ -132,6 +126,7 @@ class window.ServerFileCollection extends Backbone.Collection
        attrs = _.clone(serverFile.attributes)
        attrs.id = null
        copy = new ServerFile(attrs)
+       console.log "creating production version: " + copy.get("name")
        copy.set("isProductionVersion", true)
        @add(copy)
        copy.save()

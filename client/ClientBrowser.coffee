@@ -14,7 +14,7 @@ class window.ClientBrowser
 
     @htmlProcessor = new HTMLProcessor(
       @sendEvent, @setDocumentElementInnerHTML, @getID)
-    @ajaxClient = new AJAXClient(@sendEvent, @getSocketId)
+    @ajaxClient = new AjaxClient(@sendEvent, @getID)
 
     @setUpReceiveEventCallbacks(startPage)
 
@@ -67,10 +67,16 @@ class window.ClientBrowser
       else # Load in the default start page.
         @setDocumentElementInnerHTML(data, "initialLoadDefault")
 
-    @eventTransmitter.addEventCallback("receiveFile",
-      @htmlProcessor.receiveFile)
-    @eventTransmitter.addEventCallback("receiveAjax", @ajaxClient.receiveAjax)
-    
+    @eventTransmitter.addEventCallback("receiveFile", @receiveFileDispatch)    
+
+  # Responds to receiving a file over the data channel, dispatching the file to the 
+  #   appropriate handler. Ajax files go to the ajax handler, others go to html processor.
+  receiveFileDispatch: (data) =>
+    if data.type is "ajax"
+      @ajaxClient.receiveAjax(data)
+    else 
+      @htmlProcessor.receiveFile(data)
+
   setDocumentElementInnerHTML: (data, optionalInfo)=>
     html = data.fileContents
     path = @htmlProcessor.removeTrailingSlash(data.filename)
@@ -88,7 +94,18 @@ class window.ClientBrowser
       @htmlProcessor.processHTML html, (processedHTML, scriptMapping) =>
         @documentElement.innerHTML = processedHTML
         @executeScriptsCallback(scriptMapping)
-      
+        @overrideAjaxForClient()
+
+  # TODO handle jsonp cross-domain.
+  # Note: There will sadly be problems if a script uses $.ajax before this code is executed. 
+  #  The only way to get around this I think would be to explicitly identify when jQuery is being 
+  #  loaded in, and set the ajax function then. Might be worth a look in the future -- for now, this works.
+  overrideAjaxForClient: =>
+    if (document.getElementById("container").contentWindow.window.jQuery)
+      console.log "overriding jQuery ajax"
+      document.getElementById("container").contentWindow.window.jQuery.ajax = (url, options) ->
+        return window.clientBrowser.ajaxClient.requestAjax(url, options, options.success, options.error)
+
   # Needed since innerHTML does not run scripts.
   # Inspired by:
   # http://stackoverflow.com/questions/2592092/executing-script-elements-inserted-with-innerhtml

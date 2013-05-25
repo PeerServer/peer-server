@@ -1,6 +1,5 @@
 # Initialization code. 
 
-
 $(document).ready ->
   document.getElementById("container").contentWindow.document.location.href = "/client/entryframe.html"
 

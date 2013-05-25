@@ -1,6 +1,9 @@
 '''
   Display and organization of the user-uploaded file collection.
   Edit/Done modes for saving.
+
+  TODO handle bug of initial non-index, non-404 html files saved in localstorage returining a 404
+    due to there being no initial production version of them formed.
 '''
 
 
@@ -179,6 +182,7 @@ class window.ClientServerCollectionView extends Backbone.View
       return false
 
   eventSaveChanges: =>
+    console.log "changes saved"
     @serverFileCollection.forEachDevelopmentFile (devFile) ->
       devFile.save(hasBeenEdited: false)
     # TODO for routes

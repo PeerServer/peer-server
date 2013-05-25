@@ -56,11 +56,11 @@ app.get('/shared/:filename(*)', function(req, res) {
 //   res.sendfile(__dirname + '/test_files/wrapper.html');
 // });
 
-// /* Temporary mapping kept at the bottom just for testing. TODO remove. */
-// app.get(':filename(*)', function(req, res) {
-//   var filename = req.params.filename;
-//   res.sendfile(__dirname + '/test_files/bootstrap-example/' + filename);
-// });
+/* Temporary mapping kept at the bottom for testing. TODO remove. */
+app.get('/test_files/:filename(*)', function(req, res) {
+  var filename = req.params.filename;
+  res.sendfile(__dirname + '/test_files/' + filename);
+});
 
 app.get("/", function(req, res) {
   res.sendfile(__dirname + '/home/index.html');

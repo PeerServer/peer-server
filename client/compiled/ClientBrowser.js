@@ -9,7 +9,9 @@
 
       this.documentElement = documentElement;
       this.executeScriptsCallback = __bind(this.executeScriptsCallback, this);
+      this.overrideAjaxForClient = __bind(this.overrideAjaxForClient, this);
       this.setDocumentElementInnerHTML = __bind(this.setDocumentElementInnerHTML, this);
+      this.receiveFileDispatch = __bind(this.receiveFileDispatch, this);
       this.setUpReceiveEventCallbacks = __bind(this.setUpReceiveEventCallbacks, this);
       this.channelOnMessage = __bind(this.channelOnMessage, this);
       this.sendEvent = __bind(this.sendEvent, this);
@@ -20,7 +22,7 @@
       this.eventTransmitter = new EventTransmitter();
       this.dataChannel = new ClientBrowserDataChannel(this.channelOnMessage, this.desiredServer);
       this.htmlProcessor = new HTMLProcessor(this.sendEvent, this.setDocumentElementInnerHTML, this.getID);
-      this.ajaxClient = new AJAXClient(this.sendEvent, this.getSocketId);
+      this.ajaxClient = new AjaxClient(this.sendEvent, this.getID);
       this.setUpReceiveEventCallbacks(startPage);
       window.onpopstate = function(evt) {
         var filename;
@@ -84,8 +86,15 @@
           return _this.setDocumentElementInnerHTML(data, "initialLoadDefault");
         }
       });
-      this.eventTransmitter.addEventCallback("receiveFile", this.htmlProcessor.receiveFile);
-      return this.eventTransmitter.addEventCallback("receiveAjax", this.ajaxClient.receiveAjax);
+      return this.eventTransmitter.addEventCallback("receiveFile", this.receiveFileDispatch);
+    };
+
+    ClientBrowser.prototype.receiveFileDispatch = function(data) {
+      if (data.type === "ajax") {
+        return this.ajaxClient.receiveAjax(data);
+      } else {
+        return this.htmlProcessor.receiveFile(data);
+      }
     };
 
     ClientBrowser.prototype.setDocumentElementInnerHTML = function(data, optionalInfo) {
@@ -110,8 +119,18 @@
       } else {
         return this.htmlProcessor.processHTML(html, function(processedHTML, scriptMapping) {
           _this.documentElement.innerHTML = processedHTML;
-          return _this.executeScriptsCallback(scriptMapping);
+          _this.executeScriptsCallback(scriptMapping);
+          return _this.overrideAjaxForClient();
         });
+      }
+    };
+
+    ClientBrowser.prototype.overrideAjaxForClient = function() {
+      if ((document.getElementById("container").contentWindow.window.jQuery)) {
+        console.log("overriding jQuery ajax");
+        return document.getElementById("container").contentWindow.window.jQuery.ajax = function(url, options) {
+          return window.clientBrowser.ajaxClient.requestAjax(url, options, options.success, options.error);
+        };
       }
     };
 

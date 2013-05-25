@@ -1,1 +1,0 @@
-../client/compiled/ajax_patch.js

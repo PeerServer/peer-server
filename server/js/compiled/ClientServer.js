@@ -8,11 +8,10 @@
       this.routeCollection = routeCollection;
       this.appView = appView;
       this.userDatabase = userDatabase;
-      this.evalDynamic = __bind(this.evalDynamic, this);
       this.getContentsForPath = __bind(this.getContentsForPath, this);
       this.parsePath = __bind(this.parsePath, this);
       this.serveFile = __bind(this.serveFile, this);
-      this.send404 = __bind(this.send404, this);
+      this.sendFailure = __bind(this.sendFailure, this);
       this.sendEventTo = __bind(this.sendEventTo, this);
       this.setUpReceiveEventCallbacks = __bind(this.setUpReceiveEventCallbacks, this);
       this.channelConnectionOnData = __bind(this.channelConnectionOnData, this);
@@ -52,24 +51,47 @@
       return this.eventTransmitter.sendEvent(connection, eventName, data);
     };
 
-    ClientServer.prototype.send404 = function(data) {
-      var page404;
+    ClientServer.prototype.sendFailure = function(data, errorMessage) {
+      var page404, response;
 
-      page404 = this.serverFileCollection.get404Page();
-      return this.sendEventTo(data.socketId, "receiveFile", {
-        filename: page404.filename,
-        fileContents: page404.fileContents,
-        fileType: page404.type,
-        type: data.type
-      });
+      if (data.type === "ajax") {
+        response = {
+          fileContents: "",
+          type: data.type,
+          textStatus: "error",
+          errorThrown: errorMessage,
+          requestId: data.requestId
+        };
+      } else {
+        page404 = this.serverFileCollection.get404Page();
+        response = {
+          filename: page404.filename,
+          fileContents: page404.fileContents,
+          fileType: page404.type,
+          type: data.type,
+          errorMessage: errorMessage
+        };
+      }
+      return this.sendEventTo(data.socketId, "receiveFile", response);
     };
 
     ClientServer.prototype.serveFile = function(data) {
-      var contents, fileType, foundRoute, paramData, path, rawPath, slashedPath, _ref;
+      var contents, extraParams, fileType, foundRoute, name, paramData, path, rawPath, response, slashedPath, val, _ref;
 
       console.log("FILENAME: " + data.filename);
       rawPath = data.filename || "";
       _ref = this.parsePath(rawPath), path = _ref[0], paramData = _ref[1];
+      if (data.type === "ajax" && data.options.data) {
+        if (typeof data.options.data === "string") {
+          extraParams = URI.parseQuery(paramData);
+        } else {
+          extraParams = data.options.data;
+        }
+        for (name in extraParams) {
+          val = extraParams[name];
+          paramData[name] = val;
+        }
+      }
       console.log("Parsed path: " + path);
       console.log("PARAMS: ");
       console.log(paramData);
@@ -77,22 +99,26 @@
       foundRoute = this.routeCollection.findRouteForPath(slashedPath);
       if ((foundRoute === null || foundRoute === void 0) && !this.serverFileCollection.hasProductionFile(path)) {
         console.error("Error: Client requested " + rawPath + " which does not exist on server.");
-        this.send404(data, rawPath);
+        this.sendFailure(data, "Not found");
         return;
       }
       fileType = foundRoute === null ? this.serverFileCollection.getFileType(path) : "DYNAMIC";
       contents = this.getContentsForPath(path, paramData, foundRoute);
       if (!contents || contents.length === 0) {
         console.error("Error: Function evaluation for  " + rawPath + " generated an error, returning 404.");
-        this.send404(data, rawPath);
+        this.sendFailure(data, "Internal server error");
         return;
       }
-      return this.sendEventTo(data.socketId, "receiveFile", {
+      response = {
         filename: rawPath,
         fileContents: contents,
         type: data.type,
         fileType: fileType
-      });
+      };
+      if (data.type === "ajax") {
+        response.requestId = data.requestId;
+      }
+      return this.sendEventTo(data.socketId, "receiveFile", response);
     };
 
     ClientServer.prototype.parsePath = function(fullPath) {
@@ -122,17 +148,6 @@
       console.log("and results are: " + match);
       runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), this.serverFileCollection.getContents, this.userDatabase.database);
       return runRoute();
-    };
-
-    ClientServer.prototype.evalDynamic = function(js) {
-      var exe,
-        _this = this;
-
-      console.log("evalDynamic");
-      exe = function() {
-        return eval(js);
-      };
-      return exe();
     };
 
     return ClientServer;
