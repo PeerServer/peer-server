@@ -27,7 +27,7 @@
       this.setUpReceiveEventCallbacks = function() {
         return ClientServer.prototype.setUpReceiveEventCallbacks.apply(_this, arguments);
       };
-      this.channelConnectionOnData = function(connection, data) {
+      this.channelConnectionOnData = function(data) {
         return ClientServer.prototype.channelConnectionOnData.apply(_this, arguments);
       };
       this.channelOnConnection = function(connection) {
@@ -53,7 +53,7 @@
       return this.eventTransmitter.sendEvent(connection, "initialLoad", landingPage);
     };
 
-    ClientServer.prototype.channelConnectionOnData = function(connection, data) {
+    ClientServer.prototype.channelConnectionOnData = function(data) {
       return this.eventTransmitter.receiveEvent(data);
     };
 

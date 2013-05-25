@@ -13,6 +13,7 @@
     <script src="/shared/lib/backbone.localStorage.js"></script>
     <script src="/shared/lib/uri.min.js"></script>
     <script src="/shared/lib/peer.min.js"></script>
+    <script src="/shared/lib/miniNotification.js"></script>
 
     <script src="/server/js/compiled/ServerFile.js"></script>
     <script src="/server/js/compiled/ServerFileCollection.js"></script>
@@ -24,6 +25,7 @@
 
     <script src="/shared/compiled/util.js"></script>
     <script src="/shared/compiled/event_transmitter.js"></script>
+    <script src="/shared/compiled/ClientDataChannel.js"></script>
     <script src="/server/js/compiled/ClientServerDataChannel.js"></script>
     <script src="/server/js/compiled/ClientServer.js"></script>
     <script src="/server/js/compiled/init.js"></script>
@@ -58,12 +60,17 @@
 
     <div id="client-server">
 
+      <div id="save-notification">
+        <p>
+          <a href="#" class="save-changes">Click here</a> for your changes to go live.
+        </p>
+      </div>
+
       <div id="file-collection-view">
         <div class="left-sidebar-container">
           <div class="left-sidebar">
 
             <ul class="nav nav-tabs nav-stacked">
-              <li class="disabled save-changes"><a href="#">Save Changes</a></li>
 
               <li class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown" href="#">

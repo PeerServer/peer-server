@@ -44,7 +44,7 @@
       this.handleFileDeleted = function(deletedServerFile) {
         return ServerFileCollectionView.prototype.handleFileDeleted.apply(_this, arguments);
       };
-      this.handleFileChanged = function() {
+      this.handleFileChanged = function(serverFile) {
         return ServerFileCollectionView.prototype.handleFileChanged.apply(_this, arguments);
       };
       this.handleFile = function(file) {
@@ -83,6 +83,9 @@
       this.addAll = function() {
         return ServerFileCollectionView.prototype.addAll.apply(_this, arguments);
       };
+      this.showInitialSaveNotification = function() {
+        return ServerFileCollectionView.prototype.showInitialSaveNotification.apply(_this, arguments);
+      };
       this.render = function() {
         return ServerFileCollectionView.prototype.render.apply(_this, arguments);
       };
@@ -96,26 +99,21 @@
       this.fileViewContainer = this.$("#file-view-container");
       this.uploadFilesRegion = this.$(".file-drop");
       this.fileLists = this.$(".file-list");
-      this.saveChangesButton = this.$(".save-changes");
+      this.saveNotification = $("#save-notification").miniNotification({
+        show: false
+      });
       this.tmplFileListItem = Handlebars.compile($("#file-list-item-template").html());
       this.tmplFileDeleteConfirmation = Handlebars.compile($("#file-delete-confirmation-template").html());
       this.tmplEditableFileListItem = Handlebars.compile($("#editable-file-list-item-template").html());
       this.addAll();
       this.collection.bind("add", this.addOne);
       this.collection.bind("reset", this.addAll);
-      this.collection.bind("change", this.handleFileChanged);
+      this.collection.bind("change:contents", this.handleFileChanged);
       this.collection.bind("destroy", this.handleFileDeleted);
       $(window).keydown(this.eventKeyDown);
       $(window).resize(this.render);
-      return this.render();
-    };
-
-    ServerFileCollectionView.prototype.render = function() {
-      this.mainPane = this.$(".main-pane");
-      this.$(".left-sidebar-container").outerHeight($(window).height());
-      this.$(".left-sidebar").outerHeight($(window).height());
-      this.mainPane.height($(window).height() - this.mainPane.position().top);
-      return this.mainPane.width($(window).width() - this.mainPane.position().left);
+      this.render();
+      return this.showInitialSaveNotification();
     };
 
     ServerFileCollectionView.prototype.events = {
@@ -128,12 +126,33 @@
       "click .file-list li[data-cid] .dropdown-menu .rename": "eventRenameFile",
       "click .file-list li[data-cid] .dropdown-menu .delete": "eventDeleteFile",
       "click .file-delete-confirmation .deletion-confirmed": "eventDeleteFileConfirmed",
-      "click .save-changes": "eventSaveChanges",
       "click .upload-files": "eventUploadFiles",
+      "click .save-changes": "eventSaveChanges",
       "click .create-menu .html": "eventCreateHTML",
       "click .create-menu .js": "eventCreateJS",
       "click .create-menu .css": "eventCreateCSS",
       "click .create-menu .dynamic": "eventCreateDynamic"
+    };
+
+    ServerFileCollectionView.prototype.render = function() {
+      this.mainPane = this.$(".main-pane");
+      this.$(".left-sidebar-container").outerHeight($(window).height());
+      this.$(".left-sidebar").outerHeight($(window).height());
+      this.mainPane.height($(window).height() - this.mainPane.position().top);
+      return this.mainPane.width($(window).width() - this.mainPane.position().left);
+    };
+
+    ServerFileCollectionView.prototype.showInitialSaveNotification = function() {
+      var shouldShow;
+      shouldShow = false;
+      this.collection.forEachDevelopmentFile(function(devFile) {
+        if (devFile.get("hasBeenEdited")) {
+          return shouldShow = true;
+        }
+      });
+      if (shouldShow) {
+        return this.saveNotification.show();
+      }
     };
 
     ServerFileCollectionView.prototype.addAll = function() {
@@ -219,9 +238,13 @@
     };
 
     ServerFileCollectionView.prototype.eventSaveChanges = function() {
-      this.collection.createProductionVersion();
-      this.saveChangesButton.addClass("disabled");
-      return this.saveChangesButton.find("a").text("Changes Saved");
+      this.collection.forEachDevelopmentFile(function(devFile) {
+        return devFile.save({
+          hasBeenEdited: false
+        });
+      });
+      this.saveNotification.hide();
+      return this.collection.createProductionVersion();
     };
 
     ServerFileCollectionView.prototype.preventDefault = function(event) {
@@ -276,9 +299,11 @@
       };
     };
 
-    ServerFileCollectionView.prototype.handleFileChanged = function() {
-      this.saveChangesButton.removeClass("disabled");
-      return this.saveChangesButton.find("a").text("Save Changes");
+    ServerFileCollectionView.prototype.handleFileChanged = function(serverFile) {
+      serverFile.save({
+        hasBeenEdited: true
+      });
+      return this.saveNotification.show();
     };
 
     ServerFileCollectionView.prototype.handleFileDeleted = function(deletedServerFile) {

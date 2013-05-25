@@ -13,7 +13,8 @@ class window.ServerFileCollectionView extends Backbone.View
     @fileViewContainer = @$("#file-view-container")
     @uploadFilesRegion = @$(".file-drop")
     @fileLists = @$(".file-list")
-    @saveChangesButton = @$(".save-changes")
+    @saveNotification = $("#save-notification").miniNotification(show: false)
+
     @tmplFileListItem = Handlebars.compile($("#file-list-item-template").html())
     @tmplFileDeleteConfirmation = Handlebars.compile(
       $("#file-delete-confirmation-template").html())
@@ -23,20 +24,14 @@ class window.ServerFileCollectionView extends Backbone.View
     @addAll()
     @collection.bind("add", @addOne)
     @collection.bind("reset", @addAll)
-    @collection.bind("change", @handleFileChanged)
+    @collection.bind("change:contents", @handleFileChanged)
     @collection.bind("destroy", @handleFileDeleted)
 
     $(window).keydown(@eventKeyDown)
     $(window).resize(@render)
 
     @render()
-
-  render: =>
-    @mainPane = @$(".main-pane")
-    @$(".left-sidebar-container").outerHeight($(window).height())
-    @$(".left-sidebar").outerHeight($(window).height())
-    @mainPane.height($(window).height() - @mainPane.position().top)
-    @mainPane.width($(window).width() - @mainPane.position().left)
+    @showInitialSaveNotification()
 
   events:
     "dragover .file-drop": "preventDefault"
@@ -51,14 +46,30 @@ class window.ServerFileCollectionView extends Backbone.View
     "click .file-list li[data-cid] .dropdown-menu .delete": "eventDeleteFile"
     "click .file-delete-confirmation .deletion-confirmed": "eventDeleteFileConfirmed"
     
-    "click .save-changes": "eventSaveChanges"
     "click .upload-files": "eventUploadFiles"
+    "click .save-changes": "eventSaveChanges"
 
     "click .create-menu .html": "eventCreateHTML"
     "click .create-menu .js": "eventCreateJS"
     "click .create-menu .css": "eventCreateCSS"
     "click .create-menu .dynamic": "eventCreateDynamic"
     # TODO "click .create-menu .template": "eventCreateTemplate"
+
+  render: =>
+    @mainPane = @$(".main-pane")
+    @$(".left-sidebar-container").outerHeight($(window).height())
+    @$(".left-sidebar").outerHeight($(window).height())
+    @mainPane.height($(window).height() - @mainPane.position().top)
+    @mainPane.width($(window).width() - @mainPane.position().left)
+
+  showInitialSaveNotification: =>
+    shouldShow = false
+    @collection.forEachDevelopmentFile (devFile) ->
+      if devFile.get("hasBeenEdited")
+        shouldShow = true
+
+    if shouldShow
+      @saveNotification.show()
     
   addAll: =>
     @collection.each(@addOne)
@@ -128,9 +139,10 @@ class window.ServerFileCollectionView extends Backbone.View
       return false
 
   eventSaveChanges: =>
+    @collection.forEachDevelopmentFile (devFile) ->
+      devFile.save(hasBeenEdited: false)
+    @saveNotification.hide()
     @collection.createProductionVersion()
-    @saveChangesButton.addClass("disabled")
-    @saveChangesButton.find("a").text("Changes Saved")
 
   preventDefault: (event) =>
     event.preventDefault()
@@ -170,9 +182,9 @@ class window.ServerFileCollectionView extends Backbone.View
       @collection.add(serverFile)
       serverFile.save()
 
-  handleFileChanged: =>
-    @saveChangesButton.removeClass("disabled")
-    @saveChangesButton.find("a").text("Save Changes")
+  handleFileChanged: (serverFile) =>
+    serverFile.save(hasBeenEdited: true)
+    @saveNotification.show()
 
   handleFileDeleted: (deletedServerFile) =>
     @$("[data-cid=#{deletedServerFile.cid}]").remove()

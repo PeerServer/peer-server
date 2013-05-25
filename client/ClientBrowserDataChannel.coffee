@@ -1,23 +1,12 @@
-class window.ClientBrowserDataChannel
+class window.ClientBrowserDataChannel extends ClientDataChannel
 
-  constructor: (@onMessageCallback, @desiredServer) ->
-    if isDevelopmentServer()
-      @peer = new Peer(
-        host: location.hostname,
-        port: 9000,
-        config: { 'iceServers': [] })
-    else
-      @peer = new Peer(key: "rrvwvw4tuyxpqfr", config: { "iceServers": [] })
-
-    @peer.on("open", @onOpen)
+  constructor: (@onDataCallback, @desiredServer) ->
+    super(@onDataCallback)
 
   onOpen: (id) =>
-    @id = id
+    super(id)
     @connection = @peer.connect(@desiredServer, { reliable: true })
     @connection.on("data", @onData)
-
-  onData: (data) =>
-    @onMessageCallback(data)
 
   send: (data) =>
     @connection.send(data)

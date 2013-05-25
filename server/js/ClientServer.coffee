@@ -20,7 +20,7 @@ class window.ClientServer
     
     @eventTransmitter.sendEvent(connection, "initialLoad", landingPage)
 
-  channelConnectionOnData: (connection, data) =>
+  channelConnectionOnData: (data) =>
     @eventTransmitter.receiveEvent(data)
 
   setUpReceiveEventCallbacks: =>

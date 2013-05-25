@@ -27,7 +27,8 @@
       fileType: "",
       isProductionVersion: false,
       isRequired: false,
-      dateCreated: null
+      dateCreated: null,
+      hasBeenEdited: false
     };
 
     ServerFile.fileTypeEnum = {
