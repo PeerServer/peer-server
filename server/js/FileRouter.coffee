@@ -29,8 +29,8 @@ class window.Route extends Backbone.Model
   # Creates the text of a function that can be eval'd to obtain a renderable result. 
   # Passes in the param names in order, and a final parameter called "params" containing
   #  the url-parameters (ie, get parameters foo and bar for "page?foo=f&bar=b")
-  getExecutableFunction: (urlParams, dynamicParams, staticFiles) =>
-    text = "(function " + @get("name") + "("
+  getExecutableFunction: (urlParams, dynamicParams, staticFileFcn) =>
+    text = "(function ("
     paramNames = @get("paramNames")
     text += paramNames.join(", ") + ", params" + ") {"
     text += @get("routeCode") + "})"
@@ -41,7 +41,7 @@ class window.Route extends Backbone.Model
     text += "(" + dynamicParams.join(",") + ", " + JSON.stringify(urlParams) + ")"  
     console.log "Function: " + text
     fcn = =>
-      staticFiles = staticFiles  # TODO expose these static files a bit more nicely so it is read-only.
+      static_file = staticFileFcn
       # TODO expose database, templates when they exist.
       eval(text)
     return fcn
@@ -66,7 +66,7 @@ class window.Route extends Backbone.Model
       else
         # TODO: Need to encode anything that is URL-safe but not regex-safe
         regexParts.push(part) # Add the part as a raw string to the regex
-    @pathRegex = "^" + regexParts.join("/") + "/?$"  # Indifferent to trailing slash
+    @pathRegex = "^/?" + regexParts.join("/") + "/?$"  # Indifferent to starting or trailing slash
     @set("paramNames", paramNames)
 
   # Remove hash or param list from final path part if needed
@@ -96,6 +96,11 @@ class window.RouteCollection extends Backbone.Collection
 
   findRouteForPath: (routePath) => 
     matchedRoute = @find (route) =>
+      console.log "searching: "
+      console.log route
+      console.log "matching: "
+      console.log routePath + " with " + route.pathRegex
+      console.log routePath.match(route.pathRegex)
       return route.get("isProductionVersion") and routePath.match(route.pathRegex) isnt null
     return matchedRoute
 

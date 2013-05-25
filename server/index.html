@@ -200,9 +200,9 @@
 
       <script id="route-template" type="text/x-handlebars-template">
         Name: <input class="name" value="{{name}}"/>
-        Path: <input class="path" value="{{path}}"/>
+        Path: &#47; <input class="path" value="{{path}}"/>
 
-        <p>function {{name}} ({{functionParams}})</p>
+        <p class="route-fcn-header">function <span class="route-fcn-name">{{name}}</span>(<span class="route-fcn-params">{{functionParams}}</span>)</p>
           <div class="code"></div>
       </script>
 

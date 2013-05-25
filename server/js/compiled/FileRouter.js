@@ -32,11 +32,11 @@
       return this.on("change:routePath", this.setParsedPath);
     };
 
-    Route.prototype.getExecutableFunction = function(urlParams, dynamicParams, staticFiles) {
+    Route.prototype.getExecutableFunction = function(urlParams, dynamicParams, staticFileFcn) {
       var fcn, paramNames, text,
         _this = this;
 
-      text = "(function " + this.get("name") + "(";
+      text = "(function (";
       paramNames = this.get("paramNames");
       text += paramNames.join(", ") + ", params" + ") {";
       text += this.get("routeCode") + "})";
@@ -47,7 +47,9 @@
       text += "(" + dynamicParams.join(",") + ", " + JSON.stringify(urlParams) + ")";
       console.log("Function: " + text);
       fcn = function() {
-        staticFiles = staticFiles;
+        var static_file;
+
+        static_file = staticFileFcn;
         return eval(text);
       };
       return fcn;
@@ -77,7 +79,7 @@
           regexParts.push(part);
         }
       }
-      this.pathRegex = "^" + regexParts.join("/") + "/?$";
+      this.pathRegex = "^/?" + regexParts.join("/") + "/?$";
       return this.set("paramNames", paramNames);
     };
 
@@ -135,6 +137,11 @@
         _this = this;
 
       matchedRoute = this.find(function(route) {
+        console.log("searching: ");
+        console.log(route);
+        console.log("matching: ");
+        console.log(routePath + " with " + route.pathRegex);
+        console.log(routePath.match(route.pathRegex));
         return route.get("isProductionVersion") && routePath.match(route.pathRegex) !== null;
       });
       return matchedRoute;
@@ -176,7 +183,3 @@
   })(Backbone.Collection);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=FileRouter.map
-*/

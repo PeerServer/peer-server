@@ -39,7 +39,3 @@
   })();
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=ClientDataChannel.map
-*/

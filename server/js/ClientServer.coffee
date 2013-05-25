@@ -42,7 +42,7 @@ class window.ClientServer
     foundRoute = @routeCollection.findRouteForPath(slashedPath)  # Check if path mapping
     console.log "FOUND ROUTE: "
     console.log foundRoute
-    if foundRoute is null and not @serverFileCollection.hasProductionFile(path)
+    if (foundRoute is null or foundRoute is undefined) and not @serverFileCollection.hasProductionFile(path)
       page404 = @serverFileCollection.get404Page()
       console.error "Error: Client requested " + rawPath +
         " which does not exist on server."
@@ -120,7 +120,7 @@ class window.ClientServer
       console.log "Matching given path " + slashedPath
       console.log "with found path " + foundRoute.get("routePath")
       console.log "and results are: " + match
-      runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), @serverFileCollection)      
+      runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), @serverFileCollection.getContents)      
       return runRoute()
 
     # TODO replace this functionality (the code eval on ajax)

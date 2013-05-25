@@ -63,7 +63,7 @@
       foundRoute = this.routeCollection.findRouteForPath(slashedPath);
       console.log("FOUND ROUTE: ");
       console.log(foundRoute);
-      if (foundRoute === null && !this.serverFileCollection.hasProductionFile(path)) {
+      if ((foundRoute === null || foundRoute === void 0) && !this.serverFileCollection.hasProductionFile(path)) {
         page404 = this.serverFileCollection.get404Page();
         console.error("Error: Client requested " + rawPath + " which does not exist on server.");
         this.sendEventTo(data.socketId, "receiveFile", {
@@ -106,7 +106,7 @@
         console.log("Matching given path " + slashedPath);
         console.log("with found path " + foundRoute.get("routePath"));
         console.log("and results are: " + match);
-        runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), this.serverFileCollection);
+        runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), this.serverFileCollection.getContents);
         return runRoute();
       }
       return this.serverFileCollection.getContents(path);
@@ -128,7 +128,3 @@
   })();
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=ClientServer.map
-*/
