@@ -3,10 +3,11 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   window.ClientServer = (function() {
-    function ClientServer(serverFileCollection, routeCollection, appView) {
+    function ClientServer(serverFileCollection, routeCollection, appView, userDatabase) {
       this.serverFileCollection = serverFileCollection;
       this.routeCollection = routeCollection;
       this.appView = appView;
+      this.userDatabase = userDatabase;
       this.evalDynamic = __bind(this.evalDynamic, this);
       this.getContentsForPath = __bind(this.getContentsForPath, this);
       this.parsePath = __bind(this.parsePath, this);
@@ -106,7 +107,7 @@
         console.log("Matching given path " + slashedPath);
         console.log("with found path " + foundRoute.get("routePath"));
         console.log("and results are: " + match);
-        runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), this.serverFileCollection.getContents);
+        runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), this.serverFileCollection.getContents, this.userDatabase.database);
         return runRoute();
       }
       return this.serverFileCollection.getContents(path);

@@ -1,6 +1,6 @@
 class window.ClientServer
   
-  constructor: (@serverFileCollection, @routeCollection, @appView) ->
+  constructor: (@serverFileCollection, @routeCollection, @appView, @userDatabase) ->
     @eventTransmitter = new EventTransmitter()
     @dataChannel = new ClientServerDataChannel(
       @channelOnConnection, @channelConnectionOnData, @channelOnReady)
@@ -120,7 +120,7 @@ class window.ClientServer
       console.log "Matching given path " + slashedPath
       console.log "with found path " + foundRoute.get("routePath")
       console.log "and results are: " + match
-      runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), @serverFileCollection.getContents)      
+      runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), @serverFileCollection.getContents, @userDatabase.database)      
       return runRoute()
 
     # TODO replace this functionality (the code eval on ajax)

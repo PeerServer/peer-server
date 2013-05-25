@@ -13,6 +13,7 @@
     <script src="/shared/lib/backbone.localStorage.js"></script>
     <script src="/shared/lib/uri.min.js"></script>
     <script src="/shared/lib/peer.min.js"></script>
+    <script src="/shared/lib/taffy-min.js"></script>
     <script src="/shared/lib/miniNotification.js"></script>
 
     <script src="/server/js/compiled/ServerFile.js"></script>
@@ -22,6 +23,7 @@
     <script src="/server/js/compiled/AppView.js"></script>
     <script src="/server/js/compiled/FileRouter.js"></script>
     <script src="/server/js/compiled/RouteView.js"></script>
+    <script src="/server/js/compiled/UserDatabase.js"></script>
 
     <script src="/shared/compiled/util.js"></script>
     <script src="/shared/compiled/event_transmitter.js"></script>
@@ -201,6 +203,10 @@
       <script id="route-template" type="text/x-handlebars-template">
         Name: <input class="name" value="{{name}}"/>
         Path: &#47; <input class="path" value="{{path}}"/>
+
+        <div class="route-help">
+        <p>Use <code>static_file("filename")</code> to access static files.</p><p> Use the Taffy <code>database</code> object to save state (see <a href="http://www.taffydb.com/">TaffyDB</a> for how to use it)</p>
+        </div>
 
         <p class="route-fcn-header">function <span class="route-fcn-name">{{name}}</span>(<span class="route-fcn-params">{{functionParams}}</span>)</p>
           <div class="code"></div>

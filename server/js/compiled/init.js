@@ -9,7 +9,7 @@
       serverFileCollection: serverFileCollection,
       routeCollection: routeCollection
     });
-    return clientServer = new ClientServer(serverFileCollection, routeCollection, appView);
+    return clientServer = new ClientServer(serverFileCollection, routeCollection, appView, new window.UserDatabase);
   });
 
 }).call(this);

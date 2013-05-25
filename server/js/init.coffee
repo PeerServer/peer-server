@@ -8,4 +8,4 @@ $(document).ready ->
     serverFileCollection: serverFileCollection,
     routeCollection: routeCollection)
   clientServer = new ClientServer(
-    serverFileCollection, routeCollection, appView)
+    serverFileCollection, routeCollection, appView, new window.UserDatabase)

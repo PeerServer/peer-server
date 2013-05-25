@@ -8,6 +8,7 @@
     - routePath should be a valid path (tokens separated by / without invalid characters in the tokens.
         some of the tokens can be of the form <token> but there shouldn't be any other angle-brackets 
         except at the start and end.)
+    - reserved words: database, static_file, params  (inspect getExecutableFunction for most up-to-date)
 '''
 
 class window.Route extends Backbone.Model
@@ -29,18 +30,24 @@ class window.Route extends Backbone.Model
   # Creates the text of a function that can be eval'd to obtain a renderable result. 
   # Passes in the param names in order, and a final parameter called "params" containing
   #  the url-parameters (ie, get parameters foo and bar for "page?foo=f&bar=b")
-  getExecutableFunction: (urlParams, dynamicParams, staticFileFcn) =>
+  getExecutableFunction: (urlParams, dynamicParams, staticFileFcn, userDatabase) =>
     text = "(function ("
     paramNames = @get("paramNames")
-    text += paramNames.join(", ") + ", params" + ") {"
+    if paramNames and paramNames.length > 0
+      text += paramNames.join(", ") + ", "
+    text += "params" + ") {"
     text += @get("routeCode") + "})"
     # Now invoke the function with the appropriate parameters
-    dynamicParams = _.map dynamicParams, (param) ->
-      return '"' + param + '"'  # Place all the parameter names in quotes, as they are strings.
-    console.log "dynamic params: " + dynamicParams
-    text += "(" + dynamicParams.join(",") + ", " + JSON.stringify(urlParams) + ")"  
+    text += "("
+    if dynamicParams and dynamicParams.length > 0
+      dynamicParams = _.map dynamicParams, (param) ->
+        return '"' + param + '"'  # Place all the parameter names in quotes, as they are strings.
+      console.log "dynamic params: " + dynamicParams
+      text += dynamicParams.join(",") + ", "  # Pass in the dynamic url-path parameters
+    text += JSON.stringify(urlParams) + ")"  # Pass in the get-url parameters
     console.log "Function: " + text
     fcn = =>
+      database = userDatabase
       static_file = staticFileFcn
       # TODO expose database, templates when they exist.
       eval(text)
@@ -82,7 +89,7 @@ class window.RouteCollection extends Backbone.Collection
 
   localStorage: new Backbone.LocalStorage("RouteCollection")
   
-  initialize: ->
+  initialize: (options) ->
     @fetch()
 
     indexRoute = new Route(name:"testing", routePath: "/test/<name>/<x>/<y>", routeCode: "var result = parseInt(x)+parseInt(y); return '<h1>hello ' + name + '!</h1><p> x= ' + x + ' plus y = ' + y + ' is ' + result + '</p><h2>' + params.animal + '!!</h2>'", isProductionVersion: true)
