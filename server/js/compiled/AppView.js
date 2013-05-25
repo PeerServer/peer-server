@@ -20,11 +20,9 @@
     AppView.prototype.el = "#client-server";
 
     AppView.prototype.initialize = function(options) {
-      this.serverFileCollectionView = new ServerFileCollectionView({
-        collection: options.serverFileCollection
-      });
-      this.routeCollectionView = new RouteCollectionView({
-        collection: options.routeCollection
+      this.serverFileCollectionView = new ClientServerCollectionView({
+        serverFileCollection: options.serverFileCollection,
+        routeCollection: options.routeCollection
       });
       this.clientBrowserLink = $(".navbar .browse");
       return this.on("setServerID", this.setClientBrowserLink);

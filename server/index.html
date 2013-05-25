@@ -18,10 +18,10 @@
     <script src="/server/js/compiled/ServerFile.js"></script>
     <script src="/server/js/compiled/ServerFileCollection.js"></script>
     <script src="/server/js/compiled/ServerFileView.js"></script>
-    <script src="/server/js/compiled/ServerFileCollectionView.js"></script>
+    <script src="/server/js/compiled/ClientServerCollectionView.js"></script>
     <script src="/server/js/compiled/AppView.js"></script>
     <script src="/server/js/compiled/FileRouter.js"></script>
-    <script src="/server/js/compiled/RouteCollectionView.js"></script>
+    <script src="/server/js/compiled/RouteView.js"></script>
 
     <script src="/shared/compiled/util.js"></script>
     <script src="/shared/compiled/event_transmitter.js"></script>
@@ -66,7 +66,7 @@
         </p>
       </div>
 
-      <div id="file-collection-view">
+      <div id="client-server-collection-view">
         <div class="left-sidebar-container">
           <div class="left-sidebar">
 
@@ -129,8 +129,9 @@
         </div>
 
         <div class="main-pane">
-          <div id="file-view-container">
-          </div>
+          <div id="file-view-container"> </div>
+
+          <div id="route-view-container"> </div>
 
           <div class="file-drop well well-large">
             <div class="file-drop-inner">
@@ -142,7 +143,15 @@
       </div>
 
       <script id="route-list-item-template" type="text/x-handlebars-template">
-        <li data-cid="{{cid}}"><a href="#">{{routePath}}</a>: {{routeCode}}</li>
+        <li data-cid="{{cid}}">
+          <a href="#">
+            {{#if name}}
+              {{name}}
+            {{else}}
+              (No name yet)
+            {{/if}}
+          </a>
+        </li>
       </script>
 
       <script id="file-list-item-template" type="text/x-handlebars-template">
@@ -187,6 +196,14 @@
 
       <script id="image-template" type="text/x-handlebars-template">
         <img src=""></img>
+      </script>
+
+      <script id="route-template" type="text/x-handlebars-template">
+        Name: <input class="name" value="{{name}}"/>
+        Path: <input class="path" value="{{path}}"/>
+
+        <p>function {{name}} ({{functionParams}})</p>
+          <div class="code"></div>
       </script>
 
     </div>

@@ -29,8 +29,8 @@
       routeCode: "",
       paramNames: [],
       options: {},
-      isRequired: false,
-      isProductionVersion: false
+      isProductionVersion: false,
+      hasBeenEdited: false
     };
 
     Route.prototype.initialize = function() {
@@ -102,6 +102,12 @@
 
     function RouteCollection() {
       var _this = this;
+      this.createProductionVersion = function() {
+        return RouteCollection.prototype.createProductionVersion.apply(_this, arguments);
+      };
+      this.getRouteCode = function(routePath) {
+        return RouteCollection.prototype.getRouteCode.apply(_this, arguments);
+      };
       this.findRouteForPath = function(routePath) {
         return RouteCollection.prototype.findRouteForPath.apply(_this, arguments);
       };
@@ -113,14 +119,25 @@
 
     RouteCollection.prototype.model = Route;
 
+    RouteCollection.prototype.localStorage = new Backbone.LocalStorage("RouteCollection");
+
     RouteCollection.prototype.initialize = function() {
-      var indexRoute;
+      var indexRoute, indexRouteDev;
       indexRoute = new Route({
+        name: "testing",
         routePath: "/test/<name>/<x>/<y>",
         routeCode: "var result = parseInt(x)+parseInt(y); return '<h1>hello ' + name + '!</h1><p> x= ' + x + ' plus y = ' + y + ' is ' + result + '</p><h2>' + params.animal + '!!</h2>'",
-        isRequired: true
+        isProductionVersion: true
       });
-      return this.add(indexRoute);
+      this.add(indexRoute);
+      indexRouteDev = new Route({
+        name: "testing",
+        routePath: "/test/<name>/<x>/<y>",
+        routeCode: "var result = parseInt(x)+parseInt(y); return '<h1>hello ' + name + '!</h1><p> x= ' + x + ' plus y = ' + y + ' is ' + result + '</p><h2>' + params.animal + '!!</h2>'",
+        isProductionVersion: false
+      });
+      this.add(indexRouteDev);
+      return this.fetch();
     };
 
     RouteCollection.prototype.comparator = function(route) {
@@ -130,11 +147,39 @@
     RouteCollection.prototype.findRouteForPath = function(routePath) {
       var matchedRoute,
         _this = this;
-      console.log("route path: " + routePath);
       matchedRoute = this.find(function(route) {
-        return routePath.match(route.pathRegex) !== null;
+        return route.get("isProductionVersion") && routePath.match(route.pathRegex) !== null;
       });
       return matchedRoute;
+    };
+
+    RouteCollection.prototype.getRouteCode = function(routePath) {
+      return this.findWhere({
+        routePath: routePath
+      }).get("routeCode");
+    };
+
+    RouteCollection.prototype.createProductionVersion = function() {
+      var developmentFiles, productionFiles,
+        _this = this;
+      productionFiles = this.where({
+        isProductionVersion: true
+      });
+      _.each(productionFiles, function(route) {
+        return route.destroy();
+      });
+      developmentFiles = this.where({
+        isProductionVersion: false
+      });
+      return _.each(developmentFiles, function(route) {
+        var attrs, copy;
+        attrs = _.clone(route.attributes);
+        attrs.id = null;
+        copy = new Route(attrs);
+        copy.set("isProductionVersion", true);
+        _this.add(copy);
+        return copy.save();
+      });
     };
 
     return RouteCollection;
