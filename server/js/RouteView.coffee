@@ -1,14 +1,15 @@
 class window.RouteView extends Backbone.View
   initialize: (options) ->
     @tmplRoute = Handlebars.compile($("#route-template").html())
+    @tmplFunctionSignature = Handlebars.compile(
+      $("#route-function-signature-template").html())
+
     @model.on("change", @renderValidationResult)
-    @model.on("change:paramNames", @renderFunctionSignatureText)
+    @model.on("change:paramNames", @renderFunctionSignature)
 
   events:
     "keyup .path": "eventPathChange"
     "keyup .name": "eventNameChange"
-    "keypress .code textarea": "eventACEKeydown"
-    # "keydown  .code textarea": "eventACEKeydown"
 
   paramNamesToString: (paramNames) =>
     if paramNames.length == 0
@@ -23,40 +24,38 @@ class window.RouteView extends Backbone.View
       functionParams: @paramNamesToString([])
 
     @code = @$(".code")
-    @name = @$(".name")
     @path = @$(".path")
     @functionSignature = @$(".function-signature")
-    @functionClose = @$(".function-close")
-
-    # @functionSignature.height(16 * 4)
-    # @functionClose.height(16 * 2)
-    @code.height(100)
 
     @aceEditor = @createEditor(@code)
     @aceEditor.getSession().setValue(@model.get("routeCode"))
-    # @aceEditor.on("change", @updateContents)
+    @aceEditor.on("change", @updateContents)
 
-    # @functionSignatureEditor = @createEditor(@functionSignature)
-    # @renderFunctionSignatureText()
-    # @functionSignatureEditor.setReadOnly(true)
-    # @functionSignatureEditor.on("changeSelectionStyle", () ->
-    #   console.log arguments)
-
-    # functionCloseEditor = @createEditor(@functionClose)
-    # functionCloseEditor.getSession().setValue("\n}")
-    # functionCloseEditor.setReadOnly(true)
+    @renderFunctionSignature()
 
     @name.tipsy(fallback: "Invalid name", trigger: "manual")
     @path.tipsy(fallback: "Invalid route path", trigger: "manual")
 
     return @
 
-  renderFunctionSignatureText: =>
-    @functionSignatureEditor.getSession().setValue(
-      "// This is the function signature.\n" +
-      "function " + @model.get("name") + "(" +
-      @paramNamesToString(@model.get("paramNames")) + ") {\n" +
-      "    // Put your code below...\n")
+  adjustHeights: =>
+    $el = $(@el)
+
+    @$(".function").outerHeight(
+      $el.height() - @$(".route-path").outerHeight(true))
+
+    padding = @$(".function").innerHeight() - @$(".function").height()
+    codeHeight = @$(".function").height() - padding
+    codeHeight -= @functionSignature.outerHeight(true)
+    codeHeight -= @$(".function-close").outerHeight(true)
+    codeHeight -= @$(".route-help").outerHeight(true)
+    @code.outerHeight(codeHeight)
+
+  renderFunctionSignature: =>
+    @functionSignature.html(@tmplFunctionSignature(
+      name: @model.get("name"),
+      parameterString: @paramNamesToString(@model.get("paramNames"))))
+    @name = @$(".name")
 
   createEditor: (elem) =>
     editor = ace.edit(elem[0])
@@ -67,7 +66,6 @@ class window.RouteView extends Backbone.View
 
   updateContents: =>
     @model.save("routeCode", @aceEditor.getValue())
-    console.log arguments
 
   eventPathChange: (event) =>
     target = $(event.currentTarget)
@@ -90,19 +88,4 @@ class window.RouteView extends Backbone.View
       @path.tipsy("show")
     else
       @path.tipsy("hide")
-
-  eventACEKeydown: (event) =>
-    position = @aceEditor.getCursorPosition()
-    numRows = @aceEditor.session.getLength()
-    console.log position, numRows, event.which
-
-    if position.row is 0 or
-    position.row is numRows - 1 or
-    (position.row is 1 and position.column is 0 and event.which is 8)
-      @aceEditor.setReadOnly(true)
-      event.preventDefault()
-      event.stopPropagation()
-      return false
-    else
-      @aceEditor.setReadOnly(false)
 

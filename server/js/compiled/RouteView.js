@@ -9,13 +9,13 @@
     __extends(RouteView, _super);
 
     function RouteView() {
-      this.eventACEKeydown = __bind(this.eventACEKeydown, this);
       this.renderValidationResult = __bind(this.renderValidationResult, this);
       this.eventNameChange = __bind(this.eventNameChange, this);
       this.eventPathChange = __bind(this.eventPathChange, this);
       this.updateContents = __bind(this.updateContents, this);
       this.createEditor = __bind(this.createEditor, this);
-      this.renderFunctionSignatureText = __bind(this.renderFunctionSignatureText, this);
+      this.renderFunctionSignature = __bind(this.renderFunctionSignature, this);
+      this.adjustHeights = __bind(this.adjustHeights, this);
       this.render = __bind(this.render, this);
       this.paramNamesToString = __bind(this.paramNamesToString, this);      _ref = RouteView.__super__.constructor.apply(this, arguments);
       return _ref;
@@ -23,14 +23,14 @@
 
     RouteView.prototype.initialize = function(options) {
       this.tmplRoute = Handlebars.compile($("#route-template").html());
+      this.tmplFunctionSignature = Handlebars.compile($("#route-function-signature-template").html());
       this.model.on("change", this.renderValidationResult);
-      return this.model.on("change:paramNames", this.renderFunctionSignatureText);
+      return this.model.on("change:paramNames", this.renderFunctionSignature);
     };
 
     RouteView.prototype.events = {
       "keyup .path": "eventPathChange",
-      "keyup .name": "eventNameChange",
-      "keypress .code textarea": "eventACEKeydown"
+      "keyup .name": "eventNameChange"
     };
 
     RouteView.prototype.paramNamesToString = function(paramNames) {
@@ -50,13 +50,12 @@
         functionParams: this.paramNamesToString([])
       }));
       this.code = this.$(".code");
-      this.name = this.$(".name");
       this.path = this.$(".path");
       this.functionSignature = this.$(".function-signature");
-      this.functionClose = this.$(".function-close");
-      this.code.height(100);
       this.aceEditor = this.createEditor(this.code);
       this.aceEditor.getSession().setValue(this.model.get("routeCode"));
+      this.aceEditor.on("change", this.updateContents);
+      this.renderFunctionSignature();
       this.name.tipsy({
         fallback: "Invalid name",
         trigger: "manual"
@@ -68,8 +67,25 @@
       return this;
     };
 
-    RouteView.prototype.renderFunctionSignatureText = function() {
-      return this.functionSignatureEditor.getSession().setValue("// This is the function signature.\n" + "function " + this.model.get("name") + "(" + this.paramNamesToString(this.model.get("paramNames")) + ") {\n" + "    // Put your code below...\n");
+    RouteView.prototype.adjustHeights = function() {
+      var $el, codeHeight, padding;
+
+      $el = $(this.el);
+      this.$(".function").outerHeight($el.height() - this.$(".route-path").outerHeight(true));
+      padding = this.$(".function").innerHeight() - this.$(".function").height();
+      codeHeight = this.$(".function").height() - padding;
+      codeHeight -= this.functionSignature.outerHeight(true);
+      codeHeight -= this.$(".function-close").outerHeight(true);
+      codeHeight -= this.$(".route-help").outerHeight(true);
+      return this.code.outerHeight(codeHeight);
+    };
+
+    RouteView.prototype.renderFunctionSignature = function() {
+      this.functionSignature.html(this.tmplFunctionSignature({
+        name: this.model.get("name"),
+        parameterString: this.paramNamesToString(this.model.get("paramNames"))
+      }));
+      return this.name = this.$(".name");
     };
 
     RouteView.prototype.createEditor = function(elem) {
@@ -83,8 +99,7 @@
     };
 
     RouteView.prototype.updateContents = function() {
-      this.model.save("routeCode", this.aceEditor.getValue());
-      return console.log(arguments);
+      return this.model.save("routeCode", this.aceEditor.getValue());
     };
 
     RouteView.prototype.eventPathChange = function(event) {
@@ -113,22 +128,6 @@
         return this.path.tipsy("show");
       } else {
         return this.path.tipsy("hide");
-      }
-    };
-
-    RouteView.prototype.eventACEKeydown = function(event) {
-      var numRows, position;
-
-      position = this.aceEditor.getCursorPosition();
-      numRows = this.aceEditor.session.getLength();
-      console.log(position, numRows, event.which);
-      if (position.row === 0 || position.row === numRows - 1 || (position.row === 1 && position.column === 0 && event.which === 8)) {
-        this.aceEditor.setReadOnly(true);
-        event.preventDefault();
-        event.stopPropagation();
-        return false;
-      } else {
-        return this.aceEditor.setReadOnly(false);
       }
     };
 

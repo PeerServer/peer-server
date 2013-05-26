@@ -325,4 +325,5 @@ class window.ClientServerCollectionView extends Backbone.View
     routeView = new RouteView(model: route)
     @select(listEl, routeView)
     @routeViewContainer.append(routeView.render().el)
+    routeView.adjustHeights()
 

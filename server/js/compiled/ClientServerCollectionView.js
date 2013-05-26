@@ -452,7 +452,8 @@
         model: route
       });
       this.select(listEl, routeView);
-      return this.routeViewContainer.append(routeView.render().el);
+      this.routeViewContainer.append(routeView.render().el);
+      return routeView.adjustHeights();
     };
 
     return ClientServerCollectionView;
@@ -460,3 +461,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServerCollectionView.map
+*/
