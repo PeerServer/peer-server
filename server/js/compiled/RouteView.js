@@ -9,34 +9,28 @@
     __extends(RouteView, _super);
 
     function RouteView() {
+      this.eventACEKeydown = __bind(this.eventACEKeydown, this);
       this.renderValidationResult = __bind(this.renderValidationResult, this);
       this.eventNameChange = __bind(this.eventNameChange, this);
       this.eventPathChange = __bind(this.eventPathChange, this);
       this.updateContents = __bind(this.updateContents, this);
+      this.createEditor = __bind(this.createEditor, this);
+      this.renderFunctionSignatureText = __bind(this.renderFunctionSignatureText, this);
       this.render = __bind(this.render, this);
-      this.paramNamesToString = __bind(this.paramNamesToString, this);
-      this.handleRoutePathChange = __bind(this.handleRoutePathChange, this);      _ref = RouteView.__super__.constructor.apply(this, arguments);
+      this.paramNamesToString = __bind(this.paramNamesToString, this);      _ref = RouteView.__super__.constructor.apply(this, arguments);
       return _ref;
     }
 
     RouteView.prototype.initialize = function(options) {
-      var _this = this;
-
       this.tmplRoute = Handlebars.compile($("#route-template").html());
       this.model.on("change", this.renderValidationResult);
-      this.model.on("change:name", function(route) {
-        return $($(_this.el).find(".route-fcn-name")).html(route.get("name"));
-      });
-      return this.model.on("change:paramNames", this.handleRoutePathChange);
+      return this.model.on("change:paramNames", this.renderFunctionSignatureText);
     };
 
     RouteView.prototype.events = {
       "keyup .path": "eventPathChange",
-      "keyup .name": "eventNameChange"
-    };
-
-    RouteView.prototype.handleRoutePathChange = function(route) {
-      return $($(this.el).find(".route-fcn-params")).html(this.paramNamesToString(route.get("paramNames")));
+      "keyup .name": "eventNameChange",
+      "keypress .code textarea": "eventACEKeydown"
     };
 
     RouteView.prototype.paramNamesToString = function(paramNames) {
@@ -58,12 +52,11 @@
       this.code = this.$(".code");
       this.name = this.$(".name");
       this.path = this.$(".path");
-      this.code.text(this.model.get("routeCode"));
-      this.aceEditor = ace.edit(this.code[0]);
-      this.aceEditor.setTheme("ace/theme/tomorrow_night_eighties");
-      this.aceEditor.setFontSize("12px");
-      this.aceEditor.getSession().setMode("ace/mode/javascript");
-      this.aceEditor.on("change", this.updateContents);
+      this.functionSignature = this.$(".function-signature");
+      this.functionClose = this.$(".function-close");
+      this.code.height(100);
+      this.aceEditor = this.createEditor(this.code);
+      this.aceEditor.getSession().setValue(this.model.get("routeCode"));
       this.name.tipsy({
         fallback: "Invalid name",
         trigger: "manual"
@@ -75,8 +68,23 @@
       return this;
     };
 
+    RouteView.prototype.renderFunctionSignatureText = function() {
+      return this.functionSignatureEditor.getSession().setValue("// This is the function signature.\n" + "function " + this.model.get("name") + "(" + this.paramNamesToString(this.model.get("paramNames")) + ") {\n" + "    // Put your code below...\n");
+    };
+
+    RouteView.prototype.createEditor = function(elem) {
+      var editor;
+
+      editor = ace.edit(elem[0]);
+      editor.setTheme("ace/theme/tomorrow_night_eighties");
+      editor.setFontSize("12px");
+      editor.getSession().setMode("ace/mode/javascript");
+      return editor;
+    };
+
     RouteView.prototype.updateContents = function() {
-      return this.model.save("routeCode", this.aceEditor.getValue());
+      this.model.save("routeCode", this.aceEditor.getValue());
+      return console.log(arguments);
     };
 
     RouteView.prototype.eventPathChange = function(event) {
@@ -105,6 +113,22 @@
         return this.path.tipsy("show");
       } else {
         return this.path.tipsy("hide");
+      }
+    };
+
+    RouteView.prototype.eventACEKeydown = function(event) {
+      var numRows, position;
+
+      position = this.aceEditor.getCursorPosition();
+      numRows = this.aceEditor.session.getLength();
+      console.log(position, numRows, event.which);
+      if (position.row === 0 || position.row === numRows - 1 || (position.row === 1 && position.column === 0 && event.which === 8)) {
+        this.aceEditor.setReadOnly(true);
+        event.preventDefault();
+        event.stopPropagation();
+        return false;
+      } else {
+        return this.aceEditor.setReadOnly(false);
       }
     };
 

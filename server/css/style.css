@@ -64,8 +64,7 @@ body {
 #file-view-container .row-fluid, 
 #file-view-container .file-contents,
 #route-view-container > div,
-#route-view-container .row-fluid, 
-#route-view-container .code {
+#route-view-container .row-fluid {
   height: 100%
 }
 

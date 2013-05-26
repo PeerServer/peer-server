@@ -209,11 +209,17 @@
         Path: <input class="path" value="{{path}}"/>
 
         <div class="route-help">
-        <p>Use <code>static_file("filename")</code> to access static files.</p><p> Use the Taffy <code>database</code> object to save state (see <a href="http://www.taffydb.com/">TaffyDB</a> for how to use it)</p>
+          <p>Use <code>static_file("filename")</code> to access static files.</p>
+
+          <p>Use the Taffy <code>database</code> object to save state 
+             (see <a href="http://www.taffydb.com/">TaffyDB</a> for how 
+             to use it)
+          </p>
         </div>
 
-        <p class="route-fcn-header">function <span class="route-fcn-name">{{name}}</span>(<span class="route-fcn-params">{{functionParams}}</span>)</p>
-          <div class="code"></div>
+        <div class="function-signature"></div>
+        <div class="code"></div>
+        <div class="function-close"></div>
       </script>
 
     </div>
