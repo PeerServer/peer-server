@@ -9,6 +9,7 @@
     __extends(RouteView, _super);
 
     function RouteView() {
+      this.renderValidationResult = __bind(this.renderValidationResult, this);
       this.eventNameChange = __bind(this.eventNameChange, this);
       this.eventPathChange = __bind(this.eventPathChange, this);
       this.updateContents = __bind(this.updateContents, this);
@@ -22,6 +23,7 @@
       var _this = this;
 
       this.tmplRoute = Handlebars.compile($("#route-template").html());
+      this.model.on("change", this.renderValidationResult);
       this.model.on("change:name", function(route) {
         return $($(_this.el).find(".route-fcn-name")).html(route.get("name"));
       });
@@ -45,7 +47,7 @@
     };
 
     RouteView.prototype.render = function() {
-      var $code, $el, $name, $path;
+      var $el;
 
       $el = $(this.el);
       $el.html(this.tmplRoute({
@@ -53,15 +55,23 @@
         path: this.model.get("routePath"),
         functionParams: this.paramNamesToString([])
       }));
-      $code = this.$(".code");
-      $name = this.$(".name");
-      $path = this.$(".path");
-      $code.text(this.model.get("routeCode"));
-      this.aceEditor = ace.edit($code[0]);
+      this.code = this.$(".code");
+      this.name = this.$(".name");
+      this.path = this.$(".path");
+      this.code.text(this.model.get("routeCode"));
+      this.aceEditor = ace.edit(this.code[0]);
       this.aceEditor.setTheme("ace/theme/tomorrow_night_eighties");
       this.aceEditor.setFontSize("12px");
       this.aceEditor.getSession().setMode("ace/mode/javascript");
       this.aceEditor.on("change", this.updateContents);
+      this.name.tipsy({
+        fallback: "Invalid name",
+        trigger: "manual"
+      });
+      this.path.tipsy({
+        fallback: "Invalid route path",
+        trigger: "manual"
+      });
       return this;
     };
 
@@ -83,8 +93,27 @@
       return this.model.save("name", target.val());
     };
 
+    RouteView.prototype.renderValidationResult = function(model, error) {
+      this.model.isValid();
+      error = this.model.validationError;
+      if (error && error.name) {
+        this.name.tipsy("show");
+      } else {
+        this.name.tipsy("hide");
+      }
+      if (error && error.routePath) {
+        return this.path.tipsy("show");
+      } else {
+        return this.path.tipsy("hide");
+      }
+    };
+
     return RouteView;
 
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=RouteView.map
+*/

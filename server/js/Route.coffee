@@ -1,5 +1,5 @@
 '''
-  Defines the Route model and RouteCollection for handing dynamic paths and 
+  Defines the Route model for handing dynamic paths and 
   defined path parameters.
 
   TODO: there should be verification on the UI-end that only valid Routes are initialized.
@@ -25,7 +25,6 @@ class window.Route extends Backbone.Model
     @setParsedPath()
     console.log "Parsed route: " + @get("routePath") + " " + @pathRegex + " " + @paramNames
     @on("change:routePath", @setParsedPath)
-
 
   # Creates the text of a function that can be eval'd to obtain a renderable result. 
   # Passes in the param names in order, and a final parameter called "params" containing
@@ -78,7 +77,7 @@ class window.Route extends Backbone.Model
       else
         # TODO: Need to encode anything that is URL-safe but not regex-safe
         regexParts.push(part) # Add the part as a raw string to the regex
-    @pathRegex = "^/?" + regexParts.join("/") + "/?$"  # Indifferent to starting or trailing slash
+    @pathRegex = "^/?" + regexParts.join("/") + "/?$" # Indifferent to starting or trailing slash
     @set("paramNames", paramNames)
 
   # Remove hash or param list from final path part if needed
@@ -88,44 +87,21 @@ class window.Route extends Backbone.Model
     part = part.split("&")[0]
     return part
 
+  validate: (attrs) =>
+    invalid = {}
 
-class window.RouteCollection extends Backbone.Collection
-  model: Route
+    if _.has(attrs, "name") and
+    not /^[$A-Z_][0-9A-Z_$]*$/i.test(attrs.name)
+      invalid.name = true
 
-  localStorage: new Backbone.LocalStorage("RouteCollection")
-  
-  initialize: (options) ->
-    @fetch()
+    # Route path matches multiple groups of
+    # "letters,digits,_,-" or "<letters,digits,_,->"
+    # that begin with a "/"
+    if _.has(attrs, "routePath") and
+    not /^(\/([A-Z\d_-]+|<[A-Z\d_-]+>))+$/i.test(attrs.routePath)
+      invalid.routePath = true
 
-    indexRoute = new Route(name:"testing", routePath: "/test/<name>/<x>/<y>", routeCode: "var result = parseInt(x)+parseInt(y); return '<h1>hello ' + name + '!</h1><p> x= ' + x + ' plus y = ' + y + ' is ' + result + '</p><h2>' + params.animal + '!!</h2>'", isProductionVersion: true)
-    @add(indexRoute)
-    indexRouteDev = new Route(name:"testing", routePath: "/test/<name>/<x>/<y>", routeCode: "var result = parseInt(x)+parseInt(y); return '<h1>hello ' + name + '!</h1><p> x= ' + x + ' plus y = ' + y + ' is ' + result + '</p><h2>' + params.animal + '!!</h2>'", isProductionVersion: false)
-    @add(indexRouteDev)
+    if not _.isEmpty(invalid)
+      return invalid
 
 
-  comparator: (route) =>
-    return route.get("routePath")
-
-  findRouteForPath: (routePath) => 
-    matchedRoute = @find (route) =>
-      if routePath.match(route.pathRegex)
-        console.log "matched path: " + routePath + " with " + route.routePath
-      return route.get("isProductionVersion") and routePath.match(route.pathRegex) isnt null
-    return matchedRoute
-
-  getRouteCode: (routePath) =>
-    return @findWhere(routePath: routePath).get("routeCode")
-
-  createProductionVersion: =>
-    productionFiles = @where(isProductionVersion: true)
-    _.each productionFiles, (route) =>
-      route.destroy()
-
-    developmentFiles = @where(isProductionVersion: false)
-    _.each developmentFiles, (route) =>
-      attrs = _.clone(route.attributes)
-      attrs.id = null
-      copy = new Route(attrs)
-      copy.set("isProductionVersion", true)
-      @add(copy)
-      copy.save()

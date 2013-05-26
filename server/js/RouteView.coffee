@@ -1,6 +1,7 @@
 class window.RouteView extends Backbone.View
   initialize: (options) ->
     @tmplRoute = Handlebars.compile($("#route-template").html())
+    @model.on("change", @renderValidationResult)
 
     @model.on "change:name", (route) =>
       $($(@el).find(".route-fcn-name")).html(route.get("name"))  # This is hacky but keeps it up to date
@@ -26,18 +27,21 @@ class window.RouteView extends Backbone.View
       path: @model.get("routePath"),
       functionParams: @paramNamesToString([])
 
-    $code = @$(".code")
-    $name = @$(".name")
-    $path = @$(".path")
+    @code = @$(".code")
+    @name = @$(".name")
+    @path = @$(".path")
 
     # Set up ACE editor
-    $code.text(@model.get("routeCode"))
-    @aceEditor = ace.edit($code[0])
+    @code.text(@model.get("routeCode"))
+    @aceEditor = ace.edit(@code[0])
     @aceEditor.setTheme("ace/theme/tomorrow_night_eighties")
     @aceEditor.setFontSize("12px")
     @aceEditor.getSession().setMode("ace/mode/javascript")
 
     @aceEditor.on("change", @updateContents)
+
+    @name.tipsy(fallback: "Invalid name", trigger: "manual")
+    @path.tipsy(fallback: "Invalid route path", trigger: "manual")
 
     return @
 
@@ -51,3 +55,17 @@ class window.RouteView extends Backbone.View
   eventNameChange: (event) =>
     target = $(event.currentTarget)
     @model.save("name", target.val())
+
+  renderValidationResult: (model, error) =>
+    @model.isValid()
+    error = @model.validationError
+
+    if error and error.name
+      @name.tipsy("show")
+    else
+      @name.tipsy("hide")
+
+    if error and error.routePath
+      @path.tipsy("show")
+    else
+      @path.tipsy("hide")

@@ -15,13 +15,15 @@
     <script src="/shared/lib/peer.min.js"></script>
     <script src="/shared/lib/taffy-min.js"></script>
     <script src="/shared/lib/miniNotification.js"></script>
+    <script src="/shared/lib/jquery.tipsy.js"></script>
 
     <script src="/server/js/compiled/ServerFile.js"></script>
     <script src="/server/js/compiled/ServerFileCollection.js"></script>
     <script src="/server/js/compiled/ServerFileView.js"></script>
     <script src="/server/js/compiled/ClientServerCollectionView.js"></script>
     <script src="/server/js/compiled/AppView.js"></script>
-    <script src="/server/js/compiled/FileRouter.js"></script>
+    <script src="/server/js/compiled/Route.js"></script>
+    <script src="/server/js/compiled/RouteCollection.js"></script>
     <script src="/server/js/compiled/RouteView.js"></script>
     <script src="/server/js/compiled/UserDatabase.js"></script>
     <script src="/server/js/compiled/UserTemplateRenderer.js"></script>
@@ -39,6 +41,7 @@
     <script src="/shared/lib/ace/mode-html.js"></script>
     <script src="/shared/lib/ace/mode-css.js"></script>
 
+    <link href="/shared/css/tipsy.css" rel="stylesheet">
     <link href="/shared/css/bootstrap.css" rel="stylesheet">
     <link href="/server/css/style.css" rel="stylesheet">
   </head>
@@ -203,7 +206,7 @@
 
       <script id="route-template" type="text/x-handlebars-template">
         Name: <input class="name" value="{{name}}"/>
-        Path: &#47; <input class="path" value="{{path}}"/>
+        Path: <input class="path" value="{{path}}"/>
 
         <div class="route-help">
         <p>Use <code>static_file("filename")</code> to access static files.</p><p> Use the Taffy <code>database</code> object to save state (see <a href="http://www.taffydb.com/">TaffyDB</a> for how to use it)</p>
