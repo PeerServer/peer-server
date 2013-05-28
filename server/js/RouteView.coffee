@@ -51,6 +51,9 @@ class window.RouteView extends Backbone.View
     codeHeight -= @$(".route-help").outerHeight(true)
     @code.outerHeight(codeHeight)
 
+  focus: =>
+    @name.focus()
+
   renderFunctionSignature: =>
     @functionSignature.html(@tmplFunctionSignature(
       name: @model.get("name"),

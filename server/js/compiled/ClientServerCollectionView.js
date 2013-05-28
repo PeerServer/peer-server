@@ -107,7 +107,10 @@
       this.$(".left-sidebar-container").outerHeight($(window).height());
       this.$(".left-sidebar").outerHeight($(window).height());
       this.mainPane.height($(window).height() - this.mainPane.position().top);
-      return this.mainPane.width($(window).width() - this.mainPane.position().left);
+      this.mainPane.width($(window).width() - this.mainPane.position().left);
+      this.routeViewContainer.hide();
+      this.fileViewContainer.hide();
+      return this.uploadFilesRegion.show();
     };
 
     ClientServerCollectionView.prototype.showInitialSaveNotification = function() {
@@ -116,6 +119,11 @@
       shouldShow = false;
       this.serverFileCollection.forEachDevelopmentFile(function(devFile) {
         if (devFile.get("hasBeenEdited")) {
+          return shouldShow = true;
+        }
+      });
+      this.routeCollection.each(function(route) {
+        if (!route.get("isProductionVersion") && route.get("hasBeenEdited")) {
           return shouldShow = true;
         }
       });
@@ -157,14 +165,16 @@
     };
 
     ClientServerCollectionView.prototype.eventSelectFile = function(event) {
-      var cid, route, serverFile, target;
+      var cid, resource, route, serverFile, target;
 
       target = $(event.currentTarget);
       cid = target.attr("data-cid");
       serverFile = this.serverFileCollection.get(cid);
       route = this.routeCollection.get(cid);
-      if (serverFile) {
-        if (this.activeView && this.activeView.model === serverFile) {
+      resource = serverFile || route;
+      console.log(resource);
+      if (resource) {
+        if (this.activeView && this.activeView.model === resource) {
           target.find(".dropdown-menu").removeAttr("style");
           target.addClass("open");
         } else {
@@ -172,14 +182,13 @@
           this.fileLists.find(".caret").hide();
           this.uploadFilesRegion.hide();
           this.routeViewContainer.hide();
-          this.fileViewContainer.show();
-          this.selectServerFile(serverFile, target);
+          this.fileViewContainer.hide();
+          if (serverFile) {
+            this.selectServerFile(serverFile, target);
+          } else if (route) {
+            this.selectRoute(route, target);
+          }
         }
-      } else if (route) {
-        this.uploadFilesRegion.hide();
-        this.fileViewContainer.hide();
-        this.routeViewContainer.show();
-        this.selectRoute(route, target);
       }
       return false;
     };
@@ -193,13 +202,15 @@
     };
 
     ClientServerCollectionView.prototype.eventDeleteFile = function(event) {
-      var modal, serverFile, target;
+      var modal, resource, route, serverFile, target;
 
       target = $(event.currentTarget).parents("li[data-cid]");
       serverFile = this.serverFileCollection.get(target.attr("data-cid"));
+      route = this.routeCollection.get(target.attr("data-cid"));
+      resource = serverFile || route;
       modal = this.tmplFileDeleteConfirmation({
-        cid: serverFile.cid,
-        name: serverFile.get("name")
+        cid: resource.cid,
+        name: resource.get("name")
       });
       modal = $($.parseHTML(modal));
       modal.appendTo(this.el);
@@ -215,12 +226,14 @@
     };
 
     ClientServerCollectionView.prototype.eventDeleteFileConfirmed = function(event) {
-      var serverFile, target;
+      var resource, route, serverFile, target;
 
       target = $(event.currentTarget).parents(".file-delete-confirmation[data-cid]");
       target.modal("hide");
       serverFile = this.serverFileCollection.get(target.attr("data-cid"));
-      serverFile.destroy();
+      route = this.routeCollection.get(target.attr("data-cid"));
+      resource = serverFile || route;
+      resource.destroy();
       if (this.activeView) {
         this.activeView.remove();
       }
@@ -235,9 +248,13 @@
     };
 
     ClientServerCollectionView.prototype.eventSaveChanges = function() {
-      console.log("changes saved");
       this.serverFileCollection.forEachDevelopmentFile(function(devFile) {
         return devFile.save({
+          hasBeenEdited: false
+        });
+      });
+      this.routeCollection.each(function(route) {
+        return route.save({
           hasBeenEdited: false
         });
       });
@@ -260,6 +277,7 @@
       this.fileLists.find(".caret").hide();
       this.$(".file-list li").removeClass("active");
       this.fileViewContainer.hide();
+      this.routeViewContainer.hide();
       return this.uploadFilesRegion.show();
     };
 
@@ -309,7 +327,7 @@
     };
 
     ClientServerCollectionView.prototype.handleRouteNameChange = function(route) {
-      return this.$("li[data-cid=" + route.cid + "] a").text(route.get("name"));
+      return this.$("li[data-cid=" + route.cid + "] > a").text(route.get("name"));
     };
 
     ClientServerCollectionView.prototype.handleFileDeleted = function(model) {
@@ -351,7 +369,13 @@
     };
 
     ClientServerCollectionView.prototype.eventCreateDynamic = function() {
-      return this.routeCollection.add(new Route());
+      var listEl, route;
+
+      route = new Route();
+      this.routeCollection.add(route);
+      route.save();
+      listEl = this.$("li[data-cid=" + route.cid + "]");
+      return this.selectRoute(route, listEl);
     };
 
     ClientServerCollectionView.prototype.eventDoneNamingFile = function(event) {
@@ -442,7 +466,8 @@
         model: serverFile
       });
       this.select(listEl, serverFileView);
-      return this.fileViewContainer.append(serverFileView.render().el);
+      this.fileViewContainer.append(serverFileView.render().el);
+      return this.fileViewContainer.show();
     };
 
     ClientServerCollectionView.prototype.selectRoute = function(route, listEl) {
@@ -453,7 +478,9 @@
       });
       this.select(listEl, routeView);
       this.routeViewContainer.append(routeView.render().el);
-      return routeView.adjustHeights();
+      this.routeViewContainer.show();
+      routeView.adjustHeights();
+      return routeView.focus();
     };
 
     return ClientServerCollectionView;

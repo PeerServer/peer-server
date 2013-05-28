@@ -15,6 +15,7 @@
       this.updateContents = __bind(this.updateContents, this);
       this.createEditor = __bind(this.createEditor, this);
       this.renderFunctionSignature = __bind(this.renderFunctionSignature, this);
+      this.focus = __bind(this.focus, this);
       this.adjustHeights = __bind(this.adjustHeights, this);
       this.render = __bind(this.render, this);
       this.paramNamesToString = __bind(this.paramNamesToString, this);      _ref = RouteView.__super__.constructor.apply(this, arguments);
@@ -78,6 +79,10 @@
       codeHeight -= this.$(".function-close").outerHeight(true);
       codeHeight -= this.$(".route-help").outerHeight(true);
       return this.code.outerHeight(codeHeight);
+    };
+
+    RouteView.prototype.focus = function() {
+      return this.name.focus();
     };
 
     RouteView.prototype.renderFunctionSignature = function() {
