@@ -17,11 +17,17 @@
     AppView.prototype.el = "#client-server";
 
     AppView.prototype.initialize = function(options) {
+      this.clientBrowserLink = $(".navbar .browse");
+      this.archiveButton = $(".navbar .archive");
       this.serverFileCollectionView = new ClientServerCollectionView({
         serverFileCollection: options.serverFileCollection,
         routeCollection: options.routeCollection
       });
-      this.clientBrowserLink = $(".navbar .browse");
+      this.archiver = new ClientServerArchiver({
+        serverFileCollection: options.serverFileCollection,
+        routeCollection: options.routeCollection,
+        button: this.archiveButton
+      });
       return this.on("setServerID", this.setClientBrowserLink);
     };
 
@@ -37,3 +43,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=AppView.map
+*/

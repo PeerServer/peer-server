@@ -5,11 +5,18 @@ class window.AppView extends Backbone.View
   el: "#client-server"
 
   initialize: (options)->
+    @clientBrowserLink = $(".navbar .browse")
+    @archiveButton = $(".navbar .archive")
+
     @serverFileCollectionView = new ClientServerCollectionView(
       serverFileCollection: options.serverFileCollection,
       routeCollection: options.routeCollection)
 
-    @clientBrowserLink = $(".navbar .browse")
+    @archiver = new ClientServerArchiver(
+      serverFileCollection: options.serverFileCollection,
+      routeCollection: options.routeCollection,
+      button: @archiveButton)
+
     @on("setServerID", @setClientBrowserLink)
 
   setClientBrowserLink: (serverID) =>

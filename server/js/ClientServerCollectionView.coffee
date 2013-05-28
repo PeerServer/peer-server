@@ -299,11 +299,11 @@ class window.ClientServerCollectionView extends Backbone.View
       section = @requiredFileList
     else
       switch serverFile.get("fileType")
-        when ServerFile.fileTypeEnum.HTML     then section = @htmlFileList
-        when ServerFile.fileTypeEnum.CSS      then section = @cssFileList
-        when ServerFile.fileTypeEnum.JS       then section = @jsFileList
-        when ServerFile.fileTypeEnum.IMG      then section = @imageFileList
-        else                                  console.error("Error: Could not find proper place for file. " + serverFile.get("name"))
+        when ServerFile.fileTypeEnum.HTML then section = @htmlFileList
+        when ServerFile.fileTypeEnum.CSS  then section = @cssFileList
+        when ServerFile.fileTypeEnum.JS   then section = @jsFileList
+        when ServerFile.fileTypeEnum.IMG  then section = @imageFileList
+        else                              console.error("Error: Could not find proper place for file. " + serverFile.get("name"))
     if section
       return section.append(listEl)
     return null
