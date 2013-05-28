@@ -128,7 +128,6 @@ class window.ClientServerCollectionView extends Backbone.View
     serverFile = @serverFileCollection.get(cid)
     route = @routeCollection.get(cid)
     resource = serverFile or route
-    console.log resource
     if resource
       if @activeView and @activeView.model is resource
         target.find(".dropdown-menu").removeAttr("style")
@@ -227,7 +226,12 @@ class window.ClientServerCollectionView extends Backbone.View
     return false
 
   handleFile: (file) =>
+    if file.type = "application/zip"
+      @handleZipFile(file)
+      return
+
     reader = new FileReader()
+
     fileType = ServerFile.rawTypeToFileType(file.type)
     if fileType is ServerFile.fileTypeEnum.IMG
       reader.readAsDataURL(file)
@@ -240,6 +244,15 @@ class window.ClientServerCollectionView extends Backbone.View
         name: file.name, size: file.size, type: file.type, contents: contents)
       @serverFileCollection.add(serverFile)
       serverFile.save()
+
+  handleZipFile: (file) =>
+    reader = new FileReader()
+    reader.readAsArrayBuffer(file)
+    reader.onload = (evt) =>
+      new ClientServerUnarchiver(
+        serverFileCollection: @serverFileCollection,
+        routeCollection: @routeCollection,
+        contents: evt.target.result)
 
   handleFileChanged: (model) =>
     model.save(hasBeenEdited: true)

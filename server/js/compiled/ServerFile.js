@@ -42,7 +42,11 @@
     };
 
     ServerFile.prototype.updateFileType = function() {
-      return this.set("fileType", ServerFile.rawTypeToFileType(this.get("type")));
+      if (this.get("type")) {
+        return this.set("fileType", ServerFile.rawTypeToFileType(this.get("type")));
+      } else {
+        return this.set("fileType", ServerFile.filenameToFileType(this.get("name")));
+      }
     };
 
     ServerFile.rawTypeToFileType = function(rawType) {
@@ -61,8 +65,31 @@
       return console.error("Unable to identify file type: " + rawType);
     };
 
+    ServerFile.filenameToFileType = function(filename) {
+      var ext;
+
+      ext = filename.replace(/.*\.([a-z]+$)/i, "$1");
+      switch (ext) {
+        case "html":
+          return ServerFile.fileTypeEnum.HTML;
+        case "jpg":
+        case "jpeg":
+        case "png":
+          return ServerFile.fileTypeEnum.IMG;
+        case "css":
+          return ServerFile.fileTypeEnum.CSS;
+        case "js":
+          return ServerFile.fileTypeEnum.JS;
+      }
+      return null;
+    };
+
     return ServerFile;
 
   }).call(this, Backbone.Model);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFile.map
+*/

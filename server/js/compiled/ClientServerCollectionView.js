@@ -25,6 +25,7 @@
       this.handleFileDeleted = __bind(this.handleFileDeleted, this);
       this.handleRouteNameChange = __bind(this.handleRouteNameChange, this);
       this.handleFileChanged = __bind(this.handleFileChanged, this);
+      this.handleZipFile = __bind(this.handleZipFile, this);
       this.handleFile = __bind(this.handleFile, this);
       this.eventDropFiles = __bind(this.eventDropFiles, this);
       this.eventUploadFiles = __bind(this.eventUploadFiles, this);
@@ -172,7 +173,6 @@
       serverFile = this.serverFileCollection.get(cid);
       route = this.routeCollection.get(cid);
       resource = serverFile || route;
-      console.log(resource);
       if (resource) {
         if (this.activeView && this.activeView.model === resource) {
           target.find(".dropdown-menu").removeAttr("style");
@@ -297,6 +297,10 @@
       var fileType, reader,
         _this = this;
 
+      if (file.type = "application/zip") {
+        this.handleZipFile(file);
+        return;
+      }
       reader = new FileReader();
       fileType = ServerFile.rawTypeToFileType(file.type);
       if (fileType === ServerFile.fileTypeEnum.IMG) {
@@ -316,6 +320,21 @@
         });
         _this.serverFileCollection.add(serverFile);
         return serverFile.save();
+      };
+    };
+
+    ClientServerCollectionView.prototype.handleZipFile = function(file) {
+      var reader,
+        _this = this;
+
+      reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      return reader.onload = function(evt) {
+        return new ClientServerUnarchiver({
+          serverFileCollection: _this.serverFileCollection,
+          routeCollection: _this.routeCollection,
+          contents: evt.target.result
+        });
       };
     };
 
