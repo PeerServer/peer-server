@@ -49,6 +49,7 @@
     ClientServerCollectionView.prototype.initialize = function(options) {
       this.serverFileCollection = options.serverFileCollection;
       this.routeCollection = options.routeCollection;
+      this.userDatabase = options.userDatabase;
       this.activeView = null;
       this.fileViewContainer = this.$("#file-view-container");
       this.routeViewContainer = this.$("#route-view-container");
@@ -333,6 +334,7 @@
         return new ClientServerUnarchiver({
           serverFileCollection: _this.serverFileCollection,
           routeCollection: _this.routeCollection,
+          userDatabase: _this.userDatabase,
           contents: evt.target.result
         });
       };

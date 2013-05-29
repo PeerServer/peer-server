@@ -10,11 +10,13 @@ class window.AppView extends Backbone.View
 
     @serverFileCollectionView = new ClientServerCollectionView(
       serverFileCollection: options.serverFileCollection,
-      routeCollection: options.routeCollection)
+      routeCollection: options.routeCollection,
+      userDatabase: options.userDatabase)
 
     @archiver = new ClientServerArchiver(
       serverFileCollection: options.serverFileCollection,
       routeCollection: options.routeCollection,
+      userDatabase: options.userDatabase,
       button: @archiveButton)
 
     @on("setServerID", @setClientBrowserLink)

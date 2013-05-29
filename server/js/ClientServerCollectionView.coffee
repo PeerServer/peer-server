@@ -13,6 +13,7 @@ class window.ClientServerCollectionView extends Backbone.View
   initialize: (options) ->
     @serverFileCollection = options.serverFileCollection
     @routeCollection = options.routeCollection
+    @userDatabase = options.userDatabase
 
     @activeView = null
 
@@ -252,6 +253,7 @@ class window.ClientServerCollectionView extends Backbone.View
       new ClientServerUnarchiver(
         serverFileCollection: @serverFileCollection,
         routeCollection: @routeCollection,
+        userDatabase: @userDatabase,
         contents: evt.target.result)
 
   handleFileChanged: (model) =>

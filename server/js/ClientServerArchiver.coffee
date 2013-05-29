@@ -3,6 +3,7 @@ class window.ClientServerArchiver
   constructor: (params) ->
     @serverFileCollection = params.serverFileCollection
     @routeCollection = params.routeCollection
+    @userDatabase = params.userDatabase
     @button = params.button
 
     @button.click(@archive)
@@ -32,6 +33,8 @@ class window.ClientServerArchiver
       contents.routeCode = route.get("routeCode")
       folder.file(route.get("name") + ".route.js",
         JSON.stringify(contents, null, " "))
+
+    zip.file("database.db", @userDatabase.toString())
 
     content = zip.generate()
     location.href = "data:application/zip;base64," + content

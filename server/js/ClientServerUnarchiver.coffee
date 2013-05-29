@@ -3,6 +3,7 @@ class window.ClientServerUnarchiver
   constructor: (params) ->
     @serverFileCollection = params.serverFileCollection
     @routeCollection = params.routeCollection
+    @userDatabase = params.userDatabase
     contents = params.contents
 
     zip = new JSZip(contents)
@@ -15,6 +16,10 @@ class window.ClientServerUnarchiver
 
     _.each(productionFiles, _.bind(@processFile, @, true))
     _.each(developmentFiles, _.bind(@processFile, @, false))
+
+    database = zip.file("database.db")
+    if database
+      @userDatabase.fromJSONArray(database.data)
 
   processFile: (isProductionVersion, file) =>
     name = file.name.replace(/^(live|edited)_version\//, "")

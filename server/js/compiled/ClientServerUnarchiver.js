@@ -7,11 +7,12 @@
       this.addServerFile = __bind(this.addServerFile, this);
       this.addRoute = __bind(this.addRoute, this);
       this.processFile = __bind(this.processFile, this);
-      var contents, developmentFiles, productionFiles, zip,
+      var contents, database, developmentFiles, productionFiles, zip,
         _this = this;
 
       this.serverFileCollection = params.serverFileCollection;
       this.routeCollection = params.routeCollection;
+      this.userDatabase = params.userDatabase;
       contents = params.contents;
       zip = new JSZip(contents);
       productionFiles = zip.filter(function(relativePath, file) {
@@ -22,6 +23,10 @@
       });
       _.each(productionFiles, _.bind(this.processFile, this, true));
       _.each(developmentFiles, _.bind(this.processFile, this, false));
+      database = zip.file("database.db");
+      if (database) {
+        this.userDatabase.fromJSONArray(database.data);
+      }
     }
 
     ClientServerUnarchiver.prototype.processFile = function(isProductionVersion, file) {

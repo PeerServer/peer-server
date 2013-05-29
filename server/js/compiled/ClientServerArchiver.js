@@ -6,6 +6,7 @@
     function ClientServerArchiver(params) {
       this.archive = __bind(this.archive, this);      this.serverFileCollection = params.serverFileCollection;
       this.routeCollection = params.routeCollection;
+      this.userDatabase = params.userDatabase;
       this.button = params.button;
       this.button.click(this.archive);
     }
@@ -40,6 +41,7 @@
         contents.routeCode = route.get("routeCode");
         return folder.file(route.get("name") + ".route.js", JSON.stringify(contents, null, " "));
       });
+      zip.file("database.db", this.userDatabase.toString());
       content = zip.generate();
       return location.href = "data:application/zip;base64," + content;
     };
