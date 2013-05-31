@@ -1,5 +1,9 @@
-body {
-  overflow: hidden;
+#database-view {
+  padding-top: 40px;
+}
+
+#database-view .query-editor {
+  height: 100px;
 }
 
 .route-help,

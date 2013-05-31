@@ -10,6 +10,8 @@
     __extends(AppView, _super);
 
     function AppView() {
+      this.goToDatabasePage = __bind(this.goToDatabasePage, this);
+      this.goToEditPage = __bind(this.goToEditPage, this);
       this.setClientBrowserLink = __bind(this.setClientBrowserLink, this);      _ref = AppView.__super__.constructor.apply(this, arguments);
       return _ref;
     }
@@ -17,20 +19,19 @@
     AppView.prototype.el = "#client-server";
 
     AppView.prototype.initialize = function(options) {
+      this.serverFileCollection = options.serverFileCollection;
+      this.routeCollection = options.routeCollection;
+      this.userDatabase = options.userDatabase;
       this.clientBrowserLink = $(".navbar .browse");
       this.archiveButton = $(".navbar .archive");
-      this.serverFileCollectionView = new ClientServerCollectionView({
-        serverFileCollection: options.serverFileCollection,
-        routeCollection: options.routeCollection,
-        userDatabase: options.userDatabase
-      });
-      this.archiver = new ClientServerArchiver({
-        serverFileCollection: options.serverFileCollection,
-        routeCollection: options.routeCollection,
-        userDatabase: options.userDatabase,
-        button: this.archiveButton
-      });
-      return this.on("setServerID", this.setClientBrowserLink);
+      this.editLink = $(".navbar .edit");
+      this.databaseLink = $(".navbar .database");
+      this.tmplEditPage = Handlebars.templates["edit-page"];
+      this.tmplDatabasePage = Handlebars.templates["database-page"];
+      this.on("setServerID", this.setClientBrowserLink);
+      this.editLink.click(this.goToEditPage);
+      this.databaseLink.click(this.goToDatabasePage);
+      return this.goToDatabasePage();
     };
 
     AppView.prototype.setClientBrowserLink = function(serverID) {
@@ -38,6 +39,28 @@
 
       link = window.location.origin + "/connect/" + serverID + "/";
       return this.clientBrowserLink.attr("href", link);
+    };
+
+    AppView.prototype.goToEditPage = function() {
+      $(this.el).html(this.tmplEditPage);
+      this.serverFileCollectionView = new ClientServerCollectionView({
+        serverFileCollection: this.serverFileCollection,
+        routeCollection: this.routeCollection,
+        userDatabase: this.userDatabase
+      });
+      return this.archiver = new ClientServerArchiver({
+        serverFileCollection: this.serverFileCollection,
+        routeCollection: this.routeCollection,
+        userDatabase: this.userDatabase,
+        button: this.archiveButton
+      });
+    };
+
+    AppView.prototype.goToDatabasePage = function() {
+      $(this.el).html(this.tmplDatabasePage());
+      return this.databaseView = new DatabaseView({
+        userDatabase: this.userDatabase
+      });
     };
 
     return AppView;

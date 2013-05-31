@@ -5,16 +5,57 @@
 
   window.UserDatabase = (function() {
     function UserDatabase() {
+      this.runQuery = __bind(this.runQuery, this);
       this.fromJSONArray = __bind(this.fromJSONArray, this);
-      this.toString = __bind(this.toString, this);      this.database = TAFFY();
+      this.toString = __bind(this.toString, this);      this.database = TAFFY([
+        {
+          "id": 1,
+          "gender": "M",
+          "first": "John",
+          "last": "Smith",
+          "city": "Seattle, WA",
+          "status": "Active"
+        }, {
+          "id": 2,
+          "gender": "F",
+          "first": "Kelly",
+          "last": "Ruth",
+          "city": "Dallas, TX",
+          "status": "Active"
+        }, {
+          "id": 3,
+          "gender": "M",
+          "first": "Jeff",
+          "last": "Stevenson",
+          "city": "Washington, D.C.",
+          "status": "Active"
+        }, {
+          "id": 4,
+          "gender": "F",
+          "first": "Jennifer",
+          "last": "Gill",
+          "city": "Seattle, WA",
+          "status": "Active"
+        }
+      ]);
     }
 
-    UserDatabase.prototype.toString = function() {
+    UserDatabase.prototype.toString = function(pretty) {
+      if (pretty) {
+        return JSON.stringify(this.database().get(), null, 4);
+      }
       return this.database().stringify();
     };
 
     UserDatabase.prototype.fromJSONArray = function(array) {
       return this.database.insert(array);
+    };
+
+    UserDatabase.prototype.runQuery = function(query) {
+      var code;
+
+      code = "(function() { " + query + " }).call({ db: this.database })";
+      return eval(code);
     };
 
     return UserDatabase;

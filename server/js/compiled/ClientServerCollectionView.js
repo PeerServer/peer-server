@@ -64,10 +64,10 @@
       this.jsFileList = this.$(".file-list.js");
       this.imageFileList = this.$(".file-list.img");
       this.dynamicFileList = this.$(".file-list.dynamic");
-      this.tmplServerFileListItem = Handlebars.compile($("#file-list-item-template").html());
-      this.tmplRouteListItem = Handlebars.compile($("#route-list-item-template").html());
-      this.tmplFileDeleteConfirmation = Handlebars.compile($("#file-delete-confirmation-template").html());
-      this.tmplEditableFileListItem = Handlebars.compile($("#editable-file-list-item-template").html());
+      this.tmplServerFileListItem = Handlebars.templates["file-list-item"];
+      this.tmplRouteListItem = Handlebars.templates["route-list-item"];
+      this.tmplFileDeleteConfirmation = Handlebars.templates["file-delete-confirmation"];
+      this.tmplEditableFileListItem = Handlebars.templates["editable-file-list-item"];
       this.addAll();
       this.serverFileCollection.bind("add", this.addOneServerFile);
       this.serverFileCollection.bind("reset", this.addAll);

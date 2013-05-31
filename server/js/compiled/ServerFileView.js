@@ -18,8 +18,8 @@
     }
 
     ServerFileView.prototype.initialize = function(options) {
-      this.tplSourceCode = Handlebars.compile($("#source-code-template").html());
-      return this.tplImage = Handlebars.compile($("#image-template").html());
+      this.tplSourceCode = Handlebars.template["source-code"];
+      return this.tplImage = Handlebars.template["image"];
     };
 
     ServerFileView.prototype.render = function() {
@@ -66,3 +66,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFileView.map
+*/

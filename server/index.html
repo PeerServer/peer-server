@@ -20,7 +20,11 @@
     <script src="/shared/lib/jszip-inflate.js"></script>
     <script src="/shared/lib/jszip-deflate.js"></script>
     <script src="/shared/lib/jszip-load.js"></script>
+    <script src="/shared/lib/highlight.pack.js"></script>
 
+    <script src="/server/js/templates.js"></script>
+
+    <script src="/server/js/compiled/DatabaseView.js"></script>
     <script src="/server/js/compiled/ClientServerArchiver.js"></script>
     <script src="/server/js/compiled/ClientServerUnarchiver.js"></script>
     <script src="/server/js/compiled/ServerFile.js"></script>
@@ -49,6 +53,7 @@
 
     <link href="/shared/css/tipsy.css" rel="stylesheet">
     <link href="/shared/css/bootstrap.css" rel="stylesheet">
+    <link href="/shared/css/highlight-tomorrow-night.css" rel="stylesheet">
     <link href="/server/css/style.css" rel="stylesheet">
   </head>
   <body>
@@ -60,9 +65,11 @@
           <a class="brand" href="#">Client Server</a>
 
           <ul class="nav pull-right">
+            <li><a class="edit" href="#">Edit</a></li>
             <li><a class="browse" target="_blank">Browse</a></li>
             <li><a>Help</a></li>
             <li><a>Settings</a></li>
+            <li><a class="database" href="#">Database</a></li>
             <li><a class="archive" href="#">Download Website (ZIP)</a></li>
           </ul>
 
@@ -71,185 +78,7 @@
     </div>
 
 
-    <div id="client-server">
-
-      <div id="save-notification">
-        <p>
-          <a href="#" class="save-changes">Click here</a> for your changes to go live.
-        </p>
-      </div>
-
-      <div id="client-server-collection-view">
-        <div class="left-sidebar-container">
-          <div class="left-sidebar">
-
-            <ul class="nav nav-tabs nav-stacked">
-
-              <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                Create <b class="caret"></b>
-              </a>
-              <ul class="dropdown-menu create-menu">
-                <li class="html"><a href="#">HTML</a></li>
-                <li class="css"><a href="#">CSS</a></li>
-                <li class="js"><a href="#">JS</a></li>
-                <li class="divider"></li>
-                <li class="dynamic"><a href="#">Dynamic Path</a></li>
-                <li class="template"><a href="#">Template</a></li>
-              </ul>
-              </li>
-
-              <li class="upload-files"><a href="#">Upload Files</a></li>
-
-            </ul>
-
-            <div class="well" style="padding: 8px 0;">
-              <ul class="file-list required nav nav-list">
-                <li class="nav-header">Required Files</li>
-              </ul>
-
-              <ul class="nav nav-list">
-                <li class="divider"></li>
-              </ul>
-
-              <ul class="file-list html nav nav-list">
-                <li class="nav-header">HTML</li>
-              </ul>
-
-              <ul class="file-list css nav nav-list">
-                <li class="nav-header">CSS</li>
-              </ul>
-
-              <ul class="file-list js nav nav-list">
-                <li class="nav-header">JS</li>
-              </ul>
-
-              <ul class="file-list img nav nav-list">
-                <li class="nav-header">Images</li>
-              </ul>
-
-              <ul class="nav nav-list">
-                <li class="divider"></li>
-              </ul>
-
-              <ul class="file-list dynamic nav nav-list">
-                <li class="nav-header">Dynamic Files</li>
-              </ul>
-
-            </div>
-
-          </div>
-        </div>
-
-        <div class="main-pane">
-          <div id="file-view-container"> </div>
-
-          <div id="route-view-container"> </div>
-
-          <div class="file-drop well well-large">
-            <div class="file-drop-inner">
-              <h3>Drop files here</h3>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <script id="route-list-item-template" type="text/x-handlebars-template">
-        <li class="dropdown" data-cid="{{cid}}">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-            {{#if name}}{{name}}{{else}}(No name yet){{/if}} <b class="caret pull-right" style="display: none;"></b>
-          </a>
-          <ul class="dropdown-menu" style="display: none;">
-            <li class="delete"><a href="#">Delete</a></li>
-          </ul>
-        </li>
-      </script>
-
-      <script id="file-list-item-template" type="text/x-handlebars-template">
-        {{#if isRequired}}
-          <li data-cid="{{cid}}"><a href="#">{{name}}</a></li>
-        {{else}}
-          <li class="dropdown" data-cid="{{cid}}">
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-              {{name}} <b class="caret pull-right" style="display: none;"></b>
-            </a>
-            <ul class="dropdown-menu" style="display: none;">
-              <li class="rename"><a href="#">Rename</a></li>
-              <li class="delete"><a href="#">Delete</a></li>
-            </ul>
-            </li>
-          {{/if}}
-      </script>
-
-
-      <script id="file-delete-confirmation-template" type="text/x-handlebars-template">
-        <div class="file-delete-confirmation modal hide" data-cid="{{cid}}">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3>Are you sure that you want to delete {{name}}?</h3>
-          </div>
-          <div class="modal-body">
-          </div>
-          <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">Cancel</a>
-            <a href="#" class="btn btn-danger deletion-confirmed">Delete {{name}}</a>
-          </div>
-        </div>
-      </script>
-
-      <script id="editable-file-list-item-template" type="text/x-handlebars-template">
-        <li data-cid="{{cid}}"><input type="text" value="{{name}}"></input></li>
-      </script>
-
-      <script id="source-code-template" type="text/x-handlebars-template">
-        <div class="file-contents"></div>
-      </script>
-
-      <script id="image-template" type="text/x-handlebars-template">
-        <img src=""></img>
-      </script>
-
-      <script id="route-template" type="text/x-handlebars-template">
-        <div class="route-path">
-          URL at which the code below will be executed
-          <span class="help">(Path components entered as "&lt;someText&gt;" will become variables,
-          accessible by your function below.)</span>
-          <br/>
-          <input type="text" class="path input-xlarge" value="{{path}}">
-        </div>
-
-        <div class="error-message">
-        Error:
-        {{#if errorMessage}}
-          {{errorMessage}}
-        {{/if}}
-        </div>
-
-        <div class="well function" style="padding: 8px;">
-          <div class="function-signature"></div>
-
-          <div class="route-help">
-            <p>
-              // Use `static_file("filename")` to access static files.
-            </p>
-            <p>
-              // Use the Taffy `database` object to save state <br/>
-              // (see <a href="http://www.taffydb.com/">TaffyDB</a> for how to use it)
-            </p>
-          </div>
-
-          <div class="code"></div>
-          
-          <div class="function-close">}</div>
-        </div>
-      </script>
-
-      <script id="route-function-signature-template" type="text/x-handlebars-template">
-        function <input class="name" type="text" value="{{name}}"/> ({{parameterString}}) {
-      </script>
-
-    </div>
+    <div id="client-server"></div>
 
   </body>
 </html>
