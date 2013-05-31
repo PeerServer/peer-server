@@ -6,13 +6,7 @@
 class window.UserDatabase
 
   constructor: ->
-    # @database = TAFFY()
-    @database = TAFFY([
-      {"id":1,"gender":"M","first":"John","last":"Smith","city":"Seattle, WA","status":"Active"},
-      {"id":2,"gender":"F","first":"Kelly","last":"Ruth","city":"Dallas, TX","status":"Active"},
-      {"id":3,"gender":"M","first":"Jeff","last":"Stevenson","city":"Washington, D.C.","status":"Active"},
-      {"id":4,"gender":"F","first":"Jennifer","last":"Gill","city":"Seattle, WA","status":"Active"}
-    ])
+    @database = TAFFY()
 
   toString: (pretty) =>
     if pretty
@@ -23,6 +17,6 @@ class window.UserDatabase
     @database.insert(array)
 
   runQuery: (query) =>
-    code = "(function() { " + query + " }).call({ db: this.database })"
+    code = "(function(db) { " + query + " }).call(null, this.database)"
     return eval(code)
 

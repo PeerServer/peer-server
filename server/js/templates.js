@@ -151,14 +151,27 @@ function program3(depth0,data) {
 templates['route'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [3,'>= 1.0.0-rc.4'];
 helpers = helpers || Handlebars.helpers; data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    ";
+  if (stack1 = helpers.errorMessage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.errorMessage; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n  ";
+  return buffer;
+  }
 
   buffer += "<div class=\"route-path\">\n  URL at which the code below will be executed\n  <span class=\"help\">(Path components entered as \"&lt;someText&gt;\" will become variables,\n  accessible by your function below.)</span>\n  <br/>\n  <input type=\"text\" class=\"path input-xlarge\" value=\"";
   if (stack1 = helpers.path) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.path; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n</div>\n\n<div class=\"well function\" style=\"padding: 8px;\">\n  <div class=\"function-signature\"></div>\n\n  <div class=\"route-help\">\n    <p>\n      // Use `static_file(\"filename\")` to access static files.\n    </p>\n    <p>\n      // Use the Taffy `database` object to save state <br/>\n      // (see <a href=\"http://www.taffydb.com/\">TaffyDB</a> for how to use it)\n    </p>\n  </div>\n\n  <div class=\"code\"></div>\n  \n  <div class=\"function-close\">}</div>\n</div>\n\n";
+    + "\">\n</div>\n\n<div class=\"error-message\">\n  Error:\n  ";
+  stack1 = helpers['if'].call(depth0, depth0.errorMessage, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>\n\n<div class=\"well function\" style=\"padding: 8px;\">\n  <div class=\"function-signature\"></div>\n\n  <div class=\"route-help\">\n    <p>\n      // Use `static_file(\"filename\")` to access static files.\n    </p>\n    <p>\n      // Use the Taffy `database` object to save state <br/>\n      // (see <a href=\"http://www.taffydb.com/\">TaffyDB</a> for how to use it)\n    </p>\n  </div>\n\n  <div class=\"code\"></div>\n  \n  <div class=\"function-close\">}</div>\n</div>\n\n";
   return buffer;
   });
 templates['source-code'] = template(function (Handlebars,depth0,helpers,partials,data) {
