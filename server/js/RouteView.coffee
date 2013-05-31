@@ -1,14 +1,15 @@
 class window.RouteView extends Backbone.View
   initialize: (options) ->
     @productionRoute = options.productionRoute
-    console.log "@productionRoute", @productionRoute
+
     @tmplRoute = Handlebars.templates["route"]
     @tmplFunctionSignature = Handlebars.templates["route-function-signature"]
 
     @model.on("change:paramNames", @renderFunctionSignature)
-    # TODO FIX: Error message is not being read correctly from the model.
-    @productionRoute.on("change:errorMessage", @updateErrorMessage) if @productionRoute
     @model.on("change", @renderValidationResult)
+
+    if @productionRoute
+      @productionRoute.on("change:errorMessage", @updateErrorMessage)
 
 
   events:
@@ -22,11 +23,16 @@ class window.RouteView extends Backbone.View
 
   render: =>
     $el = $(@el)
+
+    errorMessage = ""
+    if @productionRoute
+      errorMessage = @productionRoute.get("errorMessage")
+
     $el.html @tmplRoute
       name: @model.get("name"),
       path: @model.get("routePath"),
       functionParams: @paramNamesToString([]),
-      errorMessage: @productionRoute.get("errorMessage")
+      errorMessage: errorMessage
 
     @code = @$(".code")
     @path = @$(".path")
@@ -73,9 +79,6 @@ class window.RouteView extends Backbone.View
     return editor
 
   updateErrorMessage: =>
-    console.log "UPDATING error message"
-    console.log @productionRoute.get("errorMessage")
-
     if @productionRoute.get("errorMessage")
       $(@el).find(".error-message").html(@productionRoute.get("errorMessage"))
 

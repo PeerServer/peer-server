@@ -25,14 +25,13 @@
 
     RouteView.prototype.initialize = function(options) {
       this.productionRoute = options.productionRoute;
-      console.log("@productionRoute", this.productionRoute);
       this.tmplRoute = Handlebars.templates["route"];
       this.tmplFunctionSignature = Handlebars.templates["route-function-signature"];
       this.model.on("change:paramNames", this.renderFunctionSignature);
+      this.model.on("change", this.renderValidationResult);
       if (this.productionRoute) {
-        this.productionRoute.on("change:errorMessage", this.updateErrorMessage);
+        return this.productionRoute.on("change:errorMessage", this.updateErrorMessage);
       }
-      return this.model.on("change", this.renderValidationResult);
     };
 
     RouteView.prototype.events = {
@@ -48,14 +47,18 @@
     };
 
     RouteView.prototype.render = function() {
-      var $el;
+      var $el, errorMessage;
 
       $el = $(this.el);
+      errorMessage = "";
+      if (this.productionRoute) {
+        errorMessage = this.productionRoute.get("errorMessage");
+      }
       $el.html(this.tmplRoute({
         name: this.model.get("name"),
         path: this.model.get("routePath"),
         functionParams: this.paramNamesToString([]),
-        errorMessage: this.productionRoute.get("errorMessage")
+        errorMessage: errorMessage
       }));
       this.code = this.$(".code");
       this.path = this.$(".path");
@@ -111,8 +114,6 @@
     };
 
     RouteView.prototype.updateErrorMessage = function() {
-      console.log("UPDATING error message");
-      console.log(this.productionRoute.get("errorMessage"));
       if (this.productionRoute.get("errorMessage")) {
         return $(this.el).find(".error-message").html(this.productionRoute.get("errorMessage"));
       }

@@ -141,17 +141,19 @@
 
       shouldShow = false;
       this.serverFileCollection.forEachDevelopmentFile(function(devFile) {
-        if (devFile.get("hasBeenEdited")) {
+        if (devFile.get("hasBeenEdited") && devFile.isValid()) {
           return shouldShow = true;
         }
       });
       this.routeCollection.each(function(route) {
-        if (!route.get("isProductionVersion") && route.get("hasBeenEdited")) {
+        if (!route.get("isProductionVersion") && route.get("hasBeenEdited") && route.isValid()) {
           return shouldShow = true;
         }
       });
       if (shouldShow) {
         return this.saveNotification.show();
+      } else {
+        return this.saveNotification.hide();
       }
     };
 
@@ -240,6 +242,9 @@
 
       target = $(event.currentTarget);
       serverFile = this.serverFileCollection.get(target.attr("data-cid"));
+      if (!serverFile) {
+        return;
+      }
       return this.editableFileName(serverFile, target);
     };
 
@@ -274,19 +279,32 @@
     };
 
     ClientServerCollectionView.prototype.eventSaveChanges = function() {
+      var allAreValid;
+
+      allAreValid = true;
       this.serverFileCollection.forEachDevelopmentFile(function(devFile) {
-        return devFile.save({
-          hasBeenEdited: false
-        });
+        if (devFile.isValid()) {
+          return devFile.save({
+            hasBeenEdited: false
+          });
+        } else {
+          return allAreValid = false;
+        }
       });
       this.routeCollection.each(function(route) {
-        return route.save({
-          hasBeenEdited: false
-        });
+        if (route.isValid()) {
+          return route.save({
+            hasBeenEdited: false
+          });
+        } else {
+          return allAreValid = false;
+        }
       });
-      this.saveNotification.hide();
-      this.serverFileCollection.createProductionVersion();
-      return this.routeCollection.createProductionVersion();
+      if (allAreValid) {
+        this.saveNotification.hide();
+        this.serverFileCollection.createProductionVersion();
+        return this.routeCollection.createProductionVersion();
+      }
     };
 
     ClientServerCollectionView.prototype.preventDefault = function(event) {
@@ -367,7 +385,7 @@
       model.save({
         hasBeenEdited: true
       });
-      return this.saveNotification.show();
+      return this.showInitialSaveNotification();
     };
 
     ClientServerCollectionView.prototype.handleRouteNameChange = function(route) {
@@ -406,6 +424,7 @@
     };
 
     ClientServerCollectionView.prototype.createFile = function(serverFile) {
+      this.resetClicksOnFileList();
       this.serverFileCollection.add(serverFile, {
         silent: true
       });
@@ -415,6 +434,7 @@
     ClientServerCollectionView.prototype.eventCreateDynamic = function() {
       var listEl, route;
 
+      this.resetClicksOnFileList();
       route = new Route();
       this.routeCollection.add(route);
       route.save();

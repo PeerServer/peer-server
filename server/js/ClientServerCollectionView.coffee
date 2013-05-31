@@ -109,15 +109,17 @@ class window.ClientServerCollectionView extends Backbone.View
     shouldShow = false
 
     @serverFileCollection.forEachDevelopmentFile (devFile) ->
-      if devFile.get("hasBeenEdited")
+      if devFile.get("hasBeenEdited") and devFile.isValid()
         shouldShow = true
 
     @routeCollection.each (route) ->
-      if not route.get("isProductionVersion") and route.get("hasBeenEdited")
+      if not route.get("isProductionVersion") and route.get("hasBeenEdited") and route.isValid()
         shouldShow = true
 
     if shouldShow
       @saveNotification.show()
+    else
+      @saveNotification.hide()
     
   addAll: =>
     @renderFileLists()
@@ -182,6 +184,7 @@ class window.ClientServerCollectionView extends Backbone.View
   eventRenameFile: (event) =>
     target = $(event.currentTarget)
     serverFile = @serverFileCollection.get(target.attr("data-cid"))
+    return if not serverFile
     @editableFileName(serverFile, target)
 
   eventDeleteFileConfirmed: (resource) =>
@@ -207,15 +210,24 @@ class window.ClientServerCollectionView extends Backbone.View
       return false
 
   eventSaveChanges: =>
+    allAreValid = true
+
     @serverFileCollection.forEachDevelopmentFile (devFile) ->
-      devFile.save(hasBeenEdited: false)
+      if devFile.isValid()
+        devFile.save(hasBeenEdited: false)
+      else
+        allAreValid = false
 
     @routeCollection.each (route) ->
-      route.save(hasBeenEdited: false)
+      if route.isValid()
+        route.save(hasBeenEdited: false)
+      else
+        allAreValid = false
 
-    @saveNotification.hide()
-    @serverFileCollection.createProductionVersion()
-    @routeCollection.createProductionVersion()
+    if allAreValid
+      @saveNotification.hide()
+      @serverFileCollection.createProductionVersion()
+      @routeCollection.createProductionVersion()
 
   preventDefault: (event) =>
     event.preventDefault()
@@ -271,7 +283,7 @@ class window.ClientServerCollectionView extends Backbone.View
 
   handleFileChanged: (model) =>
     model.save(hasBeenEdited: true)
-    @saveNotification.show()
+    @showInitialSaveNotification()
 
   handleRouteNameChange: (route) =>
     @$("li[data-cid=#{route.cid}] > a").text(route.get("name"))
@@ -294,10 +306,12 @@ class window.ClientServerCollectionView extends Backbone.View
     @createFile(serverFile)
 
   createFile: (serverFile) =>
+    @resetClicksOnFileList()
     @serverFileCollection.add(serverFile, silent: true)
     @editableFileName(serverFile, null)
 
   eventCreateDynamic: =>
+    @resetClicksOnFileList()
     route = new Route()
     @routeCollection.add(route)
     route.save()
