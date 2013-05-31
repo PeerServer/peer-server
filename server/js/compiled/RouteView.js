@@ -13,6 +13,7 @@
       this.eventNameChange = __bind(this.eventNameChange, this);
       this.eventPathChange = __bind(this.eventPathChange, this);
       this.updateContents = __bind(this.updateContents, this);
+      this.updateErrorMessage = __bind(this.updateErrorMessage, this);
       this.createEditor = __bind(this.createEditor, this);
       this.renderFunctionSignature = __bind(this.renderFunctionSignature, this);
       this.focus = __bind(this.focus, this);
@@ -25,8 +26,9 @@
     RouteView.prototype.initialize = function(options) {
       this.tmplRoute = Handlebars.compile($("#route-template").html());
       this.tmplFunctionSignature = Handlebars.compile($("#route-function-signature-template").html());
-      this.model.on("change", this.renderValidationResult);
-      return this.model.on("change:paramNames", this.renderFunctionSignature);
+      this.model.on("change:paramNames", this.renderFunctionSignature);
+      this.model.on("change:errorMessage", this.updateErrorMessage);
+      return this.model.on("change", this.renderValidationResult);
     };
 
     RouteView.prototype.events = {
@@ -45,10 +47,12 @@
       var $el;
 
       $el = $(this.el);
+      console.log("rendering: " + this.model.get("errorMessage"));
       $el.html(this.tmplRoute({
         name: this.model.get("name"),
         path: this.model.get("routePath"),
-        functionParams: this.paramNamesToString([])
+        functionParams: this.paramNamesToString([]),
+        errorMessage: this.model.get("errorMessage")
       }));
       this.code = this.$(".code");
       this.path = this.$(".path");
@@ -101,6 +105,14 @@
       editor.setFontSize("12px");
       editor.getSession().setMode("ace/mode/javascript");
       return editor;
+    };
+
+    RouteView.prototype.updateErrorMessage = function() {
+      console.log("UPDATING error message");
+      console.log(this.model.get("errorMessage"));
+      if (this.model.get("errorMessage")) {
+        return $(this.el).find(".error-message").html(this.model.get("errorMessage"));
+      }
     };
 
     RouteView.prototype.updateContents = function() {

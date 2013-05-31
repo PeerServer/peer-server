@@ -219,6 +219,13 @@
           <input type="text" class="path input-xlarge" value="{{path}}">
         </div>
 
+        <div class="error-message">
+        Error:
+        {{#if errorMessage}}
+          {{errorMessage}}
+        {{/if}}
+        </div>
+
         <div class="well function" style="padding: 8px;">
           <div class="function-signature"></div>
 

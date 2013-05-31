@@ -13,6 +13,7 @@
 
 class window.Route extends Backbone.Model
   defaults:
+    errorMessage: ""  # An error message in the user's function.
     name: ""
     routePath: ""
     routeCode: ""  # The function body to execute for this route
@@ -23,6 +24,7 @@ class window.Route extends Backbone.Model
 
   initialize: ->
     @setParsedPath()
+    @set("errorMessage", "Path has not yet been executed.")
     console.log "Parsed route: " + @get("routePath") + " " + @pathRegex + " " + @paramNames
     @on("change:routePath", @setParsedPath)
 
@@ -50,15 +52,27 @@ class window.Route extends Backbone.Model
       static_file = staticFileFcn
       render_template = (filename, context) =>
         return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context)
+      result = ""
       try
-        result = eval(text)
-        if not result  # It's fine for result to be undefined, for functions that complete but don't return anything.
-          result = ""
-        return {"result": result}
+        evaluation = eval(text)
+        if evaluation  # Result should stay "" for functions that complete but don't return anything.
+          result = evaluation
       catch error
         console.log "Eval error: " + error
-        return {"error": "Evaluation error in function: " + error}
+        error = "Evaluation error in function: " + error
+        @set("errorMessage", error)
+        return {"error": error}
+      @set("errorMessage", "Last execution at " + @getPrettyCurrentDate() +  " was successful!") # reset the error message to null after successful evaluation.
+      return {"result": result}
     return fcn
+
+  getPrettyCurrentDate: =>
+    now = new Date()
+    minutes = now.getMinutes()
+    minutes = "0" + minutes if minutes < 10
+    time = now.getHours() + ":" + minutes
+    date = now.getMonth() + "-" + now.getDate() + "-" + now.getFullYear()
+    return time + " on " + date
 
   # Parses the route path into a list of ordered parameters.
   # Example: "/<first>/foo/<second>/bar/<third>"  -> ["first", "second", "third"]

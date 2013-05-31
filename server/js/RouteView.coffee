@@ -4,8 +4,11 @@ class window.RouteView extends Backbone.View
     @tmplFunctionSignature = Handlebars.compile(
       $("#route-function-signature-template").html())
 
-    @model.on("change", @renderValidationResult)
     @model.on("change:paramNames", @renderFunctionSignature)
+    # TODO FIX: Error message is not being read correctly from the model.
+    @model.on("change:errorMessage", @updateErrorMessage)  # TODO for some reason not triggering
+    @model.on("change", @renderValidationResult)
+
 
   events:
     "keyup .path": "eventPathChange"
@@ -18,10 +21,12 @@ class window.RouteView extends Backbone.View
 
   render: =>
     $el = $(@el)
+    console.log "rendering: " + @model.get("errorMessage")
     $el.html @tmplRoute
       name: @model.get("name"),
       path: @model.get("routePath"),
-      functionParams: @paramNamesToString([])
+      functionParams: @paramNamesToString([]),
+      errorMessage: @model.get("errorMessage")
 
     @code = @$(".code")
     @path = @$(".path")
@@ -54,6 +59,8 @@ class window.RouteView extends Backbone.View
   focus: =>
     @name.focus()
 
+
+
   renderFunctionSignature: =>
     @functionSignature.html(@tmplFunctionSignature(
       name: @model.get("name"),
@@ -66,6 +73,13 @@ class window.RouteView extends Backbone.View
     editor.setFontSize("12px")
     editor.getSession().setMode("ace/mode/javascript")
     return editor
+
+  updateErrorMessage: =>
+    console.log "UPDATING error message"
+    console.log @model.get("errorMessage")
+
+    if @model.get("errorMessage")
+      $(@el).find(".error-message").html(@model.get("errorMessage"))
 
   updateContents: =>
     @model.save("routeCode", @aceEditor.getValue())

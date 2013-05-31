@@ -13,11 +13,13 @@
       this.validate = __bind(this.validate, this);
       this.sanitizePathPart = __bind(this.sanitizePathPart, this);
       this.setParsedPath = __bind(this.setParsedPath, this);
+      this.getPrettyCurrentDate = __bind(this.getPrettyCurrentDate, this);
       this.getExecutableFunction = __bind(this.getExecutableFunction, this);      _ref = Route.__super__.constructor.apply(this, arguments);
       return _ref;
     }
 
     Route.prototype.defaults = {
+      errorMessage: "",
       name: "",
       routePath: "",
       routeCode: "",
@@ -29,6 +31,7 @@
 
     Route.prototype.initialize = function() {
       this.setParsedPath();
+      this.set("errorMessage", "Path has not yet been executed.");
       console.log("Parsed route: " + this.get("routePath") + " " + this.pathRegex + " " + this.paramNames);
       return this.on("change:routePath", this.setParsedPath);
     };
@@ -55,30 +58,47 @@
       text += JSON.stringify(urlParams) + ")";
       console.log("Function: " + text);
       fcn = function() {
-        var database, error, render_template, result, static_file;
+        var database, error, evaluation, render_template, result, static_file;
 
         database = userDatabase;
         static_file = staticFileFcn;
         render_template = function(filename, context) {
           return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context);
         };
+        result = "";
         try {
-          result = eval(text);
-          if (!result) {
-            result = "";
+          evaluation = eval(text);
+          if (evaluation) {
+            result = evaluation;
           }
-          return {
-            "result": result
-          };
         } catch (_error) {
           error = _error;
           console.log("Eval error: " + error);
+          error = "Evaluation error in function: " + error;
+          _this.set("errorMessage", error);
           return {
-            "error": "Evaluation error in function: " + error
+            "error": error
           };
         }
+        _this.set("errorMessage", "Last execution at " + _this.getPrettyCurrentDate() + " was successful!");
+        return {
+          "result": result
+        };
       };
       return fcn;
+    };
+
+    Route.prototype.getPrettyCurrentDate = function() {
+      var date, minutes, now, time;
+
+      now = new Date();
+      minutes = now.getMinutes();
+      if (minutes < 10) {
+        minutes = "0" + minutes;
+      }
+      time = now.getHours() + ":" + minutes;
+      date = now.getMonth() + "-" + now.getDate() + "-" + now.getFullYear();
+      return time + " on " + date;
     };
 
     Route.prototype.setParsedPath = function() {
