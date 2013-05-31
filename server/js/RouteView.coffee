@@ -1,12 +1,14 @@
 class window.RouteView extends Backbone.View
   initialize: (options) ->
+    @productionRoute = options.productionRoute
+    console.log "@productionRoute", @productionRoute
     @tmplRoute = Handlebars.compile($("#route-template").html())
     @tmplFunctionSignature = Handlebars.compile(
       $("#route-function-signature-template").html())
 
     @model.on("change:paramNames", @renderFunctionSignature)
     # TODO FIX: Error message is not being read correctly from the model.
-    @model.on("change:errorMessage", @updateErrorMessage)  # TODO for some reason not triggering
+    @productionRoute.on("change:errorMessage", @updateErrorMessage)  # TODO for some reason not triggering
     @model.on("change", @renderValidationResult)
 
 
@@ -76,10 +78,10 @@ class window.RouteView extends Backbone.View
 
   updateErrorMessage: =>
     console.log "UPDATING error message"
-    console.log @model.get("errorMessage")
+    console.log @productionRoute.get("errorMessage")
 
-    if @model.get("errorMessage")
-      $(@el).find(".error-message").html(@model.get("errorMessage"))
+    if @productionRoute.get("errorMessage")
+      $(@el).find(".error-message").html(@productionRoute.get("errorMessage"))
 
   updateContents: =>
     @model.save("routeCode", @aceEditor.getValue())

@@ -24,10 +24,12 @@
     }
 
     RouteView.prototype.initialize = function(options) {
+      this.productionRoute = options.productionRoute;
+      console.log("@productionRoute", this.productionRoute);
       this.tmplRoute = Handlebars.compile($("#route-template").html());
       this.tmplFunctionSignature = Handlebars.compile($("#route-function-signature-template").html());
       this.model.on("change:paramNames", this.renderFunctionSignature);
-      this.model.on("change:errorMessage", this.updateErrorMessage);
+      this.productionRoute.on("change:errorMessage", this.updateErrorMessage);
       return this.model.on("change", this.renderValidationResult);
     };
 
@@ -109,9 +111,9 @@
 
     RouteView.prototype.updateErrorMessage = function() {
       console.log("UPDATING error message");
-      console.log(this.model.get("errorMessage"));
-      if (this.model.get("errorMessage")) {
-        return $(this.el).find(".error-message").html(this.model.get("errorMessage"));
+      console.log(this.productionRoute.get("errorMessage"));
+      if (this.productionRoute.get("errorMessage")) {
+        return $(this.el).find(".error-message").html(this.productionRoute.get("errorMessage"));
       }
     };
 

@@ -355,7 +355,8 @@ class window.ClientServerCollectionView extends Backbone.View
     @fileViewContainer.show()
 
   selectRoute: (route, listEl) =>
-    routeView = new RouteView(model: route)
+    productionRoute = @routeCollection.findWhere(name: route.get("name"), isProductionVersion: true)
+    routeView = new RouteView(model: route, productionRoute: productionRoute)
     @select(listEl, routeView)
     @routeViewContainer.append(routeView.render().el)
     @routeViewContainer.show()
