@@ -32,22 +32,31 @@
   font-size: 13px;
 }
 
+#save-notification-container {
+  height: 24px;
+  display: block;
+  width: 100%;
+  margin-top: 40px;
+}
+
 #save-notification {
+  height: 24px;
   display: none;
   position: fixed;
-  width: 600px;
-  margin-left: -300px;
+  width: 80%;
+  margin-top: 40px;
+  margin-left: -40%;
   left: 50%;
   background: #FCEFD4;
   text-align: center;
-  z-index: 9999;
   border: 1px solid #FAE1C6;
   border-radius: 0px 0px 10px 10px;
+  z-index: 2;
 }
 
 .main-pane {
   position: fixed;
-  top: 40px;
+  top: 72px;
   left: 320px;
   z-index: 1;
 }
@@ -59,7 +68,7 @@
 }
 
 .left-sidebar {
-  padding-top: 50px;
+  padding-top: 10px;
   overflow: auto;
   overflow-y: scroll;
   height: 100%;

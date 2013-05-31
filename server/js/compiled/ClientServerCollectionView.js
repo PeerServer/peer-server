@@ -58,8 +58,10 @@
       this.fileViewContainer = this.$("#file-view-container");
       this.routeViewContainer = this.$("#route-view-container");
       this.uploadFilesRegion = this.$(".file-drop");
-      this.saveNotification = $("#save-notification").miniNotification({
-        show: false
+      this.saveNotificationContainer = this.$("#save-notification-container");
+      this.saveNotification = this.$("#save-notification").miniNotification({
+        show: false,
+        hideOnClick: false
       });
       this.mainPane = this.$(".main-pane");
       this.leftSidebarContainer = this.$(".left-sidebar-container");
@@ -105,7 +107,6 @@
     };
 
     ClientServerCollectionView.prototype.render = function() {
-      this.adjustSizes();
       this.routeViewContainer.hide();
       this.fileViewContainer.hide();
       this.uploadFilesRegion.show();
@@ -115,7 +116,8 @@
         cancelButton: "Cancel",
         onConfirmCallback: this.clearAll
       });
-      return this.renderFileLists();
+      this.renderFileLists();
+      return this.adjustSizes();
     };
 
     ClientServerCollectionView.prototype.renderFileLists = function() {
@@ -130,9 +132,13 @@
     };
 
     ClientServerCollectionView.prototype.adjustSizes = function() {
-      this.leftSidebarContainer.outerHeight($(window).height());
-      this.leftSidebar.outerHeight($(window).height());
-      this.mainPane.height($(window).height() - this.mainPane.position().top);
+      var availableHeight, marginTop;
+
+      marginTop = this.saveNotificationContainer.offset().top - this.saveNotificationContainer.position().top;
+      availableHeight = $(window).height() - this.saveNotificationContainer.height() - marginTop;
+      this.leftSidebarContainer.height(availableHeight);
+      this.leftSidebar.height(availableHeight);
+      this.mainPane.height(availableHeight);
       return this.mainPane.width($(window).width() - this.mainPane.position().left);
     };
 

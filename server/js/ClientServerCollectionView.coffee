@@ -20,7 +20,9 @@ class window.ClientServerCollectionView extends Backbone.View
     @fileViewContainer = @$("#file-view-container")
     @routeViewContainer = @$("#route-view-container")
     @uploadFilesRegion = @$(".file-drop")
-    @saveNotification = $("#save-notification").miniNotification(show: false)
+    @saveNotificationContainer = @$("#save-notification-container")
+    @saveNotification = @$("#save-notification").miniNotification(
+      show: false, hideOnClick: false)
     @mainPane = @$(".main-pane")
     @leftSidebarContainer = @$(".left-sidebar-container")
     @leftSidebar = @$(".left-sidebar")
@@ -74,8 +76,6 @@ class window.ClientServerCollectionView extends Backbone.View
     # TODO "click .create-menu .template": "eventCreateTemplate"
 
   render: =>
-    @adjustSizes()
-
     @routeViewContainer.hide()
     @fileViewContainer.hide()
     @uploadFilesRegion.show()
@@ -88,6 +88,7 @@ class window.ClientServerCollectionView extends Backbone.View
     })
 
     @renderFileLists()
+    @adjustSizes()
 
   renderFileLists: =>
     @fileListContainer.html(@tmplFileLists)
@@ -100,9 +101,13 @@ class window.ClientServerCollectionView extends Backbone.View
     @dynamicFileList = @$(".file-list.dynamic")
 
   adjustSizes: =>
-    @leftSidebarContainer.outerHeight($(window).height())
-    @leftSidebar.outerHeight($(window).height())
-    @mainPane.height($(window).height() - @mainPane.position().top)
+    marginTop = @saveNotificationContainer.offset().top -
+      @saveNotificationContainer.position().top
+    availableHeight = $(window).height() -
+      @saveNotificationContainer.height() - marginTop
+    @leftSidebarContainer.height(availableHeight)
+    @leftSidebar.height(availableHeight)
+    @mainPane.height(availableHeight)
     @mainPane.width($(window).width() - @mainPane.position().left)
 
   showInitialSaveNotification: =>
