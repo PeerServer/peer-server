@@ -9,6 +9,7 @@
       this.runQuery = __bind(this.runQuery, this);
       this.fromJSONArray = __bind(this.fromJSONArray, this);
       this.toString = __bind(this.toString, this);      this.database = TAFFY();
+      this.database.store("UserDatabase");
     }
 
     UserDatabase.prototype.toString = function(pretty) {

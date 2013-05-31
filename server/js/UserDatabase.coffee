@@ -7,6 +7,7 @@ class window.UserDatabase
 
   constructor: ->
     @database = TAFFY()
+    @database.store("UserDatabase")
 
   toString: (pretty) =>
     if pretty
