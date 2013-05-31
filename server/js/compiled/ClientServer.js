@@ -103,14 +103,14 @@
       }
       fileType = foundRoute === null ? this.serverFileCollection.getFileType(path) : "DYNAMIC";
       contents = this.getContentsForPath(path, paramData, foundRoute);
-      if (!contents || contents.length === 0) {
-        console.error("Error: Function evaluation for  " + rawPath + " generated an error, returning 404.");
+      if (!contents || contents.error) {
+        console.error("Error: Function evaluation for  " + rawPath + " generated an error, returning 404: " + contents.error);
         this.sendFailure(data, "Internal server error");
         return;
       }
       response = {
         filename: rawPath,
-        fileContents: contents,
+        fileContents: contents.result,
         type: data.type,
         fileType: fileType
       };
@@ -136,7 +136,9 @@
       var match, runRoute, slashedPath;
 
       if (foundRoute === null || foundRoute === void 0) {
-        return this.serverFileCollection.getContents(path);
+        return {
+          "result": this.serverFileCollection.getContents(path)
+        };
       }
       slashedPath = "/" + path;
       console.log("getting contents for path! ");

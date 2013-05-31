@@ -79,14 +79,14 @@ class window.ClientServer
     fileType = if foundRoute is null then @serverFileCollection.getFileType(path) else "DYNAMIC"
     contents = @getContentsForPath(path, paramData, foundRoute)
     # Check if following the path results in valid contents -- otherwise send failure
-    if not contents or contents.length is 0
-      console.error "Error: Function evaluation for  " + rawPath + " generated an error, returning 404."
+    if not contents or contents.error
+      console.error "Error: Function evaluation for  " + rawPath + " generated an error, returning 404: " + contents.error
       @sendFailure(data, "Internal server error")
       return
     # Construct the response to send with the contents
     response = {
       filename: rawPath,
-      fileContents: contents,
+      fileContents: contents.result,
       type: data.type,
       fileType: fileType
     }
@@ -111,7 +111,7 @@ class window.ClientServer
   # TODO handle leading slash and handle "./file" -- currently breaks
   getContentsForPath: (path, paramData, foundRoute) =>
     if foundRoute is null or foundRoute is undefined
-      return @serverFileCollection.getContents(path)
+      return {"result": @serverFileCollection.getContents(path)}
     # Otherwise, handle a dynamic path
     slashedPath = "/" + path
     # TODO flesh out with params, etc.

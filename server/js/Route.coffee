@@ -51,10 +51,13 @@ class window.Route extends Backbone.Model
       render_template = (filename, context) =>
         return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context)
       try
-        return eval(text)
+        result = eval(text)
+        if not result  # It's fine for result to be undefined, for functions that complete but don't return anything.
+          result = ""
+        return {"result": result}
       catch error
         console.log "Eval error: " + error
-        return null
+        return {"error": "Evaluation error in function: " + error}
     return fcn
 
   # Parses the route path into a list of ordered parameters.

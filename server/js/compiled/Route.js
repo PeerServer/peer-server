@@ -55,7 +55,7 @@
       text += JSON.stringify(urlParams) + ")";
       console.log("Function: " + text);
       fcn = function() {
-        var database, error, render_template, static_file;
+        var database, error, render_template, result, static_file;
 
         database = userDatabase;
         static_file = staticFileFcn;
@@ -63,11 +63,19 @@
           return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context);
         };
         try {
-          return eval(text);
+          result = eval(text);
+          if (!result) {
+            result = "";
+          }
+          return {
+            "result": result
+          };
         } catch (_error) {
           error = _error;
           console.log("Eval error: " + error);
-          return null;
+          return {
+            "error": "Evaluation error in function: " + error
+          };
         }
       };
       return fcn;
@@ -110,70 +118,6 @@
     Route.prototype.validate = function(attrs) {
       var invalid;
 
-<<<<<<< HEAD:server/js/compiled/FileRouter.js
-    function RouteCollection() {
-      this.createProductionVersion = __bind(this.createProductionVersion, this);
-      this.getRouteCode = __bind(this.getRouteCode, this);
-      this.findRouteForPath = __bind(this.findRouteForPath, this);
-      this.comparator = __bind(this.comparator, this);      _ref1 = RouteCollection.__super__.constructor.apply(this, arguments);
-      return _ref1;
-    }
-
-    RouteCollection.prototype.model = Route;
-
-    RouteCollection.prototype.localStorage = new Backbone.LocalStorage("RouteCollection");
-
-    RouteCollection.prototype.initialize = function(options) {
-      return this.fetch();
-    };
-
-    RouteCollection.prototype.comparator = function(route) {
-      return route.get("routePath");
-    };
-
-    RouteCollection.prototype.findRouteForPath = function(routePath) {
-      var matchedRoute,
-        _this = this;
-
-      matchedRoute = this.find(function(route) {
-        if (routePath.match(route.pathRegex)) {
-          console.log("matched path: " + routePath + " with " + route.routePath);
-        }
-        return route.get("isProductionVersion") && routePath.match(route.pathRegex) !== null;
-      });
-      return matchedRoute;
-    };
-
-    RouteCollection.prototype.getRouteCode = function(routePath) {
-      return this.findWhere({
-        routePath: routePath
-      }).get("routeCode");
-    };
-
-    RouteCollection.prototype.createProductionVersion = function() {
-      var developmentFiles, productionFiles,
-        _this = this;
-
-      productionFiles = this.where({
-        isProductionVersion: true
-      });
-      _.each(productionFiles, function(route) {
-        return route.destroy();
-      });
-      developmentFiles = this.where({
-        isProductionVersion: false
-      });
-      return _.each(developmentFiles, function(route) {
-        var attrs, copy;
-
-        attrs = _.clone(route.attributes);
-        attrs.id = null;
-        copy = new Route(attrs);
-        copy.set("isProductionVersion", true);
-        _this.add(copy);
-        return copy.save();
-      });
-=======
       invalid = {};
       if (_.has(attrs, "name") && !/^[$A-Z_][0-9A-Z_$]*$/i.test(attrs.name)) {
         invalid.name = true;
@@ -184,7 +128,6 @@
       if (!_.isEmpty(invalid)) {
         return invalid;
       }
->>>>>>> 13db2db322433da095c74d656ba2c5c44d0c95a6:server/js/compiled/Route.js
     };
 
     return Route;
@@ -192,7 +135,3 @@
   })(Backbone.Model);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=Route.map
-*/
