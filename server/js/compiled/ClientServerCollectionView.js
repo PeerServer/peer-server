@@ -298,7 +298,7 @@
       var fileType, reader,
         _this = this;
 
-      if (file.type = "application/zip") {
+      if (file.type === "application/zip") {
         this.handleZipFile(file);
         return;
       }

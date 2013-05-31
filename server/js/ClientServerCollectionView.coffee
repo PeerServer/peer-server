@@ -227,7 +227,7 @@ class window.ClientServerCollectionView extends Backbone.View
     return false
 
   handleFile: (file) =>
-    if file.type = "application/zip"
+    if file.type is "application/zip"
       @handleZipFile(file)
       return
 
