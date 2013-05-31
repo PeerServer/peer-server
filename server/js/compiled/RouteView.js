@@ -29,7 +29,9 @@
       this.tmplRoute = Handlebars.compile($("#route-template").html());
       this.tmplFunctionSignature = Handlebars.compile($("#route-function-signature-template").html());
       this.model.on("change:paramNames", this.renderFunctionSignature);
-      this.productionRoute.on("change:errorMessage", this.updateErrorMessage);
+      if (this.productionRoute) {
+        this.productionRoute.on("change:errorMessage", this.updateErrorMessage);
+      }
       return this.model.on("change", this.renderValidationResult);
     };
 

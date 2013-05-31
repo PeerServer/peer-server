@@ -8,7 +8,7 @@ class window.RouteView extends Backbone.View
 
     @model.on("change:paramNames", @renderFunctionSignature)
     # TODO FIX: Error message is not being read correctly from the model.
-    @productionRoute.on("change:errorMessage", @updateErrorMessage)  # TODO for some reason not triggering
+    @productionRoute.on("change:errorMessage", @updateErrorMessage) if @productionRoute
     @model.on("change", @renderValidationResult)
 
 
