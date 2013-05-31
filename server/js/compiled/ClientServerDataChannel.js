@@ -7,10 +7,11 @@
   window.ClientServerDataChannel = (function(_super) {
     __extends(ClientServerDataChannel, _super);
 
-    function ClientServerDataChannel(onConnectionCallback, onDataCallback, onReady) {
+    function ClientServerDataChannel(onConnectionCallback, onDataCallback, onReady, onConnectionCloseCallback) {
       this.onConnectionCallback = onConnectionCallback;
       this.onDataCallback = onDataCallback;
       this.onReady = onReady;
+      this.onConnectionCloseCallback = onConnectionCloseCallback;
       this.onConnection = __bind(this.onConnection, this);
       this.onOpen = __bind(this.onOpen, this);
       ClientServerDataChannel.__super__.constructor.call(this, this.onDataCallback);
@@ -28,7 +29,10 @@
       connection.on("open", function() {
         return _this.onConnectionCallback(connection);
       });
-      return connection.on("data", this.onData);
+      connection.on("data", this.onData);
+      return connection.on("close", function() {
+        return _this.onConnectionCloseCallback(connection);
+      });
     };
 
     return ClientServerDataChannel;

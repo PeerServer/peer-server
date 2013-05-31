@@ -2,8 +2,9 @@ class window.ClientServer
   
   constructor: (@serverFileCollection, @routeCollection, @appView, @userDatabase) ->
     @eventTransmitter = new EventTransmitter()
+    @userSessions = new UserSessions()
     @dataChannel = new ClientServerDataChannel(
-      @channelOnConnection, @channelConnectionOnData, @channelOnReady)
+      @channelOnConnection, @channelConnectionOnData, @channelOnReady, @channelOnConnectionClose)
     @setUpReceiveEventCallbacks()
 
     @clientBrowserConnections = {}
@@ -14,11 +15,15 @@ class window.ClientServer
   channelOnConnection: (connection) =>
     landingPage = @serverFileCollection.getLandingPage()
 
-    # connection.peer is the id of the remote peer this connection
+    # connection.peer is the socket id of the remote peer this connection
     # is connected to
     @clientBrowserConnections[connection.peer] = connection
+    @userSessions.addSession(connection.peer)
     
     @eventTransmitter.sendEvent(connection, "initialLoad", landingPage)
+
+  channelOnConnectionClose: (connection) =>
+    @userSessions.removeSession(connection.peer) if connection and connection.peer
 
   channelConnectionOnData: (data) =>
     @eventTransmitter.receiveEvent(data)
@@ -77,12 +82,14 @@ class window.ClientServer
       return
     # TODO check if DYNAMIC is the right enum with serverfilecollection, which is being edited by brie now :)
     fileType = if foundRoute is null then @serverFileCollection.getFileType(path) else "DYNAMIC"
-    contents = @getContentsForPath(path, paramData, foundRoute)
+    contents = @getContentsForPath(path, paramData, foundRoute, data.socketId)
     # Check if following the path results in valid contents -- otherwise send failure
     if not contents or contents.error
       console.error "Error: Function evaluation for  " + rawPath + " generated an error, returning 404: " + contents.error
       @sendFailure(data, "Internal server error")
       return
+    # if contents.result and contents.result.extra is "redirect"  # Option to also return a function to be executed
+    #   contents.result.fcn()
     # Construct the response to send with the contents
     response = {
       filename: rawPath,
@@ -109,7 +116,7 @@ class window.ClientServer
   # Returns either the html string, or null if none can be found.
   #
   # TODO handle leading slash and handle "./file" -- currently breaks
-  getContentsForPath: (path, paramData, foundRoute) =>
+  getContentsForPath: (path, paramData, foundRoute, socketId) =>
     if foundRoute is null or foundRoute is undefined
       return {"result": @serverFileCollection.getContents(path)}
     # Otherwise, handle a dynamic path
@@ -122,5 +129,5 @@ class window.ClientServer
     console.log "with found path " + foundRoute.get("routePath")
     console.log "and results are: " + match
     runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), 
-      @serverFileCollection.getContents, @userDatabase.database)
+      @serverFileCollection.getContents, @userDatabase.database, @userSessions.getSession(socketId))
     return runRoute()

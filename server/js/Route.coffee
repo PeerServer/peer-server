@@ -31,7 +31,7 @@ class window.Route extends Backbone.Model
   # Creates the text of a function that can be eval'd to obtain a renderable result. 
   # Passes in the param names in order, and a final parameter called "params" containing
   #  the url-parameters (ie, get parameters foo and bar for "page?foo=f&bar=b")
-  getExecutableFunction: (urlParams, dynamicParams, staticFileFcn, userDatabase) =>
+  getExecutableFunction: (urlParams, dynamicParams, staticFileFcn, userDatabase, clientSession) =>
     text = "(function ("
     paramNames = @get("paramNames")
     if paramNames and paramNames.length > 0
@@ -50,6 +50,11 @@ class window.Route extends Backbone.Model
     fcn = =>
       database = userDatabase
       static_file = staticFileFcn
+      session = clientSession
+      hash = (value) ->
+        return "" + CryptoJS.SHA256(value) # Cryptographically secure hash function
+      cryptoRandom = (value) ->
+        return CryptoJS.lib.WordArray.random(value) + ""  # When called on a number, returns that number of random bytes in hex
       render_template = (filename, context) =>
         return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context)
       result = ""

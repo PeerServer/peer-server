@@ -15,10 +15,12 @@
       this.sendEventTo = __bind(this.sendEventTo, this);
       this.setUpReceiveEventCallbacks = __bind(this.setUpReceiveEventCallbacks, this);
       this.channelConnectionOnData = __bind(this.channelConnectionOnData, this);
+      this.channelOnConnectionClose = __bind(this.channelOnConnectionClose, this);
       this.channelOnConnection = __bind(this.channelOnConnection, this);
       this.channelOnReady = __bind(this.channelOnReady, this);
       this.eventTransmitter = new EventTransmitter();
-      this.dataChannel = new ClientServerDataChannel(this.channelOnConnection, this.channelConnectionOnData, this.channelOnReady);
+      this.userSessions = new UserSessions();
+      this.dataChannel = new ClientServerDataChannel(this.channelOnConnection, this.channelConnectionOnData, this.channelOnReady, this.channelOnConnectionClose);
       this.setUpReceiveEventCallbacks();
       this.clientBrowserConnections = {};
     }
@@ -32,7 +34,14 @@
 
       landingPage = this.serverFileCollection.getLandingPage();
       this.clientBrowserConnections[connection.peer] = connection;
+      this.userSessions.addSession(connection.peer);
       return this.eventTransmitter.sendEvent(connection, "initialLoad", landingPage);
+    };
+
+    ClientServer.prototype.channelOnConnectionClose = function(connection) {
+      if (connection && connection.peer) {
+        return this.userSessions.removeSession(connection.peer);
+      }
     };
 
     ClientServer.prototype.channelConnectionOnData = function(data) {
@@ -102,7 +111,7 @@
         return;
       }
       fileType = foundRoute === null ? this.serverFileCollection.getFileType(path) : "DYNAMIC";
-      contents = this.getContentsForPath(path, paramData, foundRoute);
+      contents = this.getContentsForPath(path, paramData, foundRoute, data.socketId);
       if (!contents || contents.error) {
         console.error("Error: Function evaluation for  " + rawPath + " generated an error, returning 404: " + contents.error);
         this.sendFailure(data, "Internal server error");
@@ -132,7 +141,7 @@
       return [pathDetails.path, params];
     };
 
-    ClientServer.prototype.getContentsForPath = function(path, paramData, foundRoute) {
+    ClientServer.prototype.getContentsForPath = function(path, paramData, foundRoute, socketId) {
       var match, runRoute, slashedPath;
 
       if (foundRoute === null || foundRoute === void 0) {
@@ -147,7 +156,7 @@
       console.log("Matching given path " + slashedPath);
       console.log("with found path " + foundRoute.get("routePath"));
       console.log("and results are: " + match);
-      runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), this.serverFileCollection.getContents, this.userDatabase.database);
+      runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), this.serverFileCollection.getContents, this.userDatabase.database, this.userSessions.getSession(socketId));
       return runRoute();
     };
 

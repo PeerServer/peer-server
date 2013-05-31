@@ -36,7 +36,7 @@
       return this.on("change:routePath", this.setParsedPath);
     };
 
-    Route.prototype.getExecutableFunction = function(urlParams, dynamicParams, staticFileFcn, userDatabase) {
+    Route.prototype.getExecutableFunction = function(urlParams, dynamicParams, staticFileFcn, userDatabase, clientSession) {
       var fcn, paramNames, text,
         _this = this;
 
@@ -58,10 +58,17 @@
       text += JSON.stringify(urlParams) + ")";
       console.log("Function: " + text);
       fcn = function() {
-        var database, error, evaluation, render_template, result, static_file;
+        var cryptoRandom, database, error, evaluation, hash, render_template, result, session, static_file;
 
         database = userDatabase;
         static_file = staticFileFcn;
+        session = clientSession;
+        hash = function(value) {
+          return "" + CryptoJS.SHA256(value);
+        };
+        cryptoRandom = function(value) {
+          return CryptoJS.lib.WordArray.random(value) + "";
+        };
         render_template = function(filename, context) {
           return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context);
         };
