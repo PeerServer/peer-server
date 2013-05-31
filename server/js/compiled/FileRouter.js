@@ -126,23 +126,7 @@
     RouteCollection.prototype.localStorage = new Backbone.LocalStorage("RouteCollection");
 
     RouteCollection.prototype.initialize = function(options) {
-      var indexRoute, indexRouteDev;
-
-      this.fetch();
-      indexRoute = new Route({
-        name: "testing",
-        routePath: "/test/<name>/<x>/<y>",
-        routeCode: "var result = parseInt(x)+parseInt(y); return '<h1>hello ' + name + '!</h1><p> x= ' + x + ' plus y = ' + y + ' is ' + result + '</p><h2>' + params.animal + '!!</h2>'",
-        isProductionVersion: true
-      });
-      this.add(indexRoute);
-      indexRouteDev = new Route({
-        name: "testing",
-        routePath: "/test/<name>/<x>/<y>",
-        routeCode: "var result = parseInt(x)+parseInt(y); return '<h1>hello ' + name + '!</h1><p> x= ' + x + ' plus y = ' + y + ' is ' + result + '</p><h2>' + params.animal + '!!</h2>'",
-        isProductionVersion: false
-      });
-      return this.add(indexRouteDev);
+      return this.fetch();
     };
 
     RouteCollection.prototype.comparator = function(route) {

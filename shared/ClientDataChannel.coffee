@@ -2,10 +2,10 @@ class window.ClientDataChannel
 
   constructor: (@onDataCallback) ->
     if isDevelopmentServer()
-      @peer = new Peer(
+      @peer = new Peer({
         host: location.hostname,
         port: 9000,
-        config: { 'iceServers': [] })
+        config: { 'iceServers': [] }})
     else
       @peer = new Peer(key: "rrvwvw4tuyxpqfr", config: { "iceServers": [] })
 

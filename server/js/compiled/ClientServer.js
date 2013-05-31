@@ -40,8 +40,7 @@
     };
 
     ClientServer.prototype.setUpReceiveEventCallbacks = function() {
-      this.eventTransmitter.addEventCallback("requestFile", this.serveFile);
-      return this.eventTransmitter.addEventCallback("requestAjax", this.serveAjax);
+      return this.eventTransmitter.addEventCallback("requestFile", this.serveFile);
     };
 
     ClientServer.prototype.sendEventTo = function(socketId, eventName, data) {

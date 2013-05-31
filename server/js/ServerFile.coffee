@@ -36,7 +36,7 @@ class window.ServerFile extends Backbone.Model
       return ServerFile.fileTypeEnum.HTML
     if rawType.indexOf("css") != -1
       return ServerFile.fileTypeEnum.CSS
-    if rawType.indexOf("javascript") != -1
+    if rawType.indexOf("javascript") != -1 
       return ServerFile.fileTypeEnum.JS
     console.error "Unable to identify file type: " + rawType
 

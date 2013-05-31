@@ -25,7 +25,6 @@ class window.ClientServer
 
   setUpReceiveEventCallbacks: =>
     @eventTransmitter.addEventCallback("requestFile", @serveFile)
-    @eventTransmitter.addEventCallback("requestAjax", @serveAjax)
 
   sendEventTo: (socketId, eventName, data) =>
     connection = @clientBrowserConnections[socketId]

@@ -53,6 +53,7 @@ todomake.js
       var name = $(".name").val();
       var desc = $(".description").val();
       $.ajax("maketodo", {success: onsuccess, error: onerror, data: {"name": name, "desc": desc}});
+      return "success"
   }
 
 == SAMPLE TODO app ==

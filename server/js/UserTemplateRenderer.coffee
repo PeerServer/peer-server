@@ -5,9 +5,6 @@
 '''
 class window.UserTemplateRenderer
 
-  constructor: ->
-    @database = TAFFY();
-
   @renderTemplate: (source, context) =>
     console.log "HANDLEBARS"
     console.log source
