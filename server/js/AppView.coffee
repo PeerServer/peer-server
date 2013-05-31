@@ -22,9 +22,7 @@ class window.AppView extends Backbone.View
     @editLink.click(@goToEditPage)
     @databaseLink.click(@goToDatabasePage)
 
-    # @goToEditPage()
-    #TODO
-    @goToDatabasePage()
+    @goToEditPage()
 
   setClientBrowserLink: (serverID) =>
     link = window.location.origin + "/connect/" + serverID + "/"

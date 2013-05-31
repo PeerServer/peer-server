@@ -31,7 +31,7 @@
       this.on("setServerID", this.setClientBrowserLink);
       this.editLink.click(this.goToEditPage);
       this.databaseLink.click(this.goToDatabasePage);
-      return this.goToDatabasePage();
+      return this.goToEditPage();
     };
 
     AppView.prototype.setClientBrowserLink = function(serverID) {
@@ -68,3 +68,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=AppView.map
+*/
