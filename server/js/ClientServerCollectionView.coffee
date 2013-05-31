@@ -89,6 +89,13 @@ class window.ClientServerCollectionView extends Backbone.View
     @fileViewContainer.hide()
     @uploadFilesRegion.show()
 
+    
+    $('a.confirm').confirmDialog({
+      message: '<strong>Do you really want to delete this entry</strong>',
+      cancelButton: 'Cancel'
+    })
+    
+
   showInitialSaveNotification: =>
     shouldShow = false
 
@@ -156,7 +163,7 @@ class window.ClientServerCollectionView extends Backbone.View
     serverFile = @serverFileCollection.get(target.attr("data-cid"))
     route = @routeCollection.get(target.attr("data-cid"))
     resource = serverFile or route
-    
+
     modal = @tmplFileDeleteConfirmation(
       cid: resource.cid, name: resource.get("name"))
     modal = $($.parseHTML(modal))

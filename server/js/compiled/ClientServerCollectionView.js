@@ -112,7 +112,11 @@
       this.mainPane.width($(window).width() - this.mainPane.position().left);
       this.routeViewContainer.hide();
       this.fileViewContainer.hide();
-      return this.uploadFilesRegion.show();
+      this.uploadFilesRegion.show();
+      return $('a.confirm').confirmDialog({
+        message: '<strong>Do you really want to delete this entry</strong>',
+        cancelButton: 'Cancel'
+      });
     };
 
     ClientServerCollectionView.prototype.showInitialSaveNotification = function() {
@@ -514,3 +518,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServerCollectionView.map
+*/
