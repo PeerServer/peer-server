@@ -1,18 +1,15 @@
 class window.RouteView extends Backbone.View
   initialize: (options) ->
     @tmplRoute = Handlebars.compile($("#route-template").html())
+    @tmplFunctionSignature = Handlebars.compile(
+      $("#route-function-signature-template").html())
 
-    @model.on "change:name", (route) =>
-      $($(@el).find(".route-fcn-name")).html(route.get("name"))  # This is hacky but keeps it up to date
-    @model.on("change:paramNames", @handleRoutePathChange)
-
+    @model.on("change", @renderValidationResult)
+    @model.on("change:paramNames", @renderFunctionSignature)
 
   events:
     "keyup .path": "eventPathChange"
     "keyup .name": "eventNameChange"
-
-  handleRoutePathChange: (route) =>
-    $($(@el).find(".route-fcn-params")).html(@paramNamesToString(route.get("paramNames")))
 
   paramNamesToString: (paramNames) =>
     if paramNames.length == 0
@@ -26,20 +23,49 @@ class window.RouteView extends Backbone.View
       path: @model.get("routePath"),
       functionParams: @paramNamesToString([])
 
-    $code = @$(".code")
-    $name = @$(".name")
-    $path = @$(".path")
+    @code = @$(".code")
+    @path = @$(".path")
+    @functionSignature = @$(".function-signature")
 
-    # Set up ACE editor
-    $code.text(@model.get("routeCode"))
-    @aceEditor = ace.edit($code[0])
-    @aceEditor.setTheme("ace/theme/tomorrow_night_eighties")
-    @aceEditor.setFontSize("12px")
-    @aceEditor.getSession().setMode("ace/mode/javascript")
-
+    @aceEditor = @createEditor(@code)
+    @aceEditor.getSession().setValue(@model.get("routeCode"))
     @aceEditor.on("change", @updateContents)
 
+    @renderFunctionSignature()
+
+    @name.tipsy(fallback: "Invalid name", trigger: "manual")
+    @path.tipsy(fallback: "Invalid route path", trigger: "manual")
+
     return @
+
+  adjustHeights: =>
+    $el = $(@el)
+
+    @$(".function").outerHeight(
+      $el.height() - @$(".route-path").outerHeight(true))
+
+    padding = @$(".function").innerHeight() - @$(".function").height()
+    codeHeight = @$(".function").height() - padding
+    codeHeight -= @functionSignature.outerHeight(true)
+    codeHeight -= @$(".function-close").outerHeight(true)
+    codeHeight -= @$(".route-help").outerHeight(true)
+    @code.outerHeight(codeHeight)
+
+  focus: =>
+    @name.focus()
+
+  renderFunctionSignature: =>
+    @functionSignature.html(@tmplFunctionSignature(
+      name: @model.get("name"),
+      parameterString: @paramNamesToString(@model.get("paramNames"))))
+    @name = @$(".name")
+
+  createEditor: (elem) =>
+    editor = ace.edit(elem[0])
+    editor.setTheme("ace/theme/tomorrow_night_eighties")
+    editor.setFontSize("12px")
+    editor.getSession().setMode("ace/mode/javascript")
+    return editor
 
   updateContents: =>
     @model.save("routeCode", @aceEditor.getValue())
@@ -51,3 +77,18 @@ class window.RouteView extends Backbone.View
   eventNameChange: (event) =>
     target = $(event.currentTarget)
     @model.save("name", target.val())
+
+  renderValidationResult: (model, error) =>
+    @model.isValid()
+    error = @model.validationError
+
+    if error and error.name
+      @name.tipsy("show")
+    else
+      @name.tipsy("hide")
+
+    if error and error.routePath
+      @path.tipsy("show")
+    else
+      @path.tipsy("hide")
+

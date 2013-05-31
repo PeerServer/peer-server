@@ -6,4 +6,10 @@
 class window.UserDatabase
 
   constructor: ->
-    @database = TAFFY();
+    @database = TAFFY()
+
+  toString: =>
+    return @database().stringify()
+
+  fromJSONArray: (array) =>
+    @database.insert(array)

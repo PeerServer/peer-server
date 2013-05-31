@@ -13,6 +13,7 @@ class window.ClientServerCollectionView extends Backbone.View
   initialize: (options) ->
     @serverFileCollection = options.serverFileCollection
     @routeCollection = options.routeCollection
+    @userDatabase = options.userDatabase
 
     @activeView = null
 
@@ -86,13 +87,20 @@ class window.ClientServerCollectionView extends Backbone.View
     @mainPane.height($(window).height() - @mainPane.position().top)
     @mainPane.width($(window).width() - @mainPane.position().left)
 
+    @routeViewContainer.hide()
+    @fileViewContainer.hide()
+    @uploadFilesRegion.show()
+
   showInitialSaveNotification: =>
     shouldShow = false
+
     @serverFileCollection.forEachDevelopmentFile (devFile) ->
       if devFile.get("hasBeenEdited")
         shouldShow = true
 
-    # TODO routes
+    @routeCollection.each (route) ->
+      if not route.get("isProductionVersion") and route.get("hasBeenEdited")
+        shouldShow = true
 
     if shouldShow
       @saveNotification.show()
@@ -120,9 +128,9 @@ class window.ClientServerCollectionView extends Backbone.View
 
     serverFile = @serverFileCollection.get(cid)
     route = @routeCollection.get(cid)
-
-    if serverFile
-      if @activeView and @activeView.model is serverFile
+    resource = serverFile or route
+    if resource
+      if @activeView and @activeView.model is resource
         target.find(".dropdown-menu").removeAttr("style")
         target.addClass("open")
       else
@@ -131,15 +139,12 @@ class window.ClientServerCollectionView extends Backbone.View
 
         @uploadFilesRegion.hide()
         @routeViewContainer.hide()
-        @fileViewContainer.show()
+        @fileViewContainer.hide()
 
-        @selectServerFile(serverFile, target)
-
-    else if route
-      @uploadFilesRegion.hide()
-      @fileViewContainer.hide()
-      @routeViewContainer.show()
-      @selectRoute(route, target)
+        if serverFile
+          @selectServerFile(serverFile, target)
+        else if route
+          @selectRoute(route, target)
 
     return false
 
@@ -151,10 +156,11 @@ class window.ClientServerCollectionView extends Backbone.View
   eventDeleteFile: (event) =>
     target = $(event.currentTarget).parents("li[data-cid]")
     serverFile = @serverFileCollection.get(target.attr("data-cid"))
-    # TODO delete for route
+    route = @routeCollection.get(target.attr("data-cid"))
+    resource = serverFile or route
     
     modal = @tmplFileDeleteConfirmation(
-      cid: serverFile.cid, name: serverFile.get("name"))
+      cid: resource.cid, name: resource.get("name"))
     modal = $($.parseHTML(modal))
     modal.appendTo(@el)
 
@@ -169,8 +175,12 @@ class window.ClientServerCollectionView extends Backbone.View
     target = $(event.currentTarget)
       .parents(".file-delete-confirmation[data-cid]")
     target.modal("hide")
+
     serverFile = @serverFileCollection.get(target.attr("data-cid"))
-    serverFile.destroy()
+    route = @routeCollection.get(target.attr("data-cid"))
+    resource = serverFile or route
+    resource.destroy()
+
     @activeView.remove() if @activeView
     @activeView = null
 
@@ -182,10 +192,12 @@ class window.ClientServerCollectionView extends Backbone.View
       return false
 
   eventSaveChanges: =>
-    console.log "changes saved"
     @serverFileCollection.forEachDevelopmentFile (devFile) ->
       devFile.save(hasBeenEdited: false)
-    # TODO for routes
+
+    @routeCollection.each (route) ->
+      route.save(hasBeenEdited: false)
+
     @saveNotification.hide()
     @serverFileCollection.createProductionVersion()
     @routeCollection.createProductionVersion()
@@ -201,6 +213,7 @@ class window.ClientServerCollectionView extends Backbone.View
     @fileLists.find(".caret").hide()
     @$(".file-list li").removeClass("active")
     @fileViewContainer.hide()
+    @routeViewContainer.hide()
     @uploadFilesRegion.show()
 
   eventDropFiles: (event) =>
@@ -214,7 +227,12 @@ class window.ClientServerCollectionView extends Backbone.View
     return false
 
   handleFile: (file) =>
+    if file.type = "application/zip"
+      @handleZipFile(file)
+      return
+
     reader = new FileReader()
+
     fileType = ServerFile.rawTypeToFileType(file.type)
     if fileType is ServerFile.fileTypeEnum.IMG
       reader.readAsDataURL(file)
@@ -228,12 +246,22 @@ class window.ClientServerCollectionView extends Backbone.View
       @serverFileCollection.add(serverFile)
       serverFile.save()
 
+  handleZipFile: (file) =>
+    reader = new FileReader()
+    reader.readAsArrayBuffer(file)
+    reader.onload = (evt) =>
+      new ClientServerUnarchiver(
+        serverFileCollection: @serverFileCollection,
+        routeCollection: @routeCollection,
+        userDatabase: @userDatabase,
+        contents: evt.target.result)
+
   handleFileChanged: (model) =>
     model.save(hasBeenEdited: true)
     @saveNotification.show()
 
   handleRouteNameChange: (route) =>
-    @$("li[data-cid=#{route.cid}] a").text(route.get("name"))
+    @$("li[data-cid=#{route.cid}] > a").text(route.get("name"))
 
   handleFileDeleted: (model) =>
     @$("[data-cid=#{model.cid}]").remove()
@@ -257,7 +285,11 @@ class window.ClientServerCollectionView extends Backbone.View
     @editableFileName(serverFile, null)
 
   eventCreateDynamic: =>
-    @routeCollection.add(new Route())
+    route = new Route()
+    @routeCollection.add(route)
+    route.save()
+    listEl = @$("li[data-cid=#{route.cid}]")
+    @selectRoute(route, listEl)
 
   # --- EDITING METHODS ---
 
@@ -299,11 +331,11 @@ class window.ClientServerCollectionView extends Backbone.View
       section = @requiredFileList
     else
       switch serverFile.get("fileType")
-        when ServerFile.fileTypeEnum.HTML     then section = @htmlFileList
-        when ServerFile.fileTypeEnum.CSS      then section = @cssFileList
-        when ServerFile.fileTypeEnum.JS       then section = @jsFileList
-        when ServerFile.fileTypeEnum.IMG      then section = @imageFileList
-        else                                  console.error("Error: Could not find proper place for file. " + serverFile.get("name"))
+        when ServerFile.fileTypeEnum.HTML then section = @htmlFileList
+        when ServerFile.fileTypeEnum.CSS  then section = @cssFileList
+        when ServerFile.fileTypeEnum.JS   then section = @jsFileList
+        when ServerFile.fileTypeEnum.IMG  then section = @imageFileList
+        else                              console.error("Error: Could not find proper place for file. " + serverFile.get("name"))
     if section
       return section.append(listEl)
     return null
@@ -320,9 +352,13 @@ class window.ClientServerCollectionView extends Backbone.View
     serverFileView = new ServerFileView(model: serverFile)
     @select(listEl, serverFileView)
     @fileViewContainer.append(serverFileView.render().el)
+    @fileViewContainer.show()
 
   selectRoute: (route, listEl) =>
     routeView = new RouteView(model: route)
     @select(listEl, routeView)
     @routeViewContainer.append(routeView.render().el)
+    @routeViewContainer.show()
+    routeView.adjustHeights()
+    routeView.focus()
 

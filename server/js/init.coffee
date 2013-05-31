@@ -4,8 +4,10 @@ $(document).ready ->
   # Initialize global state
   serverFileCollection = new ServerFileCollection()
   routeCollection = new RouteCollection()
+  userDatabase = new UserDatabase()
   appView = new AppView(
     serverFileCollection: serverFileCollection,
-    routeCollection: routeCollection)
+    routeCollection: routeCollection,
+    userDatabase: userDatabase)
   clientServer = new ClientServer(
-    serverFileCollection, routeCollection, appView, new window.UserDatabase)
+    serverFileCollection, routeCollection, appView, userDatabase)

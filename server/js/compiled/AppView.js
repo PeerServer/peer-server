@@ -17,11 +17,19 @@
     AppView.prototype.el = "#client-server";
 
     AppView.prototype.initialize = function(options) {
+      this.clientBrowserLink = $(".navbar .browse");
+      this.archiveButton = $(".navbar .archive");
       this.serverFileCollectionView = new ClientServerCollectionView({
         serverFileCollection: options.serverFileCollection,
-        routeCollection: options.routeCollection
+        routeCollection: options.routeCollection,
+        userDatabase: options.userDatabase
       });
-      this.clientBrowserLink = $(".navbar .browse");
+      this.archiver = new ClientServerArchiver({
+        serverFileCollection: options.serverFileCollection,
+        routeCollection: options.routeCollection,
+        userDatabase: options.userDatabase,
+        button: this.archiveButton
+      });
       return this.on("setServerID", this.setClientBrowserLink);
     };
 

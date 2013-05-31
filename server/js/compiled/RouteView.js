@@ -9,32 +9,29 @@
     __extends(RouteView, _super);
 
     function RouteView() {
+      this.renderValidationResult = __bind(this.renderValidationResult, this);
       this.eventNameChange = __bind(this.eventNameChange, this);
       this.eventPathChange = __bind(this.eventPathChange, this);
       this.updateContents = __bind(this.updateContents, this);
+      this.createEditor = __bind(this.createEditor, this);
+      this.renderFunctionSignature = __bind(this.renderFunctionSignature, this);
+      this.focus = __bind(this.focus, this);
+      this.adjustHeights = __bind(this.adjustHeights, this);
       this.render = __bind(this.render, this);
-      this.paramNamesToString = __bind(this.paramNamesToString, this);
-      this.handleRoutePathChange = __bind(this.handleRoutePathChange, this);      _ref = RouteView.__super__.constructor.apply(this, arguments);
+      this.paramNamesToString = __bind(this.paramNamesToString, this);      _ref = RouteView.__super__.constructor.apply(this, arguments);
       return _ref;
     }
 
     RouteView.prototype.initialize = function(options) {
-      var _this = this;
-
       this.tmplRoute = Handlebars.compile($("#route-template").html());
-      this.model.on("change:name", function(route) {
-        return $($(_this.el).find(".route-fcn-name")).html(route.get("name"));
-      });
-      return this.model.on("change:paramNames", this.handleRoutePathChange);
+      this.tmplFunctionSignature = Handlebars.compile($("#route-function-signature-template").html());
+      this.model.on("change", this.renderValidationResult);
+      return this.model.on("change:paramNames", this.renderFunctionSignature);
     };
 
     RouteView.prototype.events = {
       "keyup .path": "eventPathChange",
       "keyup .name": "eventNameChange"
-    };
-
-    RouteView.prototype.handleRoutePathChange = function(route) {
-      return $($(this.el).find(".route-fcn-params")).html(this.paramNamesToString(route.get("paramNames")));
     };
 
     RouteView.prototype.paramNamesToString = function(paramNames) {
@@ -45,7 +42,7 @@
     };
 
     RouteView.prototype.render = function() {
-      var $code, $el, $name, $path;
+      var $el;
 
       $el = $(this.el);
       $el.html(this.tmplRoute({
@@ -53,16 +50,57 @@
         path: this.model.get("routePath"),
         functionParams: this.paramNamesToString([])
       }));
-      $code = this.$(".code");
-      $name = this.$(".name");
-      $path = this.$(".path");
-      $code.text(this.model.get("routeCode"));
-      this.aceEditor = ace.edit($code[0]);
-      this.aceEditor.setTheme("ace/theme/tomorrow_night_eighties");
-      this.aceEditor.setFontSize("12px");
-      this.aceEditor.getSession().setMode("ace/mode/javascript");
+      this.code = this.$(".code");
+      this.path = this.$(".path");
+      this.functionSignature = this.$(".function-signature");
+      this.aceEditor = this.createEditor(this.code);
+      this.aceEditor.getSession().setValue(this.model.get("routeCode"));
       this.aceEditor.on("change", this.updateContents);
+      this.renderFunctionSignature();
+      this.name.tipsy({
+        fallback: "Invalid name",
+        trigger: "manual"
+      });
+      this.path.tipsy({
+        fallback: "Invalid route path",
+        trigger: "manual"
+      });
       return this;
+    };
+
+    RouteView.prototype.adjustHeights = function() {
+      var $el, codeHeight, padding;
+
+      $el = $(this.el);
+      this.$(".function").outerHeight($el.height() - this.$(".route-path").outerHeight(true));
+      padding = this.$(".function").innerHeight() - this.$(".function").height();
+      codeHeight = this.$(".function").height() - padding;
+      codeHeight -= this.functionSignature.outerHeight(true);
+      codeHeight -= this.$(".function-close").outerHeight(true);
+      codeHeight -= this.$(".route-help").outerHeight(true);
+      return this.code.outerHeight(codeHeight);
+    };
+
+    RouteView.prototype.focus = function() {
+      return this.name.focus();
+    };
+
+    RouteView.prototype.renderFunctionSignature = function() {
+      this.functionSignature.html(this.tmplFunctionSignature({
+        name: this.model.get("name"),
+        parameterString: this.paramNamesToString(this.model.get("paramNames"))
+      }));
+      return this.name = this.$(".name");
+    };
+
+    RouteView.prototype.createEditor = function(elem) {
+      var editor;
+
+      editor = ace.edit(elem[0]);
+      editor.setTheme("ace/theme/tomorrow_night_eighties");
+      editor.setFontSize("12px");
+      editor.getSession().setMode("ace/mode/javascript");
+      return editor;
     };
 
     RouteView.prototype.updateContents = function() {
@@ -81,6 +119,21 @@
 
       target = $(event.currentTarget);
       return this.model.save("name", target.val());
+    };
+
+    RouteView.prototype.renderValidationResult = function(model, error) {
+      this.model.isValid();
+      error = this.model.validationError;
+      if (error && error.name) {
+        this.name.tipsy("show");
+      } else {
+        this.name.tipsy("hide");
+      }
+      if (error && error.routePath) {
+        return this.path.tipsy("show");
+      } else {
+        return this.path.tipsy("hide");
+      }
     };
 
     return RouteView;

@@ -27,7 +27,10 @@ class window.ServerFile extends Backbone.Model
       @set("dateCreated", new Date())
 
   updateFileType: =>
-    @set("fileType", ServerFile.rawTypeToFileType(@get("type")))
+    if @get("type")
+      @set("fileType", ServerFile.rawTypeToFileType(@get("type")))
+    else
+      @set("fileType", ServerFile.filenameToFileType(@get("name")))
 
   @rawTypeToFileType: (rawType) =>
     if rawType.indexOf("image") != -1
@@ -40,3 +43,11 @@ class window.ServerFile extends Backbone.Model
       return ServerFile.fileTypeEnum.JS
     console.error "Unable to identify file type: " + rawType
 
+  @filenameToFileType: (filename) =>
+    ext = filename.replace(/.*\.([a-z]+$)/i, "$1")
+    switch ext
+      when "html" then return ServerFile.fileTypeEnum.HTML
+      when "jpg", "jpeg", "png" then return ServerFile.fileTypeEnum.IMG
+      when "css" then return ServerFile.fileTypeEnum.CSS
+      when "js" then return ServerFile.fileTypeEnum.JS
+    return null

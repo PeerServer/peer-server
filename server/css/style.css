@@ -2,6 +2,26 @@ body {
   overflow: hidden;
 }
 
+.route-help,
+.function-signature,
+.function-signature input {
+  font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+}
+
+.route-help {
+  padding-left: 20px;
+}
+
+.route-path {
+  margin: 8px 0px 24px 0px;
+}
+
+.route-path .help {
+  color: #666;
+  font-style: italic;
+  font-size: 13px;
+}
+
 #save-notification {
   display: none;
   position: fixed;
@@ -62,11 +82,13 @@ body {
 
 #file-view-container > div,
 #file-view-container .row-fluid, 
-#file-view-container .file-contents,
-#route-view-container > div,
-#route-view-container .row-fluid, 
-#route-view-container .code {
+#file-view-container .file-contents {
   height: 100%
+}
+
+#route-view-container,
+#route-view-container > div {
+  height: 100%;
 }
 
 .subnav {
