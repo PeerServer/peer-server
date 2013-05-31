@@ -2,9 +2,8 @@ class window.RouteView extends Backbone.View
   initialize: (options) ->
     @productionRoute = options.productionRoute
     console.log "@productionRoute", @productionRoute
-    @tmplRoute = Handlebars.compile($("#route-template").html())
-    @tmplFunctionSignature = Handlebars.compile(
-      $("#route-function-signature-template").html())
+    @tmplRoute = Handlebars.templates["route"]
+    @tmplFunctionSignature = Handlebars.templates["route-function-signature"]
 
     @model.on("change:paramNames", @renderFunctionSignature)
     # TODO FIX: Error message is not being read correctly from the model.
@@ -23,12 +22,11 @@ class window.RouteView extends Backbone.View
 
   render: =>
     $el = $(@el)
-    console.log "rendering: " + @model.get("errorMessage")
     $el.html @tmplRoute
       name: @model.get("name"),
       path: @model.get("routePath"),
       functionParams: @paramNamesToString([]),
-      errorMessage: @model.get("errorMessage")
+      errorMessage: @productionRoute.get("errorMessage")
 
     @code = @$(".code")
     @path = @$(".path")
@@ -60,8 +58,6 @@ class window.RouteView extends Backbone.View
 
   focus: =>
     @name.focus()
-
-
 
   renderFunctionSignature: =>
     @functionSignature.html(@tmplFunctionSignature(

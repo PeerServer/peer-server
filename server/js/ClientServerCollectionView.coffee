@@ -30,12 +30,10 @@ class window.ClientServerCollectionView extends Backbone.View
     @imageFileList = @$(".file-list.img")
     @dynamicFileList = @$(".file-list.dynamic")
 
-    @tmplServerFileListItem = Handlebars.compile($("#file-list-item-template").html())
-    @tmplRouteListItem = Handlebars.compile($("#route-list-item-template").html())
-    @tmplFileDeleteConfirmation = Handlebars.compile(
-      $("#file-delete-confirmation-template").html())
-    @tmplEditableFileListItem = Handlebars.compile(
-      $("#editable-file-list-item-template").html())
+    @tmplServerFileListItem = Handlebars.templates["file-list-item"]
+    @tmplRouteListItem = Handlebars.templates["route-list-item"]
+    @tmplFileDeleteConfirmation = Handlebars.templates["file-delete-confirmation"]
+    @tmplEditableFileListItem = Handlebars.templates["editable-file-list-item"]
 
     @addAll()
     

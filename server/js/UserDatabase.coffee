@@ -8,8 +8,15 @@ class window.UserDatabase
   constructor: ->
     @database = TAFFY()
 
-  toString: =>
+  toString: (pretty) =>
+    if pretty
+      return JSON.stringify(@database().get(), null, 4)
     return @database().stringify()
 
   fromJSONArray: (array) =>
     @database.insert(array)
+
+  runQuery: (query) =>
+    code = "(function(db) { " + query + " }).call(null, this.database)"
+    return eval(code)
+

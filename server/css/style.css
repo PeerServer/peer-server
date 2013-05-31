@@ -1,5 +1,13 @@
-body {
-  overflow: hidden;
+#database-view {
+  padding-top: 40px;
+}
+
+#database-view .query-editor {
+  height: 400px;
+}
+
+#database-view .span6 {
+  padding: 10px;
 }
 
 .route-help,

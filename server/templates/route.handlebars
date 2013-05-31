@@ -1,0 +1,33 @@
+<div class="route-path">
+  URL at which the code below will be executed
+  <span class="help">(Path components entered as "&lt;someText&gt;" will become variables,
+  accessible by your function below.)</span>
+  <br/>
+  <input type="text" class="path input-xlarge" value="{{path}}">
+</div>
+
+<div class="error-message">
+  Error:
+  {{#if errorMessage}}
+    {{errorMessage}}
+  {{/if}}
+</div>
+
+<div class="well function" style="padding: 8px;">
+  <div class="function-signature"></div>
+
+  <div class="route-help">
+    <p>
+      // Use `static_file("filename")` to access static files.
+    </p>
+    <p>
+      // Use the Taffy `database` object to save state <br/>
+      // (see <a href="http://www.taffydb.com/">TaffyDB</a> for how to use it)
+    </p>
+  </div>
+
+  <div class="code"></div>
+  
+  <div class="function-close">}</div>
+</div>
+

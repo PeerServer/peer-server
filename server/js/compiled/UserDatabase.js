@@ -5,11 +5,15 @@
 
   window.UserDatabase = (function() {
     function UserDatabase() {
+      this.runQuery = __bind(this.runQuery, this);
       this.fromJSONArray = __bind(this.fromJSONArray, this);
       this.toString = __bind(this.toString, this);      this.database = TAFFY();
     }
 
-    UserDatabase.prototype.toString = function() {
+    UserDatabase.prototype.toString = function(pretty) {
+      if (pretty) {
+        return JSON.stringify(this.database().get(), null, 4);
+      }
       return this.database().stringify();
     };
 
@@ -17,8 +21,19 @@
       return this.database.insert(array);
     };
 
+    UserDatabase.prototype.runQuery = function(query) {
+      var code;
+
+      code = "(function(db) { " + query + " }).call(null, this.database)";
+      return eval(code);
+    };
+
     return UserDatabase;
 
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=UserDatabase.map
+*/
