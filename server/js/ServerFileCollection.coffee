@@ -9,6 +9,7 @@ class window.ServerFileCollection extends Backbone.Collection
 
   initialize: ->
     @on("add", @onServerFileAdded)
+    @on("reset", @checkForNoFiles)
     @fetch(success: @checkForNoFiles)
 
   onServerFileAdded: (serverFile) =>

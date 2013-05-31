@@ -20,3 +20,6 @@ class window.UserDatabase
     code = "(function(db) { " + query + " }).call(null, this.database)"
     return eval(code)
 
+  clear: =>
+    @database().remove()
+

@@ -14,7 +14,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "<div id=\"save-notification\">\n  <p>\n    <a href=\"#\" class=\"save-changes\">Click here</a> for your changes to go live.\n  </p>\n</div>\n\n<div id=\"client-server-collection-view\">\n  <div class=\"left-sidebar-container\">\n    <div class=\"left-sidebar\">\n\n      <a class=\"confirm btn\">DELETE?</a>\n\n      <ul class=\"nav nav-tabs nav-stacked\">\n\n        <li class=\"dropdown\">\n        <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" href=\"#\">\n          Create <b class=\"caret\"></b>\n        </a>\n        <ul class=\"dropdown-menu create-menu\">\n          <li class=\"html\"><a href=\"#\">HTML</a></li>\n          <li class=\"css\"><a href=\"#\">CSS</a></li>\n          <li class=\"js\"><a href=\"#\">JS</a></li>\n          <li class=\"divider\"></li>\n          <li class=\"dynamic\"><a href=\"#\">Dynamic Path</a></li>\n          <li class=\"template\"><a href=\"#\">Template</a></li>\n        </ul>\n        </li>\n\n        <li class=\"upload-files\"><a href=\"#\">Upload Files</a></li>\n\n        <li class=\"clear-all\"><a href=\"#\">Clear All</a></li>\n\n      </ul>\n\n      <div class=\"well\" style=\"padding: 8px 0;\">\n        <ul class=\"file-list required nav nav-list\">\n          <li class=\"nav-header\">Required Files</li>\n        </ul>\n\n        <ul class=\"nav nav-list\">\n          <li class=\"divider\"></li>\n        </ul>\n\n        <ul class=\"file-list html nav nav-list\">\n          <li class=\"nav-header\">HTML</li>\n        </ul>\n\n        <ul class=\"file-list css nav nav-list\">\n          <li class=\"nav-header\">CSS</li>\n        </ul>\n\n        <ul class=\"file-list js nav nav-list\">\n          <li class=\"nav-header\">JS</li>\n        </ul>\n\n        <ul class=\"file-list img nav nav-list\">\n          <li class=\"nav-header\">Images</li>\n        </ul>\n\n        <ul class=\"nav nav-list\">\n          <li class=\"divider\"></li>\n        </ul>\n\n        <ul class=\"file-list dynamic nav nav-list\">\n          <li class=\"nav-header\">Dynamic Files</li>\n        </ul>\n\n      </div>\n\n    </div>\n  </div>\n\n  <div class=\"main-pane\">\n    <div id=\"file-view-container\"> </div>\n\n    <div id=\"route-view-container\"> </div>\n\n    <div class=\"file-drop well well-large\">\n      <div class=\"file-drop-inner\">\n        <h3>Drop files here</h3>\n      </div>\n    </div>\n  </div>\n\n</div>\n\n";
+  return "<div id=\"save-notification\">\n  <p>\n    <a href=\"#\" class=\"save-changes\">Click here</a> for your changes to go live.\n  </p>\n</div>\n\n<div id=\"client-server-collection-view\">\n  <div class=\"left-sidebar-container\">\n    <div class=\"left-sidebar\">\n\n      <ul class=\"nav nav-tabs nav-stacked\">\n\n        <li class=\"dropdown\">\n        <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" href=\"#\">\n          Create <b class=\"caret\"></b>\n        </a>\n        <ul class=\"dropdown-menu create-menu\">\n          <li class=\"html\"><a href=\"#\">HTML</a></li>\n          <li class=\"css\"><a href=\"#\">CSS</a></li>\n          <li class=\"js\"><a href=\"#\">JS</a></li>\n          <li class=\"divider\"></li>\n          <li class=\"dynamic\"><a href=\"#\">Dynamic Path</a></li>\n          <li class=\"template\"><a href=\"#\">Template</a></li>\n        </ul>\n        </li>\n\n        <li class=\"upload-files\"><a href=\"#\">Upload Files</a></li>\n\n        <li class=\"clear-all\"><a href=\"#\">Clear All</a></li>\n\n      </ul>\n\n      <div class=\"file-list-container well\" style=\"padding: 8px 0;\">\n      </div>\n\n    </div>\n  </div>\n\n  <div class=\"main-pane\">\n    <div id=\"file-view-container\"> </div>\n\n    <div id=\"route-view-container\"> </div>\n\n    <div class=\"file-drop well well-large\">\n      <div class=\"file-drop-inner\">\n        <h3>Drop files here</h3>\n      </div>\n    </div>\n  </div>\n\n</div>\n\n";
   });
 templates['editable-file-list-item'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [3,'>= 1.0.0-rc.4'];
@@ -33,27 +33,6 @@ helpers = helpers || Handlebars.helpers; data = data || {};
     + "\"></input></li>\n\n";
   return buffer;
   });
-templates['file-delete-confirmation'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
-
-
-  buffer += "<div class=\"file-delete-confirmation modal hide\" data-cid=\"";
-  if (stack1 = helpers.cid) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.cid; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">\n  <div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\n    <h3>Are you sure that you want to delete ";
-  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "?</h3>\n  </div>\n  <div class=\"modal-body\">\n  </div>\n  <div class=\"modal-footer\">\n    <a href=\"#\" class=\"btn\" data-dismiss=\"modal\">Cancel</a>\n    <a href=\"#\" class=\"btn btn-danger deletion-confirmed\">Delete ";
-  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</a>\n  </div>\n</div>\n\n";
-  return buffer;
-  });
 templates['file-list-item'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [3,'>= 1.0.0-rc.4'];
 helpers = helpers || Handlebars.helpers; data = data || {};
@@ -62,7 +41,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <li data-cid=\"";
+  buffer += "\n\n<li data-cid=\"";
   if (stack1 = helpers.cid) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.cid; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
@@ -70,22 +49,30 @@ function program1(depth0,data) {
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</a></li>\n";
+    + "</a></li>\n\n";
   return buffer;
   }
 
 function program3(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n  <li class=\"dropdown\" data-cid=\"";
+  buffer += "\n\n<li data-cid=\"";
   if (stack1 = helpers.cid) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.cid; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n    <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" href=\"#\">\n      ";
+    + "\">\n<a href=\"#\">";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " <b class=\"caret pull-right\" style=\"display: none;\"></b>\n    </a>\n    <ul class=\"dropdown-menu\" style=\"display: none;\">\n      <li class=\"rename\"><a href=\"#\">Rename</a></li>\n      <li class=\"delete\"><a href=\"#\">Delete</a></li>\n    </ul>\n  </li>\n";
+    + " <i class=\"delete icon-trash pull-right\"></i></a>\n</li>\n\n  <!-- <li class=\"dropdown\" data&#45;cid=\"";
+  if (stack1 = helpers.cid) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.cid; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\"> -->\n  <!--   <a class=\"dropdown&#45;toggle\" data&#45;toggle=\"dropdown\" href=\"#\"> -->\n  <!--     ";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + " <b class=\"caret pull&#45;right\" style=\"display: none;\"></b> -->\n  <!--   </a> -->\n  <!--   <ul class=\"dropdown&#45;menu\" style=\"display: none;\"> -->\n  <!--     <li class=\"rename\"><a href=\"#\">Rename</a></li> -->\n  <!--     <li class=\"delete\"><a href=\"#\">Delete</a></li> -->\n  <!--   </ul> -->\n  <!-- </li> -->\n\n";
   return buffer;
   }
 
@@ -93,6 +80,14 @@ function program3(depth0,data) {
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n";
   return buffer;
+  });
+templates['file-lists'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  
+
+
+  return "<ul class=\"file-list required nav nav-list\">\n  <li class=\"nav-header\">Required Files</li>\n</ul>\n\n<ul class=\"nav nav-list\">\n  <li class=\"divider\"></li>\n</ul>\n\n<ul class=\"file-list html nav nav-list\">\n  <li class=\"nav-header\">HTML</li>\n</ul>\n\n<ul class=\"file-list css nav nav-list\">\n  <li class=\"nav-header\">CSS</li>\n</ul>\n\n<ul class=\"file-list js nav nav-list\">\n  <li class=\"nav-header\">JS</li>\n</ul>\n\n<ul class=\"file-list img nav nav-list\">\n  <li class=\"nav-header\">Images</li>\n</ul>\n\n<ul class=\"nav nav-list\">\n  <li class=\"divider\"></li>\n</ul>\n\n<ul class=\"file-list dynamic nav nav-list\">\n  <li class=\"nav-header\">Dynamic Files</li>\n</ul>\n\n";
   });
 templates['image'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [3,'>= 1.0.0-rc.4'];
@@ -126,26 +121,29 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 
 function program1(depth0,data) {
   
-  var stack1;
+  var buffer = "", stack1;
+  buffer += "\n  ";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  return escapeExpression(stack1);
+  buffer += escapeExpression(stack1)
+    + "\n  ";
+  return buffer;
   }
 
 function program3(depth0,data) {
   
   
-  return "(No name yet)";
+  return "\n  (No name yet)\n  ";
   }
 
-  buffer += "<li class=\"dropdown\" data-cid=\"";
+  buffer += "<li data-cid=\"";
   if (stack1 = helpers.cid) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.cid; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n  <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" href=\"#\">\n    ";
+    + "\">\n<a href=\"#\">\n  ";
   stack1 = helpers['if'].call(depth0, depth0.name, {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += " <b class=\"caret pull-right\" style=\"display: none;\"></b>\n  </a>\n  <ul class=\"dropdown-menu\" style=\"display: none;\">\n    <li class=\"delete\"><a href=\"#\">Delete</a></li>\n  </ul>\n</li>\n\n";
+  buffer += "\n\n  <i class=\"delete icon-trash pull-right\"></i>\n</a>\n</li>\n\n";
   return buffer;
   });
 templates['route'] = template(function (Handlebars,depth0,helpers,partials,data) {

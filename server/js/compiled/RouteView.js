@@ -26,8 +26,8 @@
     RouteView.prototype.initialize = function(options) {
       this.productionRoute = options.productionRoute;
       console.log("@productionRoute", this.productionRoute);
-      this.tmplRoute = Handlebars.compile($("#route-template").html());
-      this.tmplFunctionSignature = Handlebars.compile($("#route-function-signature-template").html());
+      this.tmplRoute = Handlebars.templates["route"];
+      this.tmplFunctionSignature = Handlebars.templates["route-function-signature"];
       this.model.on("change:paramNames", this.renderFunctionSignature);
       if (this.productionRoute) {
         this.productionRoute.on("change:errorMessage", this.updateErrorMessage);
@@ -51,12 +51,11 @@
       var $el;
 
       $el = $(this.el);
-      console.log("rendering: " + this.model.get("errorMessage"));
       $el.html(this.tmplRoute({
         name: this.model.get("name"),
         path: this.model.get("routePath"),
         functionParams: this.paramNamesToString([]),
-        errorMessage: this.model.get("errorMessage")
+        errorMessage: this.productionRoute.get("errorMessage")
       }));
       this.code = this.$(".code");
       this.path = this.$(".path");
@@ -157,3 +156,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=RouteView.map
+*/

@@ -5,8 +5,8 @@
 class window.ServerFileView extends Backbone.View
 
   initialize: (options) ->
-    @tplSourceCode = Handlebars.template["source-code"]
-    @tplImage = Handlebars.template["image"]
+    @tplSourceCode = Handlebars.templates["source-code"]
+    @tplImage = Handlebars.templates["image"]
 
   render: =>
     if @model.get("fileType") isnt ServerFile.fileTypeEnum.IMG

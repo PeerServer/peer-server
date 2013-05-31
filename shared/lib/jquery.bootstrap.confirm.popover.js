@@ -37,14 +37,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 				message: '<strong>Are you sure</strong>',				
 				dialog: '<div id="confirm-dialog" class="popover">' +
 							'<div class="arrow"></div>' +
-							'<div class="inner">' +
-							  	'<div class="content">' +
-							  		'<p class="message"></p>' +
-									'<p class="button-group"><a href="#" class="btn small danger"></a><a href="#" class="btn small"></a></p>' +
-							  	'</div>' +
+							'<div class="popover-content">' +
+                  '<p class="message"></p>' +
+									'<p class="button-group"><a href="#" class="btn small btn-danger"></a><a href="#" class="btn small"></a></p>' +
 							'</div>' +
 						'</div>',
-				cancelButton: 'Cancel'
+        confirmButton: null,
+				cancelButton: "Cancel",
+        onConfirmCallback: null
 			};
 			var options =  $.extend(defaults, options);
 			
@@ -58,25 +58,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 						
 						var offset = $elem.offset();
 						var $dialog = $(o.dialog).appendTo('body');
-						
-						var x;
-						if(offset.left > $dialog.width()) {
-							//dialog can be left
-							x = e.pageX - $dialog.width();
-							$dialog.addClass('left');
-						} else {
-							x = e.pageX;
-							$dialog.addClass('right');
-						}
-						var y = e.pageY - $dialog.height() / 2 - $elem.innerHeight() / 2;
 	
-						$dialog.css({
-							display: 'block',
-							position: 'absolute',
-							top: y,
-							left: x
-						});
-						
 						$dialog.find('p.button-group').css({
 							marginTop: '5px',
 							textAlign: 'right'
@@ -88,19 +70,39 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 						
 						$dialog.find('p.message').html(o.message);
 						
-						$dialog.find('a.btn:eq(0)').text($elem.text()).bind('click', function(e) {
-							window.location.href = $elem.attr('href');
-						});
+            $dialog.find('a.btn:eq(0)')
+              .text(o.confirmButton || $elem.text())
+              .bind('click', function(e) {
+                if (o.onConfirmCallback) {
+                  o.onConfirmCallback();
+                }
+                $dialog.remove();
+              });
 						
-						$dialog.find('a.btn:eq(1)').text(o.cancelButton).bind('click', function(e) {
-							$dialog.remove();
-						});
+						$dialog.find('a.btn:eq(1)')
+              .text(o.cancelButton)
+              .bind('click', function(e) {
+                $dialog.remove();
+              });
 						
 						$dialog.bind('mouseleave', function() {
 							$dialog.fadeOut('slow', function() {
 								$dialog.remove();
 							});
 						});
+
+            $dialog.addClass('right');
+
+						var x = e.pageX;
+						var y = e.pageY - $dialog.height() / 2;
+	
+						$dialog.css({
+							display: 'block',
+							position: 'absolute',
+							top: y,
+							left: x
+						});
+            
 					}
 				});
 			});

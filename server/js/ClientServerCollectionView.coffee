@@ -21,20 +21,18 @@ class window.ClientServerCollectionView extends Backbone.View
     @routeViewContainer = @$("#route-view-container")
     @uploadFilesRegion = @$(".file-drop")
     @saveNotification = $("#save-notification").miniNotification(show: false)
-
-    @fileLists = @$(".file-list")
-    @requiredFileList = @$(".file-list.required")
-    @htmlFileList = @$(".file-list.html")
-    @cssFileList = @$(".file-list.css")
-    @jsFileList = @$(".file-list.js")
-    @imageFileList = @$(".file-list.img")
-    @dynamicFileList = @$(".file-list.dynamic")
+    @mainPane = @$(".main-pane")
+    @leftSidebarContainer = @$(".left-sidebar-container")
+    @leftSidebar = @$(".left-sidebar")
+    @clearAllButton = @$(".clear-all")
+    @fileListContainer = @$(".file-list-container")
 
     @tmplServerFileListItem = Handlebars.templates["file-list-item"]
     @tmplRouteListItem = Handlebars.templates["route-list-item"]
-    @tmplFileDeleteConfirmation = Handlebars.templates["file-delete-confirmation"]
     @tmplEditableFileListItem = Handlebars.templates["editable-file-list-item"]
+    @tmplFileLists = Handlebars.templates["file-lists"]
 
+    @render()
     @addAll()
     
     @serverFileCollection.bind("add", @addOneServerFile)
@@ -51,9 +49,8 @@ class window.ClientServerCollectionView extends Backbone.View
     @routeCollection.bind("destroy", @handleFileDeleted)
 
     $(window).keydown(@eventKeyDown)
-    $(window).resize(@render)
+    $(window).resize(@adjustSizes)
 
-    @render()
     @showInitialSaveNotification()
 
   events:
@@ -65,9 +62,7 @@ class window.ClientServerCollectionView extends Backbone.View
     "keypress .file-list li[data-cid] input": "eventKeypressWhileRenaming"
     
     "click .file-list li[data-cid]": "eventSelectFile"
-    "click .file-list li[data-cid] .dropdown-menu .rename": "eventRenameFile"
-    "click .file-list li[data-cid] .dropdown-menu .delete": "eventDeleteFile"
-    "click .file-delete-confirmation .deletion-confirmed": "eventDeleteFileConfirmed"
+    "dblclick .file-list li[data-cid]": "eventRenameFile"
     
     "click .upload-files": "eventUploadFiles"
     "click .save-changes": "eventSaveChanges"
@@ -79,22 +74,36 @@ class window.ClientServerCollectionView extends Backbone.View
     # TODO "click .create-menu .template": "eventCreateTemplate"
 
   render: =>
-    @mainPane = @$(".main-pane")
-    @$(".left-sidebar-container").outerHeight($(window).height())
-    @$(".left-sidebar").outerHeight($(window).height())
-    @mainPane.height($(window).height() - @mainPane.position().top)
-    @mainPane.width($(window).width() - @mainPane.position().left)
+    @adjustSizes()
 
     @routeViewContainer.hide()
     @fileViewContainer.hide()
     @uploadFilesRegion.show()
 
-    
-    $('a.confirm').confirmDialog({
-      message: '<strong>Do you really want to delete this entry</strong>',
-      cancelButton: 'Cancel'
+    $(@clearAllButton).confirmDialog({
+      message: "Are you sure?",
+      confirmButton: "Clear All",
+      cancelButton: "Cancel",
+      onConfirmCallback: @clearAll
     })
-    
+
+    @renderFileLists()
+
+  renderFileLists: =>
+    @fileListContainer.html(@tmplFileLists)
+    @fileLists = @$(".file-list")
+    @requiredFileList = @$(".file-list.required")
+    @htmlFileList = @$(".file-list.html")
+    @cssFileList = @$(".file-list.css")
+    @jsFileList = @$(".file-list.js")
+    @imageFileList = @$(".file-list.img")
+    @dynamicFileList = @$(".file-list.dynamic")
+
+  adjustSizes: =>
+    @leftSidebarContainer.outerHeight($(window).height())
+    @leftSidebar.outerHeight($(window).height())
+    @mainPane.height($(window).height() - @mainPane.position().top)
+    @mainPane.width($(window).width() - @mainPane.position().left)
 
   showInitialSaveNotification: =>
     shouldShow = false
@@ -111,6 +120,9 @@ class window.ClientServerCollectionView extends Backbone.View
       @saveNotification.show()
     
   addAll: =>
+    @renderFileLists()
+    @routeViewContainer.hide()
+    @fileViewContainer.hide()
     @serverFileCollection.each(@addOneServerFile)
     @routeCollection.each(@addOneRoute)
 
@@ -121,11 +133,28 @@ class window.ClientServerCollectionView extends Backbone.View
       name: serverFile.get("name"),
       isRequired: serverFile.get("isRequired"))
     @appendServerFileToFileList(serverFile, listEl)
+    @$("li[data-cid] .delete").addClass("hide")
+    @setupConfirm(serverFile)
 
   addOneRoute: (route) =>
     return if route.get("isProductionVersion")
     listEl = @tmplRouteListItem(cid: route.cid, name: route.get("name"))
     @dynamicFileList.append(listEl)
+    @$("li[data-cid] .delete").addClass("hide")
+    @setupConfirm(route)
+
+  setupConfirm: (resource) =>
+    $("li[data-cid=#{resource.cid}] .delete").confirmDialog({
+      message: "Are you sure?",
+      confirmButton: "Delete",
+      cancelButton: "Cancel",
+      onConfirmCallback: () =>
+        @eventDeleteFileConfirmed(resource)
+    })
+
+  resetClicksOnFileList: =>
+    @fileLists.find("li").removeClass("active")
+    @fileLists.find("li .delete").addClass("hide")
 
   eventSelectFile: (event) =>
     target = $(event.currentTarget)
@@ -134,60 +163,41 @@ class window.ClientServerCollectionView extends Backbone.View
     serverFile = @serverFileCollection.get(cid)
     route = @routeCollection.get(cid)
     resource = serverFile or route
-    if resource
-      if @activeView and @activeView.model is resource
-        target.find(".dropdown-menu").removeAttr("style")
-        target.addClass("open")
-      else
-        @fileLists.find(".dropdown-menu").hide()
-        @fileLists.find(".caret").hide()
 
-        @uploadFilesRegion.hide()
-        @routeViewContainer.hide()
-        @fileViewContainer.hide()
+    if resource and (not @activeView or @activeView.model isnt resource)
+      @uploadFilesRegion.hide()
+      @routeViewContainer.hide()
+      @fileViewContainer.hide()
+      @resetClicksOnFileList()
 
-        if serverFile
-          @selectServerFile(serverFile, target)
-        else if route
-          @selectRoute(route, target)
+      target.find(".delete").removeClass("hide")
+
+      if serverFile
+        @selectServerFile(serverFile, target)
+      else if route
+        @selectRoute(route, target)
 
     return false
 
   eventRenameFile: (event) =>
-    target = $(event.currentTarget).parents("li[data-cid]")
+    target = $(event.currentTarget)
     serverFile = @serverFileCollection.get(target.attr("data-cid"))
     @editableFileName(serverFile, target)
 
-  eventDeleteFile: (event) =>
-    target = $(event.currentTarget).parents("li[data-cid]")
-    serverFile = @serverFileCollection.get(target.attr("data-cid"))
-    route = @routeCollection.get(target.attr("data-cid"))
-    resource = serverFile or route
-
-    modal = @tmplFileDeleteConfirmation(
-      cid: resource.cid, name: resource.get("name"))
-    modal = $($.parseHTML(modal))
-    modal.appendTo(@el)
-
-    modal.modal(backdrop: true, show:true)
-    
-    modal.on "hide", () ->
-      modal.data("modal", null)
-      modal.remove()
-      $(".modal-backdrop").remove()
-
-  eventDeleteFileConfirmed: (event) =>
-    target = $(event.currentTarget)
-      .parents(".file-delete-confirmation[data-cid]")
-    target.modal("hide")
-
-    serverFile = @serverFileCollection.get(target.attr("data-cid"))
-    route = @routeCollection.get(target.attr("data-cid"))
-    resource = serverFile or route
+  eventDeleteFileConfirmed: (resource) =>
     resource.destroy()
-
     @activeView.remove() if @activeView
     @activeView = null
+
+  clearAll: =>
+    while model = @serverFileCollection.first()
+      model.destroy()
+    while model = @routeCollection.first()
+      model.destroy()
+    @serverFileCollection.reset()
+    @routeCollection.reset()
+    @userDatabase.clear()
+    @addAll()
 
   eventKeyDown: (event) =>
     # This condition evaluates to true if CTRL-s or CMD-s are pressed.
@@ -214,9 +224,7 @@ class window.ClientServerCollectionView extends Backbone.View
   eventUploadFiles: =>
     @activeView.remove() if @activeView
     @activeView = null
-    @fileLists.find(".dropdown-menu").hide()
-    @fileLists.find(".caret").hide()
-    @$(".file-list li").removeClass("active")
+    @resetClicksOnFileList()
     @fileViewContainer.hide()
     @routeViewContainer.hide()
     @uploadFilesRegion.show()
@@ -312,6 +320,7 @@ class window.ClientServerCollectionView extends Backbone.View
       isRequired: serverFile.get("isRequired"))
     newListEl = $($.parseHTML(newListEl))
     listEl.replaceWith(newListEl)
+    @setupConfirm(serverFile)
     @selectServerFile(serverFile, newListEl)
 
   eventKeypressWhileRenaming: (event) =>
@@ -346,10 +355,7 @@ class window.ClientServerCollectionView extends Backbone.View
     return null
 
   select: (listEl, view) =>
-    @$(".file-list li").removeClass("active")
     listEl.addClass("active")
-    listEl.find(".caret").show()
-
     @activeView.remove() if @activeView
     @activeView = view
 
@@ -360,7 +366,8 @@ class window.ClientServerCollectionView extends Backbone.View
     @fileViewContainer.show()
 
   selectRoute: (route, listEl) =>
-    productionRoute = @routeCollection.findWhere(name: route.get("name"), isProductionVersion: true)
+    productionRoute = @routeCollection.findWhere(
+      name: route.get("name"), isProductionVersion: true)
     routeView = new RouteView(model: route, productionRoute: productionRoute)
     @select(listEl, routeView)
     @routeViewContainer.append(routeView.render().el)

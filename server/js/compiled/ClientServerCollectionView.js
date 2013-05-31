@@ -32,14 +32,18 @@
       this.preventDefault = __bind(this.preventDefault, this);
       this.eventSaveChanges = __bind(this.eventSaveChanges, this);
       this.eventKeyDown = __bind(this.eventKeyDown, this);
+      this.clearAll = __bind(this.clearAll, this);
       this.eventDeleteFileConfirmed = __bind(this.eventDeleteFileConfirmed, this);
-      this.eventDeleteFile = __bind(this.eventDeleteFile, this);
       this.eventRenameFile = __bind(this.eventRenameFile, this);
       this.eventSelectFile = __bind(this.eventSelectFile, this);
+      this.resetClicksOnFileList = __bind(this.resetClicksOnFileList, this);
+      this.setupConfirm = __bind(this.setupConfirm, this);
       this.addOneRoute = __bind(this.addOneRoute, this);
       this.addOneServerFile = __bind(this.addOneServerFile, this);
       this.addAll = __bind(this.addAll, this);
       this.showInitialSaveNotification = __bind(this.showInitialSaveNotification, this);
+      this.adjustSizes = __bind(this.adjustSizes, this);
+      this.renderFileLists = __bind(this.renderFileLists, this);
       this.render = __bind(this.render, this);      _ref = ClientServerCollectionView.__super__.constructor.apply(this, arguments);
       return _ref;
     }
@@ -57,17 +61,16 @@
       this.saveNotification = $("#save-notification").miniNotification({
         show: false
       });
-      this.fileLists = this.$(".file-list");
-      this.requiredFileList = this.$(".file-list.required");
-      this.htmlFileList = this.$(".file-list.html");
-      this.cssFileList = this.$(".file-list.css");
-      this.jsFileList = this.$(".file-list.js");
-      this.imageFileList = this.$(".file-list.img");
-      this.dynamicFileList = this.$(".file-list.dynamic");
+      this.mainPane = this.$(".main-pane");
+      this.leftSidebarContainer = this.$(".left-sidebar-container");
+      this.leftSidebar = this.$(".left-sidebar");
+      this.clearAllButton = this.$(".clear-all");
+      this.fileListContainer = this.$(".file-list-container");
       this.tmplServerFileListItem = Handlebars.templates["file-list-item"];
       this.tmplRouteListItem = Handlebars.templates["route-list-item"];
-      this.tmplFileDeleteConfirmation = Handlebars.templates["file-delete-confirmation"];
       this.tmplEditableFileListItem = Handlebars.templates["editable-file-list-item"];
+      this.tmplFileLists = Handlebars.templates["file-lists"];
+      this.render();
       this.addAll();
       this.serverFileCollection.bind("add", this.addOneServerFile);
       this.serverFileCollection.bind("reset", this.addAll);
@@ -81,8 +84,7 @@
       this.routeCollection.bind("change:name", this.handleRouteNameChange);
       this.routeCollection.bind("destroy", this.handleFileDeleted);
       $(window).keydown(this.eventKeyDown);
-      $(window).resize(this.render);
-      this.render();
+      $(window).resize(this.adjustSizes);
       return this.showInitialSaveNotification();
     };
 
@@ -93,9 +95,7 @@
       "blur .file-list li[data-cid] input": "eventDoneNamingFile",
       "keypress .file-list li[data-cid] input": "eventKeypressWhileRenaming",
       "click .file-list li[data-cid]": "eventSelectFile",
-      "click .file-list li[data-cid] .dropdown-menu .rename": "eventRenameFile",
-      "click .file-list li[data-cid] .dropdown-menu .delete": "eventDeleteFile",
-      "click .file-delete-confirmation .deletion-confirmed": "eventDeleteFileConfirmed",
+      "dblclick .file-list li[data-cid]": "eventRenameFile",
       "click .upload-files": "eventUploadFiles",
       "click .save-changes": "eventSaveChanges",
       "click .create-menu .html": "eventCreateHTML",
@@ -105,18 +105,35 @@
     };
 
     ClientServerCollectionView.prototype.render = function() {
-      this.mainPane = this.$(".main-pane");
-      this.$(".left-sidebar-container").outerHeight($(window).height());
-      this.$(".left-sidebar").outerHeight($(window).height());
-      this.mainPane.height($(window).height() - this.mainPane.position().top);
-      this.mainPane.width($(window).width() - this.mainPane.position().left);
+      this.adjustSizes();
       this.routeViewContainer.hide();
       this.fileViewContainer.hide();
       this.uploadFilesRegion.show();
-      return $('a.confirm').confirmDialog({
-        message: '<strong>Do you really want to delete this entry</strong>',
-        cancelButton: 'Cancel'
+      $(this.clearAllButton).confirmDialog({
+        message: "Are you sure?",
+        confirmButton: "Clear All",
+        cancelButton: "Cancel",
+        onConfirmCallback: this.clearAll
       });
+      return this.renderFileLists();
+    };
+
+    ClientServerCollectionView.prototype.renderFileLists = function() {
+      this.fileListContainer.html(this.tmplFileLists);
+      this.fileLists = this.$(".file-list");
+      this.requiredFileList = this.$(".file-list.required");
+      this.htmlFileList = this.$(".file-list.html");
+      this.cssFileList = this.$(".file-list.css");
+      this.jsFileList = this.$(".file-list.js");
+      this.imageFileList = this.$(".file-list.img");
+      return this.dynamicFileList = this.$(".file-list.dynamic");
+    };
+
+    ClientServerCollectionView.prototype.adjustSizes = function() {
+      this.leftSidebarContainer.outerHeight($(window).height());
+      this.leftSidebar.outerHeight($(window).height());
+      this.mainPane.height($(window).height() - this.mainPane.position().top);
+      return this.mainPane.width($(window).width() - this.mainPane.position().left);
     };
 
     ClientServerCollectionView.prototype.showInitialSaveNotification = function() {
@@ -139,6 +156,9 @@
     };
 
     ClientServerCollectionView.prototype.addAll = function() {
+      this.renderFileLists();
+      this.routeViewContainer.hide();
+      this.fileViewContainer.hide();
       this.serverFileCollection.each(this.addOneServerFile);
       return this.routeCollection.each(this.addOneRoute);
     };
@@ -154,7 +174,9 @@
         name: serverFile.get("name"),
         isRequired: serverFile.get("isRequired")
       });
-      return this.appendServerFileToFileList(serverFile, listEl);
+      this.appendServerFileToFileList(serverFile, listEl);
+      this.$("li[data-cid] .delete").addClass("hide");
+      return this.setupConfirm(serverFile);
     };
 
     ClientServerCollectionView.prototype.addOneRoute = function(route) {
@@ -167,7 +189,27 @@
         cid: route.cid,
         name: route.get("name")
       });
-      return this.dynamicFileList.append(listEl);
+      this.dynamicFileList.append(listEl);
+      this.$("li[data-cid] .delete").addClass("hide");
+      return this.setupConfirm(route);
+    };
+
+    ClientServerCollectionView.prototype.setupConfirm = function(resource) {
+      var _this = this;
+
+      return $("li[data-cid=" + resource.cid + "] .delete").confirmDialog({
+        message: "Are you sure?",
+        confirmButton: "Delete",
+        cancelButton: "Cancel",
+        onConfirmCallback: function() {
+          return _this.eventDeleteFileConfirmed(resource);
+        }
+      });
+    };
+
+    ClientServerCollectionView.prototype.resetClicksOnFileList = function() {
+      this.fileLists.find("li").removeClass("active");
+      return this.fileLists.find("li .delete").addClass("hide");
     };
 
     ClientServerCollectionView.prototype.eventSelectFile = function(event) {
@@ -178,21 +220,16 @@
       serverFile = this.serverFileCollection.get(cid);
       route = this.routeCollection.get(cid);
       resource = serverFile || route;
-      if (resource) {
-        if (this.activeView && this.activeView.model === resource) {
-          target.find(".dropdown-menu").removeAttr("style");
-          target.addClass("open");
-        } else {
-          this.fileLists.find(".dropdown-menu").hide();
-          this.fileLists.find(".caret").hide();
-          this.uploadFilesRegion.hide();
-          this.routeViewContainer.hide();
-          this.fileViewContainer.hide();
-          if (serverFile) {
-            this.selectServerFile(serverFile, target);
-          } else if (route) {
-            this.selectRoute(route, target);
-          }
+      if (resource && (!this.activeView || this.activeView.model !== resource)) {
+        this.uploadFilesRegion.hide();
+        this.routeViewContainer.hide();
+        this.fileViewContainer.hide();
+        this.resetClicksOnFileList();
+        target.find(".delete").removeClass("hide");
+        if (serverFile) {
+          this.selectServerFile(serverFile, target);
+        } else if (route) {
+          this.selectRoute(route, target);
         }
       }
       return false;
@@ -201,48 +238,32 @@
     ClientServerCollectionView.prototype.eventRenameFile = function(event) {
       var serverFile, target;
 
-      target = $(event.currentTarget).parents("li[data-cid]");
+      target = $(event.currentTarget);
       serverFile = this.serverFileCollection.get(target.attr("data-cid"));
       return this.editableFileName(serverFile, target);
     };
 
-    ClientServerCollectionView.prototype.eventDeleteFile = function(event) {
-      var modal, resource, route, serverFile, target;
-
-      target = $(event.currentTarget).parents("li[data-cid]");
-      serverFile = this.serverFileCollection.get(target.attr("data-cid"));
-      route = this.routeCollection.get(target.attr("data-cid"));
-      resource = serverFile || route;
-      modal = this.tmplFileDeleteConfirmation({
-        cid: resource.cid,
-        name: resource.get("name")
-      });
-      modal = $($.parseHTML(modal));
-      modal.appendTo(this.el);
-      modal.modal({
-        backdrop: true,
-        show: true
-      });
-      return modal.on("hide", function() {
-        modal.data("modal", null);
-        modal.remove();
-        return $(".modal-backdrop").remove();
-      });
-    };
-
-    ClientServerCollectionView.prototype.eventDeleteFileConfirmed = function(event) {
-      var resource, route, serverFile, target;
-
-      target = $(event.currentTarget).parents(".file-delete-confirmation[data-cid]");
-      target.modal("hide");
-      serverFile = this.serverFileCollection.get(target.attr("data-cid"));
-      route = this.routeCollection.get(target.attr("data-cid"));
-      resource = serverFile || route;
+    ClientServerCollectionView.prototype.eventDeleteFileConfirmed = function(resource) {
       resource.destroy();
       if (this.activeView) {
         this.activeView.remove();
       }
       return this.activeView = null;
+    };
+
+    ClientServerCollectionView.prototype.clearAll = function() {
+      var model;
+
+      while (model = this.serverFileCollection.first()) {
+        model.destroy();
+      }
+      while (model = this.routeCollection.first()) {
+        model.destroy();
+      }
+      this.serverFileCollection.reset();
+      this.routeCollection.reset();
+      this.userDatabase.clear();
+      return this.addAll();
     };
 
     ClientServerCollectionView.prototype.eventKeyDown = function(event) {
@@ -278,9 +299,7 @@
         this.activeView.remove();
       }
       this.activeView = null;
-      this.fileLists.find(".dropdown-menu").hide();
-      this.fileLists.find(".caret").hide();
-      this.$(".file-list li").removeClass("active");
+      this.resetClicksOnFileList();
       this.fileViewContainer.hide();
       this.routeViewContainer.hide();
       return this.uploadFilesRegion.show();
@@ -419,6 +438,7 @@
       });
       newListEl = $($.parseHTML(newListEl));
       listEl.replaceWith(newListEl);
+      this.setupConfirm(serverFile);
       return this.selectServerFile(serverFile, newListEl);
     };
 
@@ -475,9 +495,7 @@
     };
 
     ClientServerCollectionView.prototype.select = function(listEl, view) {
-      this.$(".file-list li").removeClass("active");
       listEl.addClass("active");
-      listEl.find(".caret").show();
       if (this.activeView) {
         this.activeView.remove();
       }

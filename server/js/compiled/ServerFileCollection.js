@@ -30,6 +30,7 @@
 
     ServerFileCollection.prototype.initialize = function() {
       this.on("add", this.onServerFileAdded);
+      this.on("reset", this.checkForNoFiles);
       return this.fetch({
         success: this.checkForNoFiles
       });
@@ -243,3 +244,7 @@
   })(Backbone.Collection);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFileCollection.map
+*/

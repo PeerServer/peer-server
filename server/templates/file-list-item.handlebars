@@ -1,14 +1,22 @@
 {{#if isRequired}}
-  <li data-cid="{{cid}}"><a href="#">{{name}}</a></li>
+
+<li data-cid="{{cid}}"><a href="#">{{name}}</a></li>
+
 {{else}}
-  <li class="dropdown" data-cid="{{cid}}">
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-      {{name}} <b class="caret pull-right" style="display: none;"></b>
-    </a>
-    <ul class="dropdown-menu" style="display: none;">
-      <li class="rename"><a href="#">Rename</a></li>
-      <li class="delete"><a href="#">Delete</a></li>
-    </ul>
-  </li>
+
+<li data-cid="{{cid}}">
+<a href="#">{{name}} <i class="delete icon-trash pull-right"></i></a>
+</li>
+
+  <!-- <li class="dropdown" data&#45;cid="{{cid}}"> -->
+  <!--   <a class="dropdown&#45;toggle" data&#45;toggle="dropdown" href="#"> -->
+  <!--     {{name}} <b class="caret pull&#45;right" style="display: none;"></b> -->
+  <!--   </a> -->
+  <!--   <ul class="dropdown&#45;menu" style="display: none;"> -->
+  <!--     <li class="rename"><a href="#">Rename</a></li> -->
+  <!--     <li class="delete"><a href="#">Delete</a></li> -->
+  <!--   </ul> -->
+  <!-- </li> -->
+
 {{/if}}
 

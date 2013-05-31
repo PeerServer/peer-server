@@ -18,8 +18,8 @@
     }
 
     ServerFileView.prototype.initialize = function(options) {
-      this.tplSourceCode = Handlebars.template["source-code"];
-      return this.tplImage = Handlebars.template["image"];
+      this.tplSourceCode = Handlebars.templates["source-code"];
+      return this.tplImage = Handlebars.templates["image"];
     };
 
     ServerFileView.prototype.render = function() {

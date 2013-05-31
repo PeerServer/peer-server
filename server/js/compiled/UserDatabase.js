@@ -5,6 +5,7 @@
 
   window.UserDatabase = (function() {
     function UserDatabase() {
+      this.clear = __bind(this.clear, this);
       this.runQuery = __bind(this.runQuery, this);
       this.fromJSONArray = __bind(this.fromJSONArray, this);
       this.toString = __bind(this.toString, this);      this.database = TAFFY();
@@ -26,6 +27,10 @@
 
       code = "(function(db) { " + query + " }).call(null, this.database)";
       return eval(code);
+    };
+
+    UserDatabase.prototype.clear = function() {
+      return this.database().remove();
     };
 
     return UserDatabase;
