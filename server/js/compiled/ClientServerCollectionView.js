@@ -562,7 +562,3 @@
   })(Backbone.View);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=ClientServerCollectionView.map
-*/

@@ -18,7 +18,3 @@
   }).call(this);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=UserTemplateRenderer.map
-*/
