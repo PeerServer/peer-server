@@ -44,11 +44,14 @@ class window.ClientServer
     # is connected to
     @clientBrowserConnections[connection.peer] = connection
     @userSessions.addSession(connection.peer)
+    @appView.updateConnectionCount(_.size(@clientBrowserConnections))
     
     @eventTransmitter.sendEvent(connection, "initialLoad", landingPage)
 
   channelOnConnectionClose: (connection) =>
     @userSessions.removeSession(connection.peer) if connection and connection.peer
+    delete @clientBrowserConnections[connection.peer] if connection and connection.peer and _.has(@clientBrowserConnections, connection.peer)
+    @appView.updateConnectionCount(_.size(@clientBrowserConnections))
 
   channelConnectionOnData: (data) =>
     @eventTransmitter.receiveEvent(data)

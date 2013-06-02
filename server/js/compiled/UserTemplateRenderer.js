@@ -6,9 +6,6 @@
     UserTemplateRenderer.renderTemplate = function(source, context) {
       var template;
 
-      console.log("HANDLEBARS");
-      console.log(source);
-      console.log(context);
       template = Handlebars.compile(source);
       return template(context);
     };

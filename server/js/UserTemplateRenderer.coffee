@@ -6,8 +6,5 @@
 class window.UserTemplateRenderer
 
   @renderTemplate: (source, context) =>
-    console.log "HANDLEBARS"
-    console.log source
-    console.log context
     template = Handlebars.compile(source)
     return template(context)

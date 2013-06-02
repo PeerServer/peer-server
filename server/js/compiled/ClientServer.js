@@ -61,13 +61,18 @@
       landingPage = this.serverFileCollection.getLandingPage();
       this.clientBrowserConnections[connection.peer] = connection;
       this.userSessions.addSession(connection.peer);
+      this.appView.updateConnectionCount(_.size(this.clientBrowserConnections));
       return this.eventTransmitter.sendEvent(connection, "initialLoad", landingPage);
     };
 
     ClientServer.prototype.channelOnConnectionClose = function(connection) {
       if (connection && connection.peer) {
-        return this.userSessions.removeSession(connection.peer);
+        this.userSessions.removeSession(connection.peer);
       }
+      if (connection && connection.peer && _.has(this.clientBrowserConnections, connection.peer)) {
+        delete this.clientBrowserConnections[connection.peer];
+      }
+      return this.appView.updateConnectionCount(_.size(this.clientBrowserConnections));
     };
 
     ClientServer.prototype.channelConnectionOnData = function(data) {

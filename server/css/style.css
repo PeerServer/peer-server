@@ -1,6 +1,7 @@
-
-.server-age-wrapper {
-  color: #d0d0d0;
+.extra-data-wrapper {
+  float:left;
+  color: #d9d9d9;
+  font-size: 90%;
 }
 
 #database-view {

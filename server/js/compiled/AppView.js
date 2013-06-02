@@ -17,6 +17,7 @@
       this.goToEditPage = __bind(this.goToEditPage, this);
       this.goToPage = __bind(this.goToPage, this);
       this.renderTopbarButtons = __bind(this.renderTopbarButtons, this);
+      this.updateConnectionCount = __bind(this.updateConnectionCount, this);
       this.setClientBrowserLink = __bind(this.setClientBrowserLink, this);      _ref = AppView.__super__.constructor.apply(this, arguments);
       return _ref;
     }
@@ -24,13 +25,16 @@
     AppView.prototype.el = "#client-server";
 
     AppView.prototype.initialize = function(options) {
-      var serverAge,
-        _this = this;
+      var _this = this;
 
       this.serverFileCollection = options.serverFileCollection;
       this.routeCollection = options.routeCollection;
       this.userDatabase = options.userDatabase;
-      serverAge = new ServerAge($(".server-age-wrapper"));
+      this.serverAge = new ServerAge($(".server-age-wrapper"));
+      this.connectionDataView = new ServerConnectionDataView({
+        el: $(".server-connection-data-wrapper"),
+        model: new ServerConnectionDataModel()
+      });
       this.tmplEditPage = Handlebars.templates["edit-page"];
       this.tmplDatabasePage = Handlebars.templates["database-page"];
       this.tmplTopbarButtons = Handlebars.templates["topbar-buttons"];
@@ -56,6 +60,10 @@
       this.goToPage();
       link = window.location.origin + "/connect/" + serverID + "/";
       return this.clientBrowserLink.attr("href", link);
+    };
+
+    AppView.prototype.updateConnectionCount = function(count) {
+      return this.connectionDataView.model.set("count", count);
     };
 
     AppView.prototype.renderTopbarButtons = function() {

@@ -8,7 +8,8 @@ class window.AppView extends Backbone.View
     @serverFileCollection = options.serverFileCollection
     @routeCollection = options.routeCollection
     @userDatabase = options.userDatabase
-    serverAge = new ServerAge($(".server-age-wrapper"))
+    @serverAge = new ServerAge($(".server-age-wrapper"))
+    @connectionDataView = new ServerConnectionDataView({el: $(".server-connection-data-wrapper"), model: new ServerConnectionDataModel()})
 
     # Templates
     @tmplEditPage = Handlebars.templates["edit-page"]
@@ -35,6 +36,9 @@ class window.AppView extends Backbone.View
     @goToPage()
     link = window.location.origin + "/connect/" + serverID + "/"
     @clientBrowserLink.attr("href", link)
+
+  updateConnectionCount: (count) =>
+    @connectionDataView.model.set("count", count)
 
   renderTopbarButtons: =>
     $(".topbar-buttons").remove()
