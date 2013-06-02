@@ -9,30 +9,52 @@ class window.AppView extends Backbone.View
     @routeCollection = options.routeCollection
     @userDatabase = options.userDatabase
 
+    # Templates
     @tmplEditPage = Handlebars.templates["edit-page"]
     @tmplDatabasePage = Handlebars.templates["database-page"]
     @tmplTopbarButtons = Handlebars.templates["topbar-buttons"]
     @tmplServerIDMessage = Handlebars.templates["server-id-message"]
 
+    # Routes
+    @routeMap =
+      "edit": @goToEditPage
+      "database": @goToDatabasePage
+    @routeDefault = "edit"
+    @routeCurrent = ""
+
+    # Events
     @on("setServerID", @setClientBrowserLink)
     @on("onUnavailableID", @goToUnavailableIDPage)
     @on("onInvalidID", @goToInvalidIDPage)
 
+    $(window).on("hashchange", () => @goToPage())
+
   setClientBrowserLink: (serverID) =>
     @serverID = serverID
-    @goToEditPage()
+    @goToPage()
     link = window.location.origin + "/connect/" + serverID + "/"
     @clientBrowserLink.attr("href", link)
 
   renderTopbarButtons: =>
+    $(".topbar-buttons").remove()
     $(".topbar").append(@tmplTopbarButtons)
+
     @clientBrowserLink = $(".navbar .browse")
     @archiveButton = $(".navbar .archive")
-    @editLink = $(".navbar .edit")
-    @databaseLink = $(".navbar .database")
 
-    @editLink.click(@goToEditPage)
-    @databaseLink.click(@goToDatabasePage)
+  goToPage: (slug) =>
+    if slug
+      location.hash = "#" + slug
+    else
+      slug = location.hash.replace("#", "")
+
+    if not @routeMap[slug]
+      slug = @routeDefault
+
+    return if slug is @routeCurrent
+    @routeCurrent = slug
+
+    @routeMap[slug]()
 
   goToEditPage: =>
     @renderTopbarButtons()
