@@ -10,7 +10,6 @@
     <script src="/shared/lib/underscore.js"></script>
     <script src="/shared/lib/backbone.js"></script>
     <script src="/shared/lib/handlebars.js"></script>
-    <script src="/shared/lib/handlebars.runtime.js"></script>
     <script src="/shared/lib/backbone.localStorage.js"></script>
     <script src="/shared/lib/uri.min.js"></script>
     <script src="/shared/lib/peer.min.js"></script>
@@ -66,9 +65,15 @@
     <div class="navbar navbar-fixed-top">
       <div class="navbar-inner">
         <div class="topbar container-fluid">
-          <a class="brand" href="#">Client Server</a>
-          <small class="server-age-wrapper">Age:
-          <span class="server-age"></span></small>
+            <div class=" nav pull-left">
+                <a class="brand" href="#">Client Server</a>
+              <small class="extra-data-wrapper">
+                  <div class="server-age-wrapper">Age:
+                  <span class="server-age"></span></div>
+                  <div class="server-connection-data-wrapper">Connected browsers:
+                  <span class="server-connection-data"></span></div>
+              </small>
+            </div>
         </div>
       </div>
     </div>
