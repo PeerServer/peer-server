@@ -7,14 +7,15 @@ class window.RouteView extends Backbone.View
 
     @model.on("change:paramNames", @renderFunctionSignature)
     @model.on("change", @renderValidationResult)
+    @model.on("destroy", @onDestroy)
 
     if @productionRoute
       @productionRoute.on("change:errorMessage", @updateErrorMessage)
 
-
   events:
     "keyup .path": "eventPathChange"
     "keyup .name": "eventNameChange"
+    "remove": "onDestroy"
 
   paramNamesToString: (paramNames) =>
     if paramNames.length == 0
@@ -94,3 +95,6 @@ class window.RouteView extends Backbone.View
     else
       @path.tipsy("hide")
 
+  onDestroy: =>
+    @aceEditor.destroy()
+    $('.tipsy').remove()

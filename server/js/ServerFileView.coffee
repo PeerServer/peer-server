@@ -8,6 +8,11 @@ class window.ServerFileView extends Backbone.View
     @tplSourceCode = Handlebars.templates["source-code"]
     @tplImage = Handlebars.templates["image"]
 
+    @model.on("destroy", @onDestroy)
+
+  events:
+    "remove": "onDestroy"
+
   render: =>
     if @model.get("fileType") isnt ServerFile.fileTypeEnum.IMG
       @renderAsSourceCode()
@@ -40,3 +45,5 @@ class window.ServerFileView extends Backbone.View
   updateContents: =>
     @model.save("contents", @aceEditor.getValue())
 
+  onDestroy: =>
+    @aceEditor.destroy()

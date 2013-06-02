@@ -10,6 +10,7 @@
     __extends(ServerFileView, _super);
 
     function ServerFileView() {
+      this.onDestroy = __bind(this.onDestroy, this);
       this.updateContents = __bind(this.updateContents, this);
       this.renderAsImage = __bind(this.renderAsImage, this);
       this.renderAsSourceCode = __bind(this.renderAsSourceCode, this);
@@ -19,7 +20,12 @@
 
     ServerFileView.prototype.initialize = function(options) {
       this.tplSourceCode = Handlebars.templates["source-code"];
-      return this.tplImage = Handlebars.templates["image"];
+      this.tplImage = Handlebars.templates["image"];
+      return this.model.on("destroy", this.onDestroy);
+    };
+
+    ServerFileView.prototype.events = {
+      "remove": "onDestroy"
     };
 
     ServerFileView.prototype.render = function() {
@@ -61,8 +67,16 @@
       return this.model.save("contents", this.aceEditor.getValue());
     };
 
+    ServerFileView.prototype.onDestroy = function() {
+      return this.aceEditor.destroy();
+    };
+
     return ServerFileView;
 
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFileView.map
+*/

@@ -30,6 +30,7 @@
       CSS: "CSS",
       JS: "JS",
       IMG: "IMG",
+      TEMPLATE: "TEMPLATE",
       NONE: "NONE"
     };
 
@@ -59,6 +60,9 @@
       if (rawType.indexOf("css") !== -1) {
         return ServerFile.fileTypeEnum.CSS;
       }
+      if (rawType.indexOf("handlebars") !== -1) {
+        return ServerFile.fileTypeEnum.TEMPLATE;
+      }
       if (rawType.indexOf("javascript") !== -1) {
         return ServerFile.fileTypeEnum.JS;
       }
@@ -80,6 +84,8 @@
           return ServerFile.fileTypeEnum.CSS;
         case "js":
           return ServerFile.fileTypeEnum.JS;
+        case "handlebars":
+          return ServerFile.fileTypeEnum.TEMPLATE;
       }
       return null;
     };
@@ -89,3 +95,7 @@
   }).call(this, Backbone.Model);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFile.map
+*/

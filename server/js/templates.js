@@ -87,7 +87,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<ul class=\"file-list required nav nav-list\">\n  <li class=\"nav-header\">Required Files</li>\n</ul>\n\n<ul class=\"nav nav-list\">\n  <li class=\"divider\"></li>\n</ul>\n\n<ul class=\"file-list html nav nav-list\">\n  <li class=\"nav-header\">HTML</li>\n</ul>\n\n<ul class=\"file-list css nav nav-list\">\n  <li class=\"nav-header\">CSS</li>\n</ul>\n\n<ul class=\"file-list js nav nav-list\">\n  <li class=\"nav-header\">JS</li>\n</ul>\n\n<ul class=\"file-list img nav nav-list\">\n  <li class=\"nav-header\">Images</li>\n</ul>\n\n<ul class=\"nav nav-list\">\n  <li class=\"divider\"></li>\n</ul>\n\n<ul class=\"file-list dynamic nav nav-list\">\n  <li class=\"nav-header\">Dynamic Files</li>\n</ul>\n\n";
+  return "<ul class=\"file-list required nav nav-list\">\n  <li class=\"nav-header\">Required Files</li>\n</ul>\n\n<ul class=\"nav nav-list\">\n  <li class=\"divider\"></li>\n</ul>\n\n<ul class=\"file-list html nav nav-list\">\n  <li class=\"nav-header\">HTML</li>\n</ul>\n\n<ul class=\"file-list css nav nav-list\">\n  <li class=\"nav-header\">CSS</li>\n</ul>\n\n<ul class=\"file-list js nav nav-list\">\n  <li class=\"nav-header\">JS</li>\n</ul>\n\n<ul class=\"file-list img nav nav-list\">\n  <li class=\"nav-header\">Images</li>\n</ul>\n\n<ul class=\"nav nav-list\">\n  <li class=\"divider\"></li>\n</ul>\n\n<ul class=\"file-list dynamic nav nav-list\">\n  <li class=\"nav-header\">Dynamic Files</li>\n</ul>\n\n<ul class=\"file-list template nav nav-list\">\n  <li class=\"nav-header\">Templates</li>\n</ul>\n\n";
   });
 templates['image'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
@@ -154,22 +154,22 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n    ";
+  buffer += "\n      ";
   if (stack1 = helpers.errorMessage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.errorMessage; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\n  ";
+    + "\n    ";
   return buffer;
   }
 
-  buffer += "<div class=\"route-help\">\n  <p> <a class=\"showhide\" onclick=\"$('.route-tips').toggle()\" style=\"cursor:pointer\">Show/hide tips on database, templates, sessions, etc.</a>\n  <ul class=\"route-tips\" style=\"display:none\">\n    <li>Database: Use the TaffyDB `database` object to save state. See <a target=\"_blank\" href=\"http://www.taffydb.com/\">TaffyDB</a> for more, or <a href=\"#database\">browse and run sample queries</a>. </li>\n    <li>Templates: Use render_template(\"aTemplate.html\", context) to render the template with the given context (an object mapping names to values). See <a target=\"_blank\" href=\"http://handlebarsjs.com/\">HandlebarsJS</a> for more.</li>\n    <li>Session: Access the current user session with the `session` object and set properties as usual with session.someProperty = someValue.</li>\n    <li>Static files: Use `static_file(\"filename\")` to access the content of static files.</li>\n    <li>Cryptography: Use cryptoRandom(n) to generate a string of integer n random hex bytes. Call hash(str) to securely hash the string str with Sha-2</li>\n    <li>Escaping HTML: Use _.escape(str) and _.unescape(str) to escape and unescape strings for safe HTML insertion.</li>\n    <li>Convenience functions: All <a target=\"_blank\" href=\"http://underscorejs.org\">Underscore</a> functions are available.</li>\n  </ul>\n  </p>\n</div>\n\n<div class=\"error-message\">\n  ";
+  buffer += "<div class=\"error-message-container alert alert-error\">\n  <div class=\"error-message\">\n    ";
   stack1 = helpers['if'].call(depth0, depth0.errorMessage, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>\n\n<div class=\"well function\" style=\"padding: 8px;\">\n  <div class=\"route-path\">\n    path\n    <span class=\"help\">(Path components entered as \"&lt;someVar&gt;\" will become variables,\n    accessible by your function below.)</span>\n    <br/>\n    <input type=\"text\" placeholder=\"Enter a path mapping\" class=\"path input-xlarge\" value=\"";
+  buffer += "\n  </div>\n</div>\n\n<div class=\"well function\" style=\"padding: 8px;\">\n\n  <div class=\"route-path\">\n    path\n    <span class=\"help\">(Path components entered as \"&lt;someVar&gt;\" will become variables,\n    accessible by your function below.)</span>\n    <br/>\n    <input type=\"text\" placeholder=\"Enter a path mapping\" class=\"path input-xlarge\" value=\"";
   if (stack1 = helpers.path) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.path; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\">\n  </div>\n  <div class=\"function-signature\"></div>\n\n  <div class=\"code-container\">\n    <div class=\"code\"></div>\n  </div>\n  \n  <div class=\"function-close\">}</div>\n</div>\n\n";
+    + "\">\n  </div>\n\n  <div class=\"route-help\">\n    <p> <a class=\"showhide\" onclick=\"$('.route-tips').toggle()\" style=\"cursor:pointer\">Show/hide tips on database, templates, sessions, etc.</a>\n    <ul class=\"route-tips\" style=\"display:none\">\n      <li>Database: Use the TaffyDB `database` object to save state. See <a target=\"_blank\" href=\"http://www.taffydb.com/\">TaffyDB</a> for more, or <a href=\"#database\">browse and run sample queries</a>. </li>\n      <li>Templates: Use render_template(\"aTemplate.html\", context) to render the template with the given context (an object mapping names to values). See <a target=\"_blank\" href=\"http://handlebarsjs.com/\">HandlebarsJS</a> for more.</li>\n      <li>Session: Access the current user session with the `session` object and set properties as usual with session.someProperty = someValue.</li>\n      <li>Static files: Use `static_file(\"filename\")` to access the content of static files.</li>\n      <li>Cryptography: Use cryptoRandom(n) to generate a string of integer n random hex bytes. Call hash(str) to securely hash the string str with Sha-2</li>\n      <li>Escaping strings: Use _.escape(str) and _.unescape(str) to escape and unescape strings for safe HTML insertion.</li>\n      <li>Convenience functions: All <a target=\"_blank\" href=\"http://underscorejs.org\">UnderscoreJS</a> functions are available.</li>\n    </ul>\n    </p>\n  </div>\n\n  <div class=\"function-signature\"></div>\n\n  <div class=\"code-container\">\n    <div class=\"code\"></div>\n  </div>\n  \n  <div class=\"function-close\">}</div>\n</div>\n\n";
   return buffer;
   });
 templates['server-id-message'] = template(function (Handlebars,depth0,helpers,partials,data) {
