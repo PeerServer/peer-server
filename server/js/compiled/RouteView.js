@@ -17,7 +17,6 @@
       this.createEditor = __bind(this.createEditor, this);
       this.renderFunctionSignature = __bind(this.renderFunctionSignature, this);
       this.focus = __bind(this.focus, this);
-      this.adjustHeights = __bind(this.adjustHeights, this);
       this.render = __bind(this.render, this);
       this.paramNamesToString = __bind(this.paramNamesToString, this);      _ref = RouteView.__super__.constructor.apply(this, arguments);
       return _ref;
@@ -76,19 +75,6 @@
         trigger: "manual"
       });
       return this;
-    };
-
-    RouteView.prototype.adjustHeights = function() {
-      var $el, codeHeight, padding;
-
-      $el = $(this.el);
-      this.$(".function").outerHeight($el.height() - this.$(".route-path").outerHeight(true));
-      padding = this.$(".function").innerHeight() - this.$(".function").height();
-      codeHeight = this.$(".function").height() - padding;
-      codeHeight -= this.functionSignature.outerHeight(true);
-      codeHeight -= this.$(".function-close").outerHeight(true);
-      codeHeight -= this.$(".route-help").outerHeight(true);
-      return this.code.outerHeight(codeHeight);
     };
 
     RouteView.prototype.focus = function() {
@@ -157,3 +143,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=RouteView.map
+*/

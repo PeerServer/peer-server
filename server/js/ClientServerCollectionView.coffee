@@ -51,7 +51,6 @@ class window.ClientServerCollectionView extends Backbone.View
     @routeCollection.bind("destroy", @handleFileDeleted)
 
     $(window).keydown(@eventKeyDown)
-    $(window).resize(@adjustSizes)
 
     @showInitialSaveNotification()
 
@@ -88,7 +87,6 @@ class window.ClientServerCollectionView extends Backbone.View
     })
 
     @renderFileLists()
-    @adjustSizes()
 
   renderFileLists: =>
     @fileListContainer.html(@tmplFileLists)
@@ -99,16 +97,6 @@ class window.ClientServerCollectionView extends Backbone.View
     @jsFileList = @$(".file-list.js")
     @imageFileList = @$(".file-list.img")
     @dynamicFileList = @$(".file-list.dynamic")
-
-  adjustSizes: =>
-    marginTop = @saveNotificationContainer.offset().top -
-      @saveNotificationContainer.position().top
-    availableHeight = $(window).height() -
-      @saveNotificationContainer.height() - marginTop
-    @leftSidebarContainer.height(availableHeight)
-    @leftSidebar.height(availableHeight)
-    @mainPane.height(availableHeight)
-    @mainPane.width($(window).width() - @mainPane.position().left)
 
   showInitialSaveNotification: =>
     shouldShow = false
@@ -391,6 +379,5 @@ class window.ClientServerCollectionView extends Backbone.View
     @select(listEl, routeView)
     @routeViewContainer.append(routeView.render().el)
     @routeViewContainer.show()
-    routeView.adjustHeights()
     routeView.focus()
 

@@ -49,19 +49,6 @@ class window.RouteView extends Backbone.View
 
     return @
 
-  adjustHeights: =>
-    $el = $(@el)
-
-    @$(".function").outerHeight(
-      $el.height() - @$(".route-path").outerHeight(true))
-
-    padding = @$(".function").innerHeight() - @$(".function").height()
-    codeHeight = @$(".function").height() - padding
-    codeHeight -= @functionSignature.outerHeight(true)
-    codeHeight -= @$(".function-close").outerHeight(true)
-    codeHeight -= @$(".route-help").outerHeight(true)
-    @code.outerHeight(codeHeight)
-
   focus: =>
     @name.focus()
 

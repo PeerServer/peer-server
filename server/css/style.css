@@ -1,7 +1,19 @@
+html, body {
+  height: 100%;
+}
+
 .extra-data-wrapper {
   float:left;
   color: #d9d9d9;
   font-size: 90%;
+}
+
+#client-server {
+  height: -moz-calc(100% - 40px);
+}
+
+#client-server-collection-view {
+  height: 100%;
 }
 
 #database-view {
@@ -87,29 +99,38 @@
 }
 
 .main-pane {
-  position: fixed;
-  top: 72px;
-  left: 320px;
-  z-index: 1;
-}
-
-.left-sidebar-container {
-  overflow: hidden;
-  width: 280px;  
-  margin-left: 20px;
+  margin-left: 300px;
+  width: -moz-calc(100% - 300px);
+  height: 100%;
 }
 
 .left-sidebar {
   padding-top: 10px;
-  overflow: auto;
-  overflow-y: scroll;
   height: 100%;
-  width: 295px;  
+  margin-left: 10px;
+  width: 280px;  
+  float: left;
 }
 
-#file-view-container,
-#route-view-container {
+#file-view-container {
+  height: calc(100% - 72px);
+  left: 300px;
+  position: fixed;
+  top: 72px;
+  width: calc(100% - 300px);
+  z-index: 1;
+}
+
+#route-view-container .code-container {
+  height: -moz-calc(100% - 172px);
+}
+
+#route-view-container .code {
   height: 100%;
+}
+
+#route-view-container .function {
+  height: -moz-calc(100% - 100px);
 }
 
 .file-drop {
