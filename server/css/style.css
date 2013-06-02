@@ -50,15 +50,15 @@ html, body {
   padding: 10px;
 }
 
+
 .function-signature,
 .function-signature input {
   font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
 }
 
-.route-help {
-  padding-left: 20px;
-  font-size: 10px;
-  line-height: 12px;
+.function-signature {
+  width: -moz-calc(100% - 214px);
+  word-wrap: break-word;
 }
 
 .route-path {
@@ -66,8 +66,11 @@ html, body {
 }
 
 .route-help {
-  padding: 5px;
+  line-height: 12px;
+  float: right;
   font-size: 11px;
+  padding: 0 4px;
+  width: 200px;
 }
 
 .route-path .help {
@@ -95,7 +98,7 @@ html, body {
   text-align: center;
   border: 1px solid #FAE1C6;
   border-radius: 0px 0px 10px 10px;
-  z-index: 2;
+  z-index: 5;
 }
 
 #server-id-message {
@@ -121,9 +124,12 @@ html, body {
 }
 
 .main-pane {
+  padding-top: 10px;
   margin-left: 300px;
-  width: -moz-calc(100% - 300px);
-  height: 100%;
+  width: -moz-calc(100% - 310px);
+  height: -moz-calc(100% - 84px);
+  position: fixed;
+  z-index: 1;
 }
 
 .left-sidebar {
@@ -135,16 +141,12 @@ html, body {
 }
 
 #file-view-container {
-  height: calc(100% - 72px);
-  left: 300px;
-  position: fixed;
-  top: 72px;
-  width: calc(100% - 300px);
-  z-index: 1;
+  height: 100%;
+  width: 100%;
 }
 
 #route-view-container .code-container {
-  height: -moz-calc(100% - 172px);
+  height: -moz-calc(100% - 210px);
 }
 
 #route-view-container .code {
@@ -152,14 +154,13 @@ html, body {
 }
 
 #route-view-container .function {
-  height: -moz-calc(100% - 100px);
+  height: -moz-calc(100% - 58px);
+  overflow-y: auto;
 }
 
-.file-drop {
-  margin: 20px;
+.error-message-container {
+  margin-bottom: 10px;
 }
-
-/* TODO make fat dashed border for file drop. */
 
 .file-drop-inner {
   display: none;

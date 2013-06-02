@@ -51,6 +51,7 @@ class window.ClientServerCollectionView extends Backbone.View
     @routeCollection.bind("destroy", @handleFileDeleted)
 
     $(window).keydown(@eventKeyDown)
+    $("a[href=#]").attr("href", "javascript:void(0)")
 
     @showInitialSaveNotification()
 
@@ -71,8 +72,8 @@ class window.ClientServerCollectionView extends Backbone.View
     "click .create-menu .html": "eventCreateHTML"
     "click .create-menu .js": "eventCreateJS"
     "click .create-menu .css": "eventCreateCSS"
+    "click .create-menu .template": "eventCreateTemplate"
     "click .create-menu .dynamic": "eventCreateDynamic"
-    # TODO "click .create-menu .template": "eventCreateTemplate"
 
   render: =>
     @routeViewContainer.hide()
@@ -96,6 +97,7 @@ class window.ClientServerCollectionView extends Backbone.View
     @cssFileList = @$(".file-list.css")
     @jsFileList = @$(".file-list.js")
     @imageFileList = @$(".file-list.img")
+    @templateFileList = @$(".file-list.template")
     @dynamicFileList = @$(".file-list.dynamic")
 
   showInitialSaveNotification: =>
@@ -298,6 +300,10 @@ class window.ClientServerCollectionView extends Backbone.View
     serverFile = new ServerFile(type: "text/css")
     @createFile(serverFile)
 
+  eventCreateTemplate: =>
+    serverFile = new ServerFile(type: "text/x-handlebars-template")
+    @createFile(serverFile)
+
   createFile: (serverFile) =>
     @resetClicksOnFileList()
     @serverFileCollection.add(serverFile, silent: true)
@@ -337,12 +343,29 @@ class window.ClientServerCollectionView extends Backbone.View
   editableFileName: (serverFile, listElToReplace) =>
     listEl = @tmplEditableFileListItem(
       cid: serverFile.cid, name:serverFile.get("name"))
+
     if listElToReplace
       listEl = $($.parseHTML(listEl))
       listElToReplace.replaceWith(listEl)
     else
-      listEl = @appendServerFileToFileList(serverFile, listEl)
+      @appendServerFileToFileList(serverFile, listEl)
+
+    listEl = $("li[data-cid=#{serverFile.cid}]")
+    listElTop = listEl.offset().top
+
+    if $(window).scrollTop() < listElTop
+      # listEl[0].scrollIntoView()
+      $(window).scrollTop(listElTop)
+      # $('html, body').animate({
+        # scrollTop: listEl.offset().top
+      # }, 100)
+      
+    # $('body').scrollTo(listEl)
+
     listEl.find("input").focus()
+    # console.log listEl
+      # $(window).scrollTop(listElTop)
+
 
   # --- HELPER METHODS ---
   
@@ -352,14 +375,15 @@ class window.ClientServerCollectionView extends Backbone.View
       section = @requiredFileList
     else
       switch serverFile.get("fileType")
-        when ServerFile.fileTypeEnum.HTML then section = @htmlFileList
-        when ServerFile.fileTypeEnum.CSS  then section = @cssFileList
-        when ServerFile.fileTypeEnum.JS   then section = @jsFileList
-        when ServerFile.fileTypeEnum.IMG  then section = @imageFileList
+        when ServerFile.fileTypeEnum.HTML      then section = @htmlFileList
+        when ServerFile.fileTypeEnum.CSS       then section = @cssFileList
+        when ServerFile.fileTypeEnum.JS        then section = @jsFileList
+        when ServerFile.fileTypeEnum.IMG       then section = @imageFileList
+        when ServerFile.fileTypeEnum.TEMPLATE  then section = @templateFileList
         else                              console.error("Error: Could not find proper place for file. " + serverFile.get("name"))
+    
     if section
-      return section.append(listEl)
-    return null
+      section.append(listEl)
 
   select: (listEl, view) =>
     listEl.addClass("active")
@@ -369,15 +393,23 @@ class window.ClientServerCollectionView extends Backbone.View
   selectServerFile: (serverFile, listEl) =>
     serverFileView = new ServerFileView(model: serverFile)
     @select(listEl, serverFileView)
-    @fileViewContainer.append(serverFileView.render().el)
+    @fileViewContainer.html(serverFileView.render().el)
+
+    @uploadFilesRegion.hide()
+    @routeViewContainer.hide()
     @fileViewContainer.show()
 
   selectRoute: (route, listEl) =>
     productionRoute = @routeCollection.findWhere(
       name: route.get("name"), isProductionVersion: true)
     routeView = new RouteView(model: route, productionRoute: productionRoute)
+    
     @select(listEl, routeView)
-    @routeViewContainer.append(routeView.render().el)
+    @routeViewContainer.html(routeView.render().el)
+
+    @uploadFilesRegion.hide()
+    @fileViewContainer.hide()
     @routeViewContainer.show()
+    
     routeView.focus()
 

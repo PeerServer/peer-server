@@ -19,6 +19,7 @@
       this.eventDoneNamingFile = __bind(this.eventDoneNamingFile, this);
       this.eventCreateDynamic = __bind(this.eventCreateDynamic, this);
       this.createFile = __bind(this.createFile, this);
+      this.eventCreateTemplate = __bind(this.eventCreateTemplate, this);
       this.eventCreateCSS = __bind(this.eventCreateCSS, this);
       this.eventCreateJS = __bind(this.eventCreateJS, this);
       this.eventCreateHTML = __bind(this.eventCreateHTML, this);
@@ -85,6 +86,7 @@
       this.routeCollection.bind("change:name", this.handleRouteNameChange);
       this.routeCollection.bind("destroy", this.handleFileDeleted);
       $(window).keydown(this.eventKeyDown);
+      $("a[href=#]").attr("href", "javascript:void(0)");
       return this.showInitialSaveNotification();
     };
 
@@ -101,6 +103,7 @@
       "click .create-menu .html": "eventCreateHTML",
       "click .create-menu .js": "eventCreateJS",
       "click .create-menu .css": "eventCreateCSS",
+      "click .create-menu .template": "eventCreateTemplate",
       "click .create-menu .dynamic": "eventCreateDynamic"
     };
 
@@ -125,6 +128,7 @@
       this.cssFileList = this.$(".file-list.css");
       this.jsFileList = this.$(".file-list.js");
       this.imageFileList = this.$(".file-list.img");
+      this.templateFileList = this.$(".file-list.template");
       return this.dynamicFileList = this.$(".file-list.dynamic");
     };
 
@@ -415,6 +419,15 @@
       return this.createFile(serverFile);
     };
 
+    ClientServerCollectionView.prototype.eventCreateTemplate = function() {
+      var serverFile;
+
+      serverFile = new ServerFile({
+        type: "text/x-handlebars-template"
+      });
+      return this.createFile(serverFile);
+    };
+
     ClientServerCollectionView.prototype.createFile = function(serverFile) {
       this.resetClicksOnFileList();
       this.serverFileCollection.add(serverFile, {
@@ -461,7 +474,7 @@
     };
 
     ClientServerCollectionView.prototype.editableFileName = function(serverFile, listElToReplace) {
-      var listEl;
+      var listEl, listElTop;
 
       listEl = this.tmplEditableFileListItem({
         cid: serverFile.cid,
@@ -471,7 +484,12 @@
         listEl = $($.parseHTML(listEl));
         listElToReplace.replaceWith(listEl);
       } else {
-        listEl = this.appendServerFileToFileList(serverFile, listEl);
+        this.appendServerFileToFileList(serverFile, listEl);
+      }
+      listEl = $("li[data-cid=" + serverFile.cid + "]");
+      listElTop = listEl.offset().top;
+      if ($(window).scrollTop() < listElTop) {
+        $(window).scrollTop(listElTop);
       }
       return listEl.find("input").focus();
     };
@@ -496,6 +514,9 @@
           case ServerFile.fileTypeEnum.IMG:
             section = this.imageFileList;
             break;
+          case ServerFile.fileTypeEnum.TEMPLATE:
+            section = this.templateFileList;
+            break;
           default:
             console.error("Error: Could not find proper place for file. " + serverFile.get("name"));
         }
@@ -503,7 +524,6 @@
       if (section) {
         return section.append(listEl);
       }
-      return null;
     };
 
     ClientServerCollectionView.prototype.select = function(listEl, view) {
@@ -521,7 +541,9 @@
         model: serverFile
       });
       this.select(listEl, serverFileView);
-      this.fileViewContainer.append(serverFileView.render().el);
+      this.fileViewContainer.html(serverFileView.render().el);
+      this.uploadFilesRegion.hide();
+      this.routeViewContainer.hide();
       return this.fileViewContainer.show();
     };
 
@@ -537,7 +559,9 @@
         productionRoute: productionRoute
       });
       this.select(listEl, routeView);
-      this.routeViewContainer.append(routeView.render().el);
+      this.routeViewContainer.html(routeView.render().el);
+      this.uploadFilesRegion.hide();
+      this.fileViewContainer.hide();
       this.routeViewContainer.show();
       return routeView.focus();
     };

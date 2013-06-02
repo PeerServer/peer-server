@@ -17,6 +17,7 @@ class window.ServerFile extends Backbone.Model
     CSS: "CSS",
     JS: "JS",
     IMG: "IMG",
+    TEMPLATE: "TEMPLATE",
     NONE: "NONE"
 
   initialize: ->
@@ -39,7 +40,9 @@ class window.ServerFile extends Backbone.Model
       return ServerFile.fileTypeEnum.HTML
     if rawType.indexOf("css") != -1
       return ServerFile.fileTypeEnum.CSS
-    if rawType.indexOf("javascript") != -1 
+    if rawType.indexOf("handlebars") != -1
+      return ServerFile.fileTypeEnum.TEMPLATE
+    if rawType.indexOf("javascript") != -1
       return ServerFile.fileTypeEnum.JS
     console.error "Unable to identify file type: " + rawType
 
@@ -50,4 +53,5 @@ class window.ServerFile extends Backbone.Model
       when "jpg", "jpeg", "png" then return ServerFile.fileTypeEnum.IMG
       when "css" then return ServerFile.fileTypeEnum.CSS
       when "js" then return ServerFile.fileTypeEnum.JS
+      when "handlebars" then return ServerFile.fileTypeEnum.TEMPLATE
     return null

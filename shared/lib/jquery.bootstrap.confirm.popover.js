@@ -39,7 +39,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 							'<div class="arrow"></div>' +
 							'<div class="popover-content">' +
                   '<p class="message"></p>' +
-									'<p class="button-group"><a href="#" class="btn small btn-danger"></a><a href="#" class="btn small"></a></p>' +
+									'<p class="button-group"><a href="javascript:void(0)" class="btn small btn-danger"></a><a href="javascript:void(0)" class="btn small"></a></p>' +
 							'</div>' +
 						'</div>',
         confirmButton: null,

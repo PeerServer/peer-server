@@ -9,6 +9,7 @@
     __extends(RouteView, _super);
 
     function RouteView() {
+      this.onDestroy = __bind(this.onDestroy, this);
       this.renderValidationResult = __bind(this.renderValidationResult, this);
       this.eventNameChange = __bind(this.eventNameChange, this);
       this.eventPathChange = __bind(this.eventPathChange, this);
@@ -28,6 +29,7 @@
       this.tmplFunctionSignature = Handlebars.templates["route-function-signature"];
       this.model.on("change:paramNames", this.renderFunctionSignature);
       this.model.on("change", this.renderValidationResult);
+      this.model.on("destroy", this.onDestroy);
       if (this.productionRoute) {
         return this.productionRoute.on("change:errorMessage", this.updateErrorMessage);
       }
@@ -35,7 +37,8 @@
 
     RouteView.prototype.events = {
       "keyup .path": "eventPathChange",
-      "keyup .name": "eventNameChange"
+      "keyup .name": "eventNameChange",
+      "remove": "onDestroy"
     };
 
     RouteView.prototype.paramNamesToString = function(paramNames) {
@@ -136,6 +139,11 @@
       } else {
         return this.path.tipsy("hide");
       }
+    };
+
+    RouteView.prototype.onDestroy = function() {
+      this.aceEditor.destroy();
+      return $('.tipsy').remove();
     };
 
     return RouteView;
