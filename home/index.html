@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>Server in Browser</title>
+  <title>+PeerServer</title>
   <link href="/shared/css/bootstrap.min.css" rel="stylesheet">
   <script src="/shared/lib/jquery-2.0.0.js"></script>
   <script src="/shared/lib/bootstrap.js"></script>
@@ -27,14 +27,37 @@
       line-height: 39px;
       font-size: 18px;
     }
+    .subtitle-part {
+      color: #555;
+    }
+    .subtitle-part-two {
+      color: #333;
+    }
+    .goto-server-wrapper {
+      text-align: center;
+    }
+    .goto-server {
+      /*padding-top: 10px;*/
+      /*padding-bottom: 30px;*/
+    }
+    .goto-server input {
+      border: 1px solid #CC641F;
+      padding: 3px;
+      letter-spacing: 1px;
+      margin: 5px;
+      color: #663210;
+    }
+    #serverName {
+      width: 200px;
+    }
 
   </style>
 </head>
 <body>
 <div class="top-header">
   <div class="container">
-    <h1>Peer-to-Peer Server <small>with WebRTC</small></h1>
-    <h4>Sophia, Brie, and Joe</h4>
+    <h1>+PeerServer: A Server in a Browser <small class="subtitle-part">with WebRTC</small></h1>
+    <h4>Sophia Westwood and Brie Bunge <small class="subtitle-part-two">(sophia at cs.stanford.edu | brie at cs.stanford.edu)</small></h4>
     <h5>Spring 2013, Stanford Senior Project</h5>
   </div>
 </div>
@@ -42,18 +65,26 @@
   <div class="row">
     <div class="span1">
     </div>
-    <div class="span5">
-      <h3>About</h3>
-      <p>We have implemented a peer-to-peer client server using WebRTC, where one browser can act as a server for other browsers across WebRTC peer-to-peer data channels. Anyone can create a client-server within their browser tab, upload content, and even generate dynamic results. Any client browser that connects to that client server will behave as though the client server were a "real" server serving content.</p>
-      <p>The real server only connects the client-browsers with the client-server; from there, the connection will continue to work even if the real server goes down. Furthermore, this system allows for people to create decentralized web sites where all the content on the server lives within their browser, not on any external server.</p>
-      <p>Check it out!</p>
-    </div>
-    <div class="span5">
-      <h3>Try it</h3>
-      <h5><a class='btn btn-primary' target="_blank" href="/server/">Make a server</a></h5>
-      <p><small>(Use Firefox Nightly as of May 10, 2013)</small></p>
+    <div class="span10 goto-server-wrapper ">
+      <h5 class="goto-server"><input id="serverName" placeholder="Server Name?"> </input> <a class='btn btn-primary' onclick="this.href='/server/'+$('#serverName').val()" target="_blank" href="/server/">Create PeerServer</a></h5>
+      <p><small>(Use <a href="http://www.mozilla.org/en-US/firefox/beta/" target="_blank">Firefox Beta</a> (version 22.0) until June 25, 2013)</small></p>
+      </div>
+    <div class="span1">
     </div>
   </div>
+
+  <div class="row">
+    <div class="span1">
+    </div>
+    <div class="span10">
+      <h3>About</h3>
+      <p>We have implemented a peer-to-peer client server using WebRTC, where your browser acts as a server for other browsers across WebRTC peer-to-peer data channels. You can create a client-server within your browser tab, upload content, and generate dynamic content using a mock-database, templating system, and sessions. Any client browser that connects to your client server will behave as if it is talking to a traditional server while in fact exclusively hitting your server.</p>
+      <p>This system allows you to quickly create a decentralized, short-lived web application where all the content lives within your browser. The traditional server only performs the initial handshake between the client-browsers and the client-server; your browser serves all other content peer-to-peer.</p>
+      <p>Check it out and create a server!</p>
+    </div>
+    <div class="span1"></div>
+  </div>
+
 </div>
 </body>
 </html>
