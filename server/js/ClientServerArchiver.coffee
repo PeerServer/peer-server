@@ -20,8 +20,17 @@ class window.ClientServerArchiver
         folder = productionFolder
       else
         folder = developmentFolder
-        
-      folder.file(serverFile.get("name"), serverFile.get("contents"))
+      
+      filename = serverFile.get("name")
+      ext = ServerFile.fileTypeToFileExt[serverFile.get("fileType")] or ""
+      if ext isnt "" and filename.match("\." + ext + "$") is null
+        filename += "." + ext
+
+      if serverFile.get("fileType") is ServerFile.fileTypeEnum.IMG
+        imageData = serverFile.get("contents").replace(/data:image\/.*?;base64,/, "")
+        folder.file(filename, imageData, {base64: true})
+      else
+        folder.file(filename, serverFile.get("contents"))
 
     @routeCollection.each (route) =>
       if route.get("isProductionVersion")

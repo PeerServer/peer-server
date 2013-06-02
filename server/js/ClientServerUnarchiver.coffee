@@ -26,10 +26,19 @@ class window.ClientServerUnarchiver
     contents = file.data
     isRoute = /.+\.route\.js$/.test(name)
 
+    fileType = ""
+    ext = name.match(/.*\.(.*?)$/)
+    if ext
+      ext = ext[1]
+      fileType = ServerFile.fileExtToFileType[ext] or ""
+
+      if ext in ["jpg", "png", "jpeg"]
+        contents = @alterContentsForImage(ext, contents)
+
     if isRoute
       @addRoute(name, contents, isProductionVersion)
     else
-      @addServerFile(name, contents, isProductionVersion)
+      @addServerFile(name, contents, fileType, isProductionVersion)
 
   addRoute: (name, contents, isProductionVersion) =>
     contents = JSON.parse(contents)
@@ -45,11 +54,19 @@ class window.ClientServerUnarchiver
     @routeCollection.add(route)
     route.save()
 
-  addServerFile: (name, contents, isProductionVersion) =>
+  addServerFile: (name, contents, fileType, isProductionVersion) =>
     serverFile = new ServerFile(
       name: name,
       contents: contents,
+      fileType: fileType,
       isProductionVersion: isProductionVersion)
     @serverFileCollection.add(serverFile)
     serverFile.save()
+
+  alterContentsForImage: (ext, contents) =>
+    contents = btoa(contents)
+    if ext in ["jpg", "jpeg"]
+      return "data:image/jpeg;base64," + contents
+    if ext is "png"
+      return "data:image/png;base64," + contents
 

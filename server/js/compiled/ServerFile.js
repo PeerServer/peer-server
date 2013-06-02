@@ -34,6 +34,15 @@
       NONE: "NONE"
     };
 
+    ServerFile.fileTypeToFileExt = {
+      HTML: "html",
+      CSS: "css",
+      JS: "js",
+      TEMPLATE: "handlebars"
+    };
+
+    ServerFile.fileExtToFileType = _.invert(ServerFile.fileTypeToFileExt);
+
     ServerFile.prototype.initialize = function() {
       this.on("change:type", this.updateFileType);
       this.updateFileType();
@@ -95,3 +104,7 @@
   }).call(this, Backbone.Model);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFile.map
+*/

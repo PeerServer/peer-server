@@ -20,14 +20,26 @@
       productionFolder = zip.folder("live_version");
       developmentFolder = zip.folder("edited_version");
       this.serverFileCollection.each(function(serverFile) {
-        var folder;
+        var ext, filename, folder, imageData;
 
         if (serverFile.get("isProductionVersion")) {
           folder = productionFolder;
         } else {
           folder = developmentFolder;
         }
-        return folder.file(serverFile.get("name"), serverFile.get("contents"));
+        filename = serverFile.get("name");
+        ext = ServerFile.fileTypeToFileExt[serverFile.get("fileType")] || "";
+        if (ext !== "" && filename.match("\." + ext + "$") === null) {
+          filename += "." + ext;
+        }
+        if (serverFile.get("fileType") === ServerFile.fileTypeEnum.IMG) {
+          imageData = serverFile.get("contents").replace(/data:image\/.*?;base64,/, "");
+          return folder.file(filename, imageData, {
+            base64: true
+          });
+        } else {
+          return folder.file(filename, serverFile.get("contents"));
+        }
       });
       this.routeCollection.each(function(route) {
         var contents, folder;
@@ -61,3 +73,7 @@
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServerArchiver.map
+*/

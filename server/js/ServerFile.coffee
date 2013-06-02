@@ -20,6 +20,14 @@ class window.ServerFile extends Backbone.Model
     TEMPLATE: "TEMPLATE",
     NONE: "NONE"
 
+  @fileTypeToFileExt:
+    HTML: "html",
+    CSS: "css",
+    JS: "js",
+    TEMPLATE: "handlebars"
+
+  @fileExtToFileType: _.invert(@fileTypeToFileExt)
+
   initialize: ->
     @on("change:type", @updateFileType)
     @updateFileType()

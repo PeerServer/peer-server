@@ -4,6 +4,7 @@
 
   window.ClientServerUnarchiver = (function() {
     function ClientServerUnarchiver(params) {
+      this.alterContentsForImage = __bind(this.alterContentsForImage, this);
       this.addServerFile = __bind(this.addServerFile, this);
       this.addRoute = __bind(this.addRoute, this);
       this.processFile = __bind(this.processFile, this);
@@ -30,15 +31,24 @@
     }
 
     ClientServerUnarchiver.prototype.processFile = function(isProductionVersion, file) {
-      var contents, isRoute, name;
+      var contents, ext, fileType, isRoute, name;
 
       name = file.name.replace(/^(live|edited)_version\//, "");
       contents = file.data;
       isRoute = /.+\.route\.js$/.test(name);
+      fileType = "";
+      ext = name.match(/.*\.(.*?)$/);
+      if (ext) {
+        ext = ext[1];
+        fileType = ServerFile.fileExtToFileType[ext] || "";
+        if (ext === "jpg" || ext === "png" || ext === "jpeg") {
+          contents = this.alterContentsForImage(ext, contents);
+        }
+      }
       if (isRoute) {
         return this.addRoute(name, contents, isProductionVersion);
       } else {
-        return this.addServerFile(name, contents, isProductionVersion);
+        return this.addServerFile(name, contents, fileType, isProductionVersion);
       }
     };
 
@@ -59,16 +69,27 @@
       return route.save();
     };
 
-    ClientServerUnarchiver.prototype.addServerFile = function(name, contents, isProductionVersion) {
+    ClientServerUnarchiver.prototype.addServerFile = function(name, contents, fileType, isProductionVersion) {
       var serverFile;
 
       serverFile = new ServerFile({
         name: name,
         contents: contents,
+        fileType: fileType,
         isProductionVersion: isProductionVersion
       });
       this.serverFileCollection.add(serverFile);
       return serverFile.save();
+    };
+
+    ClientServerUnarchiver.prototype.alterContentsForImage = function(ext, contents) {
+      contents = btoa(contents);
+      if (ext === "jpg" || ext === "jpeg") {
+        return "data:image/jpeg;base64," + contents;
+      }
+      if (ext === "png") {
+        return "data:image/png;base64," + contents;
+      }
     };
 
     return ClientServerUnarchiver;
@@ -76,3 +97,7 @@
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServerUnarchiver.map
+*/
