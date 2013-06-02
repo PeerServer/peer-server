@@ -42,7 +42,6 @@
       this.addOneServerFile = __bind(this.addOneServerFile, this);
       this.addAll = __bind(this.addAll, this);
       this.showInitialSaveNotification = __bind(this.showInitialSaveNotification, this);
-      this.adjustSizes = __bind(this.adjustSizes, this);
       this.renderFileLists = __bind(this.renderFileLists, this);
       this.render = __bind(this.render, this);      _ref = ClientServerCollectionView.__super__.constructor.apply(this, arguments);
       return _ref;
@@ -86,7 +85,6 @@
       this.routeCollection.bind("change:name", this.handleRouteNameChange);
       this.routeCollection.bind("destroy", this.handleFileDeleted);
       $(window).keydown(this.eventKeyDown);
-      $(window).resize(this.adjustSizes);
       return this.showInitialSaveNotification();
     };
 
@@ -116,8 +114,7 @@
         cancelButton: "Cancel",
         onConfirmCallback: this.clearAll
       });
-      this.renderFileLists();
-      return this.adjustSizes();
+      return this.renderFileLists();
     };
 
     ClientServerCollectionView.prototype.renderFileLists = function() {
@@ -129,17 +126,6 @@
       this.jsFileList = this.$(".file-list.js");
       this.imageFileList = this.$(".file-list.img");
       return this.dynamicFileList = this.$(".file-list.dynamic");
-    };
-
-    ClientServerCollectionView.prototype.adjustSizes = function() {
-      var availableHeight, marginTop;
-
-      marginTop = this.saveNotificationContainer.offset().top - this.saveNotificationContainer.position().top;
-      availableHeight = $(window).height() - this.saveNotificationContainer.height() - marginTop;
-      this.leftSidebarContainer.height(availableHeight);
-      this.leftSidebar.height(availableHeight);
-      this.mainPane.height(availableHeight);
-      return this.mainPane.width($(window).width() - this.mainPane.position().left);
     };
 
     ClientServerCollectionView.prototype.showInitialSaveNotification = function() {
@@ -553,7 +539,6 @@
       this.select(listEl, routeView);
       this.routeViewContainer.append(routeView.render().el);
       this.routeViewContainer.show();
-      routeView.adjustHeights();
       return routeView.focus();
     };
 
@@ -562,3 +547,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServerCollectionView.map
+*/
