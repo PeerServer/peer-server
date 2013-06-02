@@ -89,7 +89,7 @@
       console.log("FILENAME: " + data.filename);
       rawPath = data.filename || "";
       _ref = this.parsePath(rawPath), path = _ref[0], paramData = _ref[1];
-      if (data.type === "ajax" && data.options.data) {
+      if (data.options && data.options.data) {
         if (typeof data.options.data === "string") {
           extraParams = URI.parseQuery(paramData);
         } else {
@@ -100,7 +100,6 @@
           paramData[name] = val;
         }
       }
-      console.log("Parsed path: " + path);
       console.log("PARAMS: ");
       console.log(paramData);
       slashedPath = "/" + path;

@@ -62,7 +62,7 @@ class window.ClientServer
     console.log "FILENAME: " + data.filename
     rawPath = data.filename || ""
     [path, paramData] = @parsePath(rawPath)
-    if data.type is "ajax" and data.options.data
+    if data.options and data.options.data  # Happens for ajax and form submits
       # Merge in any extra parameters passed with the ajax request. 
       if typeof(data.options.data) is "string"
         extraParams = URI.parseQuery(paramData) # TODO test, should return object mapping of get params in data.options.data
@@ -70,7 +70,7 @@ class window.ClientServer
         extraParams = data.options.data
       for name, val of extraParams
         paramData[name] = val
-    console.log "Parsed path: " + path
+    # console.log "Parsed path: " + path
     console.log "PARAMS: "
     console.log paramData
     slashedPath = "/" + path

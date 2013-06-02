@@ -125,7 +125,7 @@ class window.HTMLProcessor
     #  to be the received html file. 
     # Setting the document inner HTML calls the webRTC method passed in, which initiates
     #   another round of setting up the HTML for the frame (with processing). 
-    if type is "alink" or type is "backbutton" or type is "initialLoad"
+    if type is "alink" or type is "backbutton" or type is "initialLoad" or type is "submit"
       @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename, "fileType": fileType}, type)
     else
       $element = @requestedFilenamesToElement[filename]

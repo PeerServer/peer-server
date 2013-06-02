@@ -84,7 +84,7 @@ class window.ClientBrowser
     if optionalInfo isnt "backbutton" and optionalInfo isnt "initialLoad" # still do it for initialLoadDefault
       fullPath = @pathRoot + path
       window.history.pushState({"path": path}, fullPath, fullPath)
-      console.log window.history.state
+      # console.log window.history.state
     @documentElement.innerHTML = ""
     if data.fileType is "IMG"
       # Serve up a single image
@@ -95,6 +95,7 @@ class window.ClientBrowser
         @documentElement.innerHTML = processedHTML
         @executeScriptsCallback(scriptMapping)
         @overrideAjaxForClient()
+        @overrideFormsForClient()
 
   # TODO handle jsonp cross-domain.
   # Note: There will sadly be problems if a script uses $.ajax before this code is executed. 
@@ -105,6 +106,38 @@ class window.ClientBrowser
       console.log "overriding jQuery ajax"
       document.getElementById("container").contentWindow.window.jQuery.ajax = (url, options) ->
         return window.clientBrowser.ajaxClient.requestAjax(url, options, options.success, options.error)
+
+  overrideFormsForClient: =>
+      console.log "overriding forms"
+      forms = $(document.getElementById("container").contentWindow.document.forms)
+      forms.submit (evt) =>
+        form = $(evt.target)
+        path = form.attr("action")
+        if not path  # Don't modify the form if there's no path.
+          return true  # continue normal form execution
+        evt.preventDefault()
+        @handleFormSubmit(form, path)
+        return false  # Stop the form from actually redirecting.
+
+  # Responds to a form being submitted that needs to hit the path, possibly with 
+  #  form input attributes. Parses out the input attributes and dispatches a request
+  #  with the form. 
+  handleFormSubmit: (form, path) =>
+    properties = {}
+    for input in form.find(":input")
+      input = $(input)
+      if $(input).attr("name")
+        properties[$(input).attr("name")] = input.val()
+    console.log "FORM SUBMITTED"
+    console.log path
+    console.log properties
+    data = {
+      "filename": path,  # Path is more accurate than filename, but use filename for consistency.
+      "socketId": @getID(),
+      "options": {"data": properties}
+      "type": "submit"
+    }
+    @sendEvent("requestFile", data)
 
   # Needed since innerHTML does not run scripts.
   # Inspired by:

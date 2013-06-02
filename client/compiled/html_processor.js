@@ -158,7 +158,7 @@
       fileContents = data.fileContents;
       type = data.type;
       fileType = data.fileType;
-      if (type === "alink" || type === "backbutton" || type === "initialLoad") {
+      if (type === "alink" || type === "backbutton" || type === "initialLoad" || type === "submit") {
         this.setDocumentElementInnerHTML({
           "fileContents": data.fileContents,
           "filename": filename,

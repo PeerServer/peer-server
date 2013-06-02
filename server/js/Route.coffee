@@ -25,7 +25,7 @@ class window.Route extends Backbone.Model
   initialize: ->
     @setParsedPath()
     @set("errorMessage", "Path has not yet been executed.")
-    console.log "Parsed route: " + @get("routePath") + " " + @pathRegex + " " + @paramNames
+    # console.log "Parsed route: " + @get("routePath") + " " + @pathRegex + " " + @paramNames
     @on("change:routePath", @setParsedPath)
 
   # Creates the text of a function that can be eval'd to obtain a renderable result. 
@@ -46,7 +46,7 @@ class window.Route extends Backbone.Model
       console.log "dynamic params: " + dynamicParams
       text += dynamicParams.join(",") + ", "  # Pass in the dynamic url-path parameters
     text += JSON.stringify(urlParams) + ")"  # Pass in the get-url parameters
-    console.log "Function: " + text
+    # console.log "Function: " + text
     fcn = =>
       database = userDatabase
       static_file = staticFileFcn

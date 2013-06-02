@@ -32,7 +32,6 @@
     Route.prototype.initialize = function() {
       this.setParsedPath();
       this.set("errorMessage", "Path has not yet been executed.");
-      console.log("Parsed route: " + this.get("routePath") + " " + this.pathRegex + " " + this.paramNames);
       return this.on("change:routePath", this.setParsedPath);
     };
 
@@ -56,7 +55,6 @@
         text += dynamicParams.join(",") + ", ";
       }
       text += JSON.stringify(urlParams) + ")";
-      console.log("Function: " + text);
       fcn = function() {
         var cryptoRandom, database, error, evaluation, hash, render_template, result, session, static_file;
 

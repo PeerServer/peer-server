@@ -33,10 +33,6 @@
         "options": options,
         "type": "ajax"
       };
-      console.log("options: ");
-      console.log(options);
-      console.log("sending ajax request:");
-      console.log(data);
       return this.sendEvent("requestFile", data);
     };
 

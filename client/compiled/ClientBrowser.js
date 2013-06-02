@@ -9,6 +9,8 @@
 
       this.documentElement = documentElement;
       this.executeScriptsCallback = __bind(this.executeScriptsCallback, this);
+      this.handleFormSubmit = __bind(this.handleFormSubmit, this);
+      this.overrideFormsForClient = __bind(this.overrideFormsForClient, this);
       this.overrideAjaxForClient = __bind(this.overrideAjaxForClient, this);
       this.setDocumentElementInnerHTML = __bind(this.setDocumentElementInnerHTML, this);
       this.receiveFileDispatch = __bind(this.receiveFileDispatch, this);
@@ -109,7 +111,6 @@
         window.history.pushState({
           "path": path
         }, fullPath, fullPath);
-        console.log(window.history.state);
       }
       this.documentElement.innerHTML = "";
       if (data.fileType === "IMG") {
@@ -120,7 +121,8 @@
         return this.htmlProcessor.processHTML(html, function(processedHTML, scriptMapping) {
           _this.documentElement.innerHTML = processedHTML;
           _this.executeScriptsCallback(scriptMapping);
-          return _this.overrideAjaxForClient();
+          _this.overrideAjaxForClient();
+          return _this.overrideFormsForClient();
         });
       }
     };
@@ -132,6 +134,52 @@
           return window.clientBrowser.ajaxClient.requestAjax(url, options, options.success, options.error);
         };
       }
+    };
+
+    ClientBrowser.prototype.overrideFormsForClient = function() {
+      var forms,
+        _this = this;
+
+      console.log("overriding forms");
+      forms = $(document.getElementById("container").contentWindow.document.forms);
+      return forms.submit(function(evt) {
+        var form, path;
+
+        form = $(evt.target);
+        path = form.attr("action");
+        if (!path) {
+          return true;
+        }
+        evt.preventDefault();
+        _this.handleFormSubmit(form, path);
+        return false;
+      });
+    };
+
+    ClientBrowser.prototype.handleFormSubmit = function(form, path) {
+      var data, input, properties, _i, _len, _ref;
+
+      properties = {};
+      _ref = form.find(":input");
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        input = $(input);
+        if ($(input).attr("name")) {
+          properties[$(input).attr("name")] = input.val();
+        }
+      }
+      console.log("FORM SUBMITTED");
+      console.log(path);
+      console.log(properties);
+      data = {
+        "filename": path,
+        "socketId": this.getID(),
+        "options": {
+          "data": properties
+        },
+        "type": "submit"
+      };
+      return this.sendEvent("requestFile", data);
     };
 
     ClientBrowser.prototype.executeScriptsCallback = function(scriptMapping) {

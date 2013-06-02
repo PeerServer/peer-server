@@ -30,10 +30,10 @@ class window.AjaxClient
       "options": options
       "type": "ajax"
     }
-    console.log "options: "
-    console.log options
-    console.log "sending ajax request:"
-    console.log data
+    # console.log "options: "
+    # console.log options
+    # console.log "sending ajax request:"
+    # console.log data
     @sendEvent("requestFile", data)
 
   receiveAjax: (data) =>
