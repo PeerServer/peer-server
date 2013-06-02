@@ -11,7 +11,16 @@
       routeCollection: routeCollection,
       userDatabase: userDatabase
     });
-    return clientServer = new ClientServer(serverFileCollection, routeCollection, appView, userDatabase);
+    return clientServer = new ClientServer({
+      serverFileCollection: serverFileCollection,
+      routeCollection: routeCollection,
+      appView: appView,
+      userDatabase: userDatabase
+    });
   });
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=init.map
+*/

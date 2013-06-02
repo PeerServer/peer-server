@@ -10,8 +10,12 @@
     __extends(AppView, _super);
 
     function AppView() {
+      this.getAlternativeServerID = __bind(this.getAlternativeServerID, this);
+      this.goToInvalidIDPage = __bind(this.goToInvalidIDPage, this);
+      this.goToUnavailableIDPage = __bind(this.goToUnavailableIDPage, this);
       this.goToDatabasePage = __bind(this.goToDatabasePage, this);
       this.goToEditPage = __bind(this.goToEditPage, this);
+      this.renderTopbarButtons = __bind(this.renderTopbarButtons, this);
       this.setClientBrowserLink = __bind(this.setClientBrowserLink, this);      _ref = AppView.__super__.constructor.apply(this, arguments);
       return _ref;
     }
@@ -22,26 +26,35 @@
       this.serverFileCollection = options.serverFileCollection;
       this.routeCollection = options.routeCollection;
       this.userDatabase = options.userDatabase;
-      this.clientBrowserLink = $(".navbar .browse");
-      this.archiveButton = $(".navbar .archive");
-      this.editLink = $(".navbar .edit");
-      this.databaseLink = $(".navbar .database");
       this.tmplEditPage = Handlebars.templates["edit-page"];
       this.tmplDatabasePage = Handlebars.templates["database-page"];
+      this.tmplTopbarButtons = Handlebars.templates["topbar-buttons"];
+      this.tmplServerIDMessage = Handlebars.templates["server-id-message"];
       this.on("setServerID", this.setClientBrowserLink);
-      this.editLink.click(this.goToEditPage);
-      this.databaseLink.click(this.goToDatabasePage);
-      return this.goToEditPage();
+      this.on("onUnavailableID", this.goToUnavailableIDPage);
+      return this.on("onInvalidID", this.goToInvalidIDPage);
     };
 
     AppView.prototype.setClientBrowserLink = function(serverID) {
       var link;
 
+      this.goToEditPage();
       link = window.location.origin + "/connect/" + serverID + "/";
       return this.clientBrowserLink.attr("href", link);
     };
 
+    AppView.prototype.renderTopbarButtons = function() {
+      $(".topbar").append(this.tmplTopbarButtons);
+      this.clientBrowserLink = $(".navbar .browse");
+      this.archiveButton = $(".navbar .archive");
+      this.editLink = $(".navbar .edit");
+      this.databaseLink = $(".navbar .database");
+      this.editLink.click(this.goToEditPage);
+      return this.databaseLink.click(this.goToDatabasePage);
+    };
+
     AppView.prototype.goToEditPage = function() {
+      this.renderTopbarButtons();
       $(this.el).html(this.tmplEditPage);
       this.serverFileCollectionView = new ClientServerCollectionView({
         serverFileCollection: this.serverFileCollection,
@@ -57,11 +70,37 @@
     };
 
     AppView.prototype.goToDatabasePage = function() {
+      this.renderTopbarButtons();
       $(this.el).html(this.tmplDatabasePage());
       return this.databaseView = new DatabaseView({
         userDatabase: this.userDatabase
       });
     };
+
+    AppView.prototype.goToUnavailableIDPage = function(desiredServerID) {
+      $(".topbar-buttons").remove();
+      return $(this.el).html(this.tmplServerIDMessage({
+        message: "\"" + desiredServerID + "\" is unavailable.",
+        alternativeServerID: this.getAlternativeServerID()
+      }));
+    };
+
+    AppView.prototype.goToInvalidIDPage = function(desiredServerID) {
+      $(".topbar-buttons").remove();
+      return $(this.el).html(this.tmplServerIDMessage({
+        message: "\"" + desiredServerID + "\" is an invalid server name.",
+        alternativeServerID: this.getAlternativeServerID()
+      }));
+    };
+
+    AppView.prototype.getAlternativeServerID = function() {
+      var randomIndex;
+
+      randomIndex = Math.floor(Math.random() * AppView.listOfDogBreeds.length);
+      return AppView.listOfDogBreeds[randomIndex];
+    };
+
+    AppView.listOfDogBreeds = ["AfghanHound", "Aidi", "AiredaleTerrier", "AkbashDog", "AkitaInu", "AlanoEspanol", "AlaskanKlee", "AlaskanMalamute", "AlpineDachsbracke", "AlpineSpaniel", "AmericanAkita", "AmericanBulldog", "AmericanCocker", "AmericanEskimo", "AmericanFoxhound", "AmericanHairless", "AmericanMastiff", "AmericanPit", "AmericanStaffordshire", "AmericanWater", "AnatolianShepherd", "AngloFrancaisde", "AppenzellerSennenhund", "AriegePointer", "Ariegeois", "Armant", "ArmenianGampr", "ArtoisHound", "AustralianCattle", "AustralianKelpie", "AustralianShepherd", "AustralianSilky", "AustralianStumpy", "AustralianTerrier", "AustrianBlack", "AustrianPinscher", "Azawakh", "Barbet", "Basenji", "BasqueShepherd", "BassetArtesien", "BassetBleu", "BassetFauve", "GrandBasset", "PetitBasset", "BassetHound", "BavarianMountain", "Beagle", "BeagleHarrier", "BeardedCollie", "Beauceron", "BedlingtonTerrier", "BelgianShepherd", "BelgianShepherd", "BelgianShepherd", "BelgianShepherd", "BergamascoShepherd", "BergerBlanc", "BergerPicard", "BernerLaufhund", "BerneseMountain", "BichonFrise", "Billy", "Blackand", "Blackand", "Bullenbeisser", "BlackNorwegian", "BlackRussian", "BlackmouthCur", "GrandBleu", "PetitBleu", "Bloodhound", "BlueLacy", "BluePaul", "BluetickCoonhound", "Boerboel", "BohemianShepherd", "Bolognese", "BorderCollie", "BorderTerrier", "Borzoi", "BosnianCoarsehaired", "BostonTerrier", "Bouvierdes", "Bouvierdes", "Boxer", "BoykinSpaniel", "BraccoItaliano", "BraquedAuvergne", "Braquedu", "Braquedu", "BraqueFrancais", "BraqueSaintGermain", "BrazilianTerrier", "Briard", "BriquetGriffon", "Brittany", "Broholmer", "BrunoJura", "BucovinaShepherd", "Bulland", "BullTerrier", "BullTerrier", "Bulldog", "Bullmastiff", "BullyKutta", "BurgosPointer", "CanaanDog", "CanadianEskimo", "CaneCorso", "Caoda", "Caode", "CaoFila", "CarolinaDog", "CarpathianShepherd", "CatahoulaCur", "CatalanSheepdog", "CaucasianShepherd", "CavalierKing", "CentralAsian", "CeskyFousek", "CeskyTerrier", "ChesapeakeBay", "ChienFrancais", "Chiengris", "Chihuahua", "ChileanFox", "ChineseChongqing", "ChineseCrested", "ChineseImperial", "Chinook", "Chippiparai", "ChowChow", "CiernySery", "CimarronUruguayo", "CirnecodellEtna", "ClumberSpaniel", "RoughCollie", "SmoothCollie", "Combai", "CordobaFighting", "Cotonde", "CretanHound", "CroatianSheepdog", "CumberlandSheepdog", "CurlyCoated", "Cursinu", "CzechoslovakWolfdog", "Dalmatian", "DandieDinmont", "DanishSwedish", "DeutscheBracke", "DobermanPinscher", "DogoArgentino", "DogoCubano", "Doguede", "DrentsePatrijshond", "Drever", "Dunker", "DutchShepherd", "DutchSmoushond", "EastEuropeanShepherd", "Elo", "EnglishCocker", "EnglishCoonhound", "EnglishFoxhound", "EnglishMastiff", "EnglishSetter", "EnglishShepherd", "EnglishSpringer", "EnglishToy", "EnglishWater", "EnglishWhite", "EntlebucherMountain", "EpagneulBleu", "EstonianHound", "EstrelaMountain", "Eurasier", "FilaBrasileiro", "FinnishHound", "FinnishLapphund", "FinnishSpitz", "FlatCoatedRetriever", "FormosanMountain", "FoxTerrier", "WireFox", "FrenchBrittany", "FrenchBulldog", "FrenchSpaniel", "GasconSaintongeois", "Georgianshepherd", "GermanLonghaired", "GermanPinscher", "GermanRoughhaired", "GermanShepherd", "GermanShorthaired", "GermanSpaniel", "GermanSpitz", "GermanWirehaired", "GiantSchnauzer", "Glenof", "GoldenRetriever", "GordonSetter", "GranMastin", "GrandAngloFrancais", "GrandGriffon", "GreatDane", "GreatPyrenees", "GreaterSwiss", "GreekHarehound", "GreenlandDog", "Greyhound", "GriffonBleu", "GriffonBruxellois", "GriffonFauve", "GriffonNivernais", "HanoverHound", "HareIndian", "Harrier", "Havanese", "HawaiianPoi", "HimalayanSheepdog", "Hokkaido", "HortayaBorzaya", "Hovawart", "HungarianHound", "Huntaway", "Hygenhund", "IcelandicSheepdog", "IndianSpitz", "IrishRed", "IrishSetter", "IrishTerrier", "IrishWater", "IrishWolfhound", "IstrianCoarsehaired", "IstrianShorthaired", "ItalianGreyhound", "Jagdterrier", "Jamthund", "JapaneseChin", "JapaneseSpitz", "JapaneseTerrier", "KaiKen", "KangalDog", "Kanni", "KarakachanDog", "KarelianBear", "KarstShepherd", "Keeshond", "KerryBeagle", "KerryBlue", "KingCharles", "KingShepherd", "Kintamani", "Kishu", "Komondor", "Kooikerhondje", "Koolie", "KoreanJindo", "Kromfohrlander", "KunmingWolfdog", "Kuri", "Kuvasz", "KyiLeo", "LabradorRetriever", "LagottoRomagnolo", "LakelandTerrier", "LancashireHeeler", "Landseer", "LapponianHerder", "Leonberger", "LhasaApso", "LithuanianHound", "LonghairedWhippet", "Lowchen", "Maltese", "ManchesterTerrier", "MaremmaSheepdog", "McNab", "MexicanHairless", "MiniatureAustralian", "MiniatureAmerican", "MiniatureFox", "MiniaturePinscher", "MiniatureSchnauzer", "Mioritic", "Molossus", "MontenegrinMountain", "MoscowWatchdog", "MoscowWater", "MountainCur", "Mucuchies", "MudholHound", "Mudi", "LargeMunsterlander", "SmallMunsterlander", "Newfoundland", "NewZealand", "NorfolkSpaniel", "NorfolkTerrier", "Norrbottenspets", "NorthCountry", "NorthernInuit", "NorwegianBuhund", "NorwegianElkhound", "NorwegianLundehund", "NorwichTerrier", "NovaScotia", "OldDanish", "OldEnglish", "OldGerman", "Oldtime", "OldeEnglish", "Otterhound", "PaisleyTerrier", "Papillon", "ParsonRussell", "PatterdaleTerrier", "Pekingese", "Perrode", "Perrode", "PeruvianHairless", "Phalene", "PharaohHound", "PhuQuoc", "PicardySpaniel", "PlottHound", "PodencoCanario", "Pointer", "PolishGreyhound", "PolishHound", "PolishHunting", "PolishLowland", "PolishTatra", "Pomeranian", "PontAudemerSpaniel", "Poodle", "Porcelaine", "PortuguesePodengo", "PortuguesePointer", "PortugueseWater", "PosavacHound", "PrazskyKrysarik", "Pudelpointer", "Pug", "Puli", "Pumi", "PungsanDog", "PyreneanMastiff", "PyreneanShepherd", "Rajapalayam", "RampurGreyhound", "RastreadorBrasileiro", "RatoneroBodeguero", "RatoneroValenciano", "RatTerrier", "RedboneCoonhound", "RhodesianRidgeback", "Rottweiler", "RussianSpaniel", "RussianToy", "Russiantracker", "RussoEuropeanLaika", "RussellTerrier", "SabuesoEspanol", "SaintUsugeSpaniel", "SakhalinHusky", "Saluki", "Samoyed", "Sapsali", "Šarplaninac", "Schapendoes", "Schillerstövare", "Schipperke", "StandardSchnauzer", "SchweizerLaufhund", "SchweizerischerNiederlaufhund", "ScotchCollie", "ScottishDeerhound", "ScottishTerrier", "SealyhamTerrier", "SegugioItaliano", "SeppalaSiberian", "SerbianHound", "SerbianTricolour", "SharPei", "ShetlandSheepdog", "ShibaInu", "ShihTzu", "Shikoku", "ShilohShepherd", "SiberianHusky", "SilkenWindhound", "SinhalaHound", "SkyeTerrier", "Sloughi", "SlovakCuvac", "SlovakianRoughhaired", "SlovenskKopov", "Smalandsstovare", "SmallGreek", "SoftCoatedWheaten", "SouthRussian", "SouthernHound", "SpanishMastiff", "SpanishWater", "SpinoneItaliano", "SportingLucas", "StBernard", "StJohns", "Stabyhoun", "StaffordshireBull", "StephensCur", "StyrianCoarsehaired", "SussexSpaniel", "SwedishLapphund", "SwedishVallhund", "Taigan", "Talbot", "TamaskanDog", "TeddyRoosevelt", "Telomian", "TennesseeTreeing", "TenterfieldTerrier", "ThaiBangkaew", "ThaiRidgeback", "TibetanMastiff", "TibetanSpaniel", "TibetanTerrier", "Tornjak", "Tosa", "ToyBulldog", "ToyFox", "ToyManchester", "ToyTrawler", "TransylvanianHound", "TreeingCur", "TreeingWalker", "TriggHound", "TweedWater", "TyroleanHound", "VolpinoItaliano", "CardiganWelsh", "PembrokeWelsh", "WelshSheepdog", "WelshSpringer", "WelshTerrier", "WestHighland", "WestSiberian", "WestphalianDachsbracke", "Wetterhoun", "Whippet", "WhiteShepherd", "WirehairedPointing", "WirehairedVizsla"];
 
     return AppView;
 
