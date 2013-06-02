@@ -1,11 +1,13 @@
 <div class="route-help">
   <p> <a class="showhide" onclick="$('.route-tips').toggle()" style="cursor:pointer">Show/hide tips on database, templates, sessions, etc.</a>
   <ul class="route-tips" style="display:none">
-    <li>Database: Use the TaffyDB `database` object to save state. See <a href="http://www.taffydb.com/">TaffyDB</a> for more, or <a href="#database">browse and run sample queries</a>. </li>
-    <li>Templates: Use render_template("aTemplate.html", context) to render the template with the given context (an object mapping names to values). See <a href="http://handlebarsjs.com/">HandlebarsJS</a> for more.</li>
+    <li>Database: Use the TaffyDB `database` object to save state. See <a target="_blank" href="http://www.taffydb.com/">TaffyDB</a> for more, or <a href="#database">browse and run sample queries</a>. </li>
+    <li>Templates: Use render_template("aTemplate.html", context) to render the template with the given context (an object mapping names to values). See <a target="_blank" href="http://handlebarsjs.com/">HandlebarsJS</a> for more.</li>
     <li>Session: Access the current user session with the `session` object and set properties as usual with session.someProperty = someValue.</li>
     <li>Static files: Use `static_file("filename")` to access the content of static files.</li>
     <li>Cryptography: Use cryptoRandom(n) to generate a string of integer n random hex bytes. Call hash(str) to securely hash the string str with Sha-2</li>
+    <li>Escaping strings: Use _.escape(str) and _.unescape(str) to escape and unescape strings for safe HTML insertion.</li>
+    <li>Convenience functions: All <a target="_blank" href="http://underscorejs.org">UnderscoreJS</a> functions are available.</li>
   </ul>
   </p>
 </div>
