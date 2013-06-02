@@ -88,9 +88,8 @@ class window.HTMLProcessor
         @requestFile(filename, type)
 
   isInternalFile: (filename) =>
-    # TODO hack -- basically, an internal file needs to have an extension (hence the .), and also
-    #   shouldn't match http/https.
-    if (filename[0] != "#" and (filename.indexOf(".") != -1) and filename.match(/(?:https?:\/\/)|(?:data:)/) is null)
+    # TODO hack -- basically, an internal file can't start with "#" and shouldn't match http/https.
+    if (filename[0] != "#" and filename.match(/(?:https?:\/\/)|(?:data:)/) is null)
       return true
     return false
 

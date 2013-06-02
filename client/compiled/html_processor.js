@@ -124,7 +124,7 @@
     };
 
     HTMLProcessor.prototype.isInternalFile = function(filename) {
-      if (filename[0] !== "#" && (filename.indexOf(".") !== -1) && filename.match(/(?:https?:\/\/)|(?:data:)/) === null) {
+      if (filename[0] !== "#" && filename.match(/(?:https?:\/\/)|(?:data:)/) === null) {
         return true;
       }
       return false;
