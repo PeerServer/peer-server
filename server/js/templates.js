@@ -1,24 +1,16 @@
 (function() {
   var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {};
 templates['database-page'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
   return "<div id=\"database-view\">\n\n</div>\n";
   });
-templates['edit-page'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
-  
-
-
-  return "<div id=\"client-server-collection-view\">\n  <div id=\"save-notification-container\">\n    <div id=\"save-notification\">\n      <p>\n        <a href=\"#\" class=\"save-changes\">Click here</a> for your changes to go live.\n      </p>\n    </div>\n  </div>\n  \n\n  <div class=\"left-sidebar-container\">\n    <div class=\"left-sidebar\">\n\n      <ul class=\"nav nav-tabs nav-stacked\">\n\n        <li class=\"dropdown\">\n        <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" href=\"#\">\n          Create <b class=\"caret\"></b>\n        </a>\n        <ul class=\"dropdown-menu create-menu\">\n          <li class=\"html\"><a href=\"#\">HTML</a></li>\n          <li class=\"css\"><a href=\"#\">CSS</a></li>\n          <li class=\"js\"><a href=\"#\">JS</a></li>\n          <li class=\"divider\"></li>\n          <li class=\"dynamic\"><a href=\"#\">Dynamic Path</a></li>\n          <li class=\"template\"><a href=\"#\">Template</a></li>\n        </ul>\n        </li>\n\n        <li class=\"upload-files\"><a href=\"#\">Upload Files</a></li>\n\n        <li class=\"clear-all\"><a href=\"#\">Clear All</a></li>\n\n      </ul>\n\n      <div class=\"file-list-container well\" style=\"padding: 8px 0;\">\n      </div>\n\n    </div>\n  </div>\n\n  <div class=\"main-pane\">\n    <div id=\"file-view-container\"> </div>\n\n    <div id=\"route-view-container\"> </div>\n\n    <div class=\"file-drop well well-large\">\n      <div class=\"file-drop-inner\">\n        <h3>Drop files here</h3>\n      </div>\n    </div>\n  </div>\n\n</div>\n\n";
-  });
 templates['editable-file-list-item'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -33,9 +25,17 @@ helpers = helpers || Handlebars.helpers; data = data || {};
     + "\"></input></li>\n\n";
   return buffer;
   });
+templates['edit-page'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  
+
+
+  return "<div id=\"client-server-collection-view\">\n  <div id=\"save-notification-container\">\n    <div id=\"save-notification\">\n      <p>\n        <a href=\"#\" class=\"save-changes\">Click here</a> for your changes to go live.\n      </p>\n    </div>\n  </div>\n  \n\n  <div class=\"left-sidebar-container\">\n    <div class=\"left-sidebar\">\n\n      <ul class=\"nav nav-tabs nav-stacked\">\n\n        <li class=\"dropdown\">\n        <a class=\"dropdown-toggle\" data-toggle=\"dropdown\" href=\"#\">\n          Create <b class=\"caret\"></b>\n        </a>\n        <ul class=\"dropdown-menu create-menu\">\n          <li class=\"html\"><a href=\"#\">HTML</a></li>\n          <li class=\"css\"><a href=\"#\">CSS</a></li>\n          <li class=\"js\"><a href=\"#\">JS</a></li>\n          <li class=\"divider\"></li>\n          <li class=\"dynamic\"><a href=\"#\">Dynamic Path</a></li>\n          <li class=\"template\"><a href=\"#\">Template</a></li>\n        </ul>\n        </li>\n\n        <li class=\"upload-files\"><a href=\"#\">Upload Files</a></li>\n\n        <li class=\"clear-all\"><a href=\"#\">Clear All</a></li>\n\n      </ul>\n\n      <div class=\"file-list-container well\" style=\"padding: 8px 0;\">\n      </div>\n\n    </div>\n  </div>\n\n  <div class=\"main-pane\">\n    <div id=\"file-view-container\"> </div>\n\n    <div id=\"route-view-container\"> </div>\n\n    <div class=\"file-drop well well-large\">\n      <div class=\"file-drop-inner\">\n        <h3>Drop files here</h3>\n      </div>\n    </div>\n  </div>\n\n</div>\n\n";
+  });
 templates['file-list-item'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
@@ -82,24 +82,24 @@ function program3(depth0,data) {
   return buffer;
   });
 templates['file-lists'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
   return "<ul class=\"file-list required nav nav-list\">\n  <li class=\"nav-header\">Required Files</li>\n</ul>\n\n<ul class=\"nav nav-list\">\n  <li class=\"divider\"></li>\n</ul>\n\n<ul class=\"file-list html nav nav-list\">\n  <li class=\"nav-header\">HTML</li>\n</ul>\n\n<ul class=\"file-list css nav nav-list\">\n  <li class=\"nav-header\">CSS</li>\n</ul>\n\n<ul class=\"file-list js nav nav-list\">\n  <li class=\"nav-header\">JS</li>\n</ul>\n\n<ul class=\"file-list img nav nav-list\">\n  <li class=\"nav-header\">Images</li>\n</ul>\n\n<ul class=\"nav nav-list\">\n  <li class=\"divider\"></li>\n</ul>\n\n<ul class=\"file-list dynamic nav nav-list\">\n  <li class=\"nav-header\">Dynamic Files</li>\n</ul>\n\n";
   });
 templates['image'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
   return "<img src=\"\"></img>\n\n";
   });
 templates['route-function-signature'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
@@ -114,9 +114,35 @@ helpers = helpers || Handlebars.helpers; data = data || {};
     + ") {\n\n";
   return buffer;
   });
+templates['route'] = template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n    ";
+  if (stack1 = helpers.errorMessage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.errorMessage; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n  ";
+  return buffer;
+  }
+
+  buffer += "<div class=\"route-help\">\n  <p>\n    // Use `static_file(\"filename\")` to access static files.\n  </p>\n  <p>\n    // Use the Taffy `database` object to save state <br/>\n    // (see <a href=\"http://www.taffydb.com/\">TaffyDB</a> for how to use it)\n  </p>\n</div>\n\n<div class=\"error-message\">\n  ";
+  stack1 = helpers['if'].call(depth0, depth0.errorMessage, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n</div>\n\n<div class=\"well function\" style=\"padding: 8px;\">\n  <div class=\"route-path\">\n    URL at which the code below will be executed\n    <span class=\"help\">(Path components entered as \"&lt;someText&gt;\" will become variables,\n    accessible by your function below.)</span>\n    <br/>\n    <input type=\"text\" class=\"path input-xlarge\" value=\"";
+  if (stack1 = helpers.path) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.path; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">\n  </div>\n  <div class=\"function-signature\"></div>\n\n  <div class=\"code\"></div>\n  \n  <div class=\"function-close\">}</div>\n</div>\n\n";
+  return buffer;
+  });
 templates['route-list-item'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
@@ -146,43 +172,17 @@ function program3(depth0,data) {
   buffer += "\n\n  <i class=\"delete icon-trash pull-right\"></i>\n</a>\n</li>\n\n";
   return buffer;
   });
-templates['route'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
-
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\n    ";
-  if (stack1 = helpers.errorMessage) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.errorMessage; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\n  ";
-  return buffer;
-  }
-
-  buffer += "<div class=\"route-path\">\n  URL at which the code below will be executed\n  <span class=\"help\">(Path components entered as \"&lt;someText&gt;\" will become variables,\n  accessible by your function below.)</span>\n  <br/>\n  <input type=\"text\" class=\"path input-xlarge\" value=\"";
-  if (stack1 = helpers.path) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.path; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">\n</div>\n\n<div class=\"error-message\">\n  Error:\n  ";
-  stack1 = helpers['if'].call(depth0, depth0.errorMessage, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>\n\n<div class=\"well function\" style=\"padding: 8px;\">\n  <div class=\"function-signature\"></div>\n\n  <div class=\"route-help\">\n    <p>\n      // Use `static_file(\"filename\")` to access static files.\n    </p>\n    <p>\n      // Use the Taffy `database` object to save state <br/>\n      // (see <a href=\"http://www.taffydb.com/\">TaffyDB</a> for how to use it)\n    </p>\n  </div>\n\n  <div class=\"code\"></div>\n  \n  <div class=\"function-close\">}</div>\n</div>\n\n";
-  return buffer;
-  });
 templates['source-code'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
   return "<div class=\"file-contents\"></div>\n\n";
   });
 templates['user-database'] = template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [3,'>= 1.0.0-rc.4'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+  this.compilerInfo = [4,'>= 1.0.0'];
+helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
