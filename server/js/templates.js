@@ -130,10 +130,10 @@ function program1(depth0,data) {
   return buffer;
   }
 
-  buffer += "<div class=\"route-help\">\n  <p>\n    // Use `static_file(\"filename\")` to access static files.\n  </p>\n  <p>\n    // Use the Taffy `database` object to save state <br/>\n    // (see <a href=\"http://www.taffydb.com/\">TaffyDB</a> for how to use it)\n  </p>\n</div>\n\n<div class=\"error-message\">\n  ";
+  buffer += "<div class=\"route-help\">\n  <p>\n  <ol>\n    <li>Database: Use the TaffyDB `database` object to save state. See <a href=\"http://www.taffydb.com/\">TaffyDB</a> for more, or <a href=\"#database\">browse and run sample queries</a>. </li>\n    <li>Templates: Use render_template(\"aTemplate.html\", context) to render the template with the given context (an object mapping names to values). See <a href=\"http://handlebarsjs.com/\">HandlebarsJS</a> for more.</li>\n    <li>Session: Access the current user session with the `session` object and set properties as usual with session.someProperty = someValue.</li>\n    <li>Static files: Use `static_file(\"filename\")` to access the content of static files.</li>\n    <li>Cryptography: Use cryptoRandom(n) to generate a string of integer n random hex bytes. Call hash(str) to securely hash the string str with Sha-2</li>\n  </ol>\n  </p>\n</div>\n\n<div class=\"error-message\">\n  ";
   stack1 = helpers['if'].call(depth0, depth0.errorMessage, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>\n\n<div class=\"well function\" style=\"padding: 8px;\">\n  <div class=\"route-path\">\n    URL at which the code below will be executed\n    <span class=\"help\">(Path components entered as \"&lt;someText&gt;\" will become variables,\n    accessible by your function below.)</span>\n    <br/>\n    <input type=\"text\" class=\"path input-xlarge\" value=\"";
+  buffer += "\n</div>\n\n<div class=\"well function\" style=\"padding: 8px;\">\n  <div class=\"route-path\">\n    path\n    <span class=\"help\">(Path components entered as \"&lt;someText&gt;\" will become variables,\n    accessible by your function below.)</span>\n    <br/>\n    <input type=\"text\" placeholder=\"Enter a path mapping\" class=\"path input-xlarge\" value=\"";
   if (stack1 = helpers.path) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.path; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
