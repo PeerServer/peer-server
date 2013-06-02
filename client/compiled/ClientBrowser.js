@@ -13,6 +13,7 @@
       this.overrideFormsForClient = __bind(this.overrideFormsForClient, this);
       this.overrideAjaxForClient = __bind(this.overrideAjaxForClient, this);
       this.setDocumentElementInnerHTML = __bind(this.setDocumentElementInnerHTML, this);
+      this.getFullPath = __bind(this.getFullPath, this);
       this.receiveFileDispatch = __bind(this.receiveFileDispatch, this);
       this.setUpReceiveEventCallbacks = __bind(this.setUpReceiveEventCallbacks, this);
       this.channelOnMessage = __bind(this.channelOnMessage, this);
@@ -20,7 +21,7 @@
       this.parseUrl = __bind(this.parseUrl, this);
       this.getID = __bind(this.getID, this);
       _ref = this.parseUrl(window.location), this.desiredServer = _ref[0], startPage = _ref[1];
-      this.pathRoot = "/connect/" + this.desiredServer + "/";
+      this.pathRoot = "/connect/" + this.desiredServer;
       this.eventTransmitter = new EventTransmitter();
       this.dataChannel = new ClientBrowserDataChannel(this.channelOnMessage, this.desiredServer);
       this.htmlProcessor = new HTMLProcessor(this.sendEvent, this.setDocumentElementInnerHTML, this.getID);
@@ -98,17 +99,28 @@
       }
     };
 
+    ClientBrowser.prototype.getFullPath = function(path) {
+      var fullPath;
+
+      fullPath = this.pathRoot;
+      if (path[0] !== "/") {
+        fullPath += "/";
+      }
+      return fullPath + path;
+    };
+
     ClientBrowser.prototype.setDocumentElementInnerHTML = function(data, optionalInfo) {
       var fullPath, html, path,
         _this = this;
 
       html = data.fileContents;
       path = this.htmlProcessor.removeTrailingSlash(data.filename);
-      if (optionalInfo !== "backbutton" && optionalInfo !== "initialLoad") {
-        fullPath = this.pathRoot + path;
+      if (optionalInfo !== "backbutton") {
+        fullPath = this.getFullPath(path);
         window.history.pushState({
           "path": path
         }, fullPath, fullPath);
+        console.log("pushed state: " + path);
       }
       this.documentElement.innerHTML = "";
       if (data.fileType === "IMG") {

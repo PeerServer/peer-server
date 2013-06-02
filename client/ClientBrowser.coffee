@@ -6,7 +6,7 @@ class window.ClientBrowser
     # desired server is used both as a socket id for joining up via webRTC,
     # as well as in the url path
     [@desiredServer, startPage] = @parseUrl(window.location)
-    @pathRoot = "/connect/" + @desiredServer + "/"
+    @pathRoot = "/connect/" + @desiredServer
 
     @eventTransmitter = new EventTransmitter()
     @dataChannel = new ClientBrowserDataChannel(
@@ -76,12 +76,19 @@ class window.ClientBrowser
     else 
       @htmlProcessor.receiveFile(data)
 
+  getFullPath: (path) =>
+    fullPath = @pathRoot
+    if path[0] isnt "/"
+      fullPath += "/"
+    return fullPath + path
+
   setDocumentElementInnerHTML: (data, optionalInfo)=>
     html = data.fileContents
     path = @htmlProcessor.removeTrailingSlash(data.filename)
-    if optionalInfo isnt "backbutton" and optionalInfo isnt "initialLoad" # still do it for initialLoadDefault
-      fullPath = @pathRoot + path
+    if optionalInfo isnt "backbutton" # still do it for initialLoadDefault
+      fullPath = @getFullPath(path)
       window.history.pushState({"path": path}, fullPath, fullPath)
+      console.log "pushed state: " + path
       # console.log window.history.state
     @documentElement.innerHTML = ""
     if data.fileType is "IMG"
