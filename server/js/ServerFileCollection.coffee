@@ -105,7 +105,7 @@ class window.ServerFileCollection extends Backbone.Collection
 
   getFileType: (filename) =>
     serverFile = @findWhere(name: filename, isProductionVersion: true)
-    fileType = ""
+    fileType = "UNKNOWN"
     if serverFile
       fileType = serverFile.get("fileType")
     return fileType

@@ -120,7 +120,6 @@
         window.history.pushState({
           "path": path
         }, fullPath, fullPath);
-        console.log("pushed state: " + path);
       }
       this.documentElement.innerHTML = "";
       if (data.fileType === "IMG") {

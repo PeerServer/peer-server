@@ -180,7 +180,7 @@
         name: filename,
         isProductionVersion: true
       });
-      fileType = "";
+      fileType = "UNKNOWN";
       if (serverFile) {
         fileType = serverFile.get("fileType");
       }

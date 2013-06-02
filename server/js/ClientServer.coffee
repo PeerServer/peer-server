@@ -87,7 +87,7 @@ class window.ClientServer
     @sendEventTo(data.socketId, "receiveFile", response)
 
   serveFile: (data) =>
-    console.log "FILENAME: " + data.filename
+    # console.log "FILENAME: " + data.filename
     rawPath = data.filename || ""
     [path, paramData] = @parsePath(rawPath)
     if data.options and data.options.data  # Happens for ajax and form submits
@@ -99,8 +99,8 @@ class window.ClientServer
       for name, val of extraParams
         paramData[name] = val
     # console.log "Parsed path: " + path
-    console.log "PARAMS: "
-    console.log paramData
+    # console.log "PARAMS: "
+    # console.log paramData
     slashedPath = "/" + path
     foundRoute = @routeCollection.findRouteForPath(slashedPath)
     # Check if path mapping or a static file for this path exists -- otherwise send failure
@@ -108,8 +108,11 @@ class window.ClientServer
       console.error "Error: Client requested " + rawPath + " which does not exist on server."
       @sendFailure(data, "Not found")
       return
-    # TODO check if DYNAMIC is the right enum with serverfilecollection, which is being edited by brie now :)
-    fileType = if foundRoute is null then @serverFileCollection.getFileType(path) else "DYNAMIC"
+    if foundRoute is null or foundRoute is undefined
+      fileType = @serverFileCollection.getFileType(path) 
+    else 
+      fileType = "UNKNOWN"
+      console.error "Unknown type for path: " + path
     contents = @getContentsForPath(path, paramData, foundRoute, data.socketId)
     # Check if following the path results in valid contents -- otherwise send failure
     if not contents or contents.error

@@ -88,7 +88,7 @@ class window.ClientBrowser
     if optionalInfo isnt "backbutton" # still do it for initialLoadDefault
       fullPath = @getFullPath(path)
       window.history.pushState({"path": path}, fullPath, fullPath)
-      console.log "pushed state: " + path
+      # console.log "pushed state: " + path
       # console.log window.history.state
     @documentElement.innerHTML = ""
     if data.fileType is "IMG"

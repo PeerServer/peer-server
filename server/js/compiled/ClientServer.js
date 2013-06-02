@@ -117,7 +117,6 @@
     ClientServer.prototype.serveFile = function(data) {
       var contents, extraParams, fileType, foundRoute, name, paramData, path, rawPath, response, slashedPath, val, _ref;
 
-      console.log("FILENAME: " + data.filename);
       rawPath = data.filename || "";
       _ref = this.parsePath(rawPath), path = _ref[0], paramData = _ref[1];
       if (data.options && data.options.data) {
@@ -131,8 +130,6 @@
           paramData[name] = val;
         }
       }
-      console.log("PARAMS: ");
-      console.log(paramData);
       slashedPath = "/" + path;
       foundRoute = this.routeCollection.findRouteForPath(slashedPath);
       if ((foundRoute === null || foundRoute === void 0) && !this.serverFileCollection.hasProductionFile(path)) {
@@ -140,7 +137,12 @@
         this.sendFailure(data, "Not found");
         return;
       }
-      fileType = foundRoute === null ? this.serverFileCollection.getFileType(path) : "DYNAMIC";
+      if (foundRoute === null || foundRoute === void 0) {
+        fileType = this.serverFileCollection.getFileType(path);
+      } else {
+        fileType = "UNKNOWN";
+        console.error("Unknown type for path: " + path);
+      }
       contents = this.getContentsForPath(path, paramData, foundRoute, data.socketId);
       if (!contents || contents.error) {
         console.error("Error: Function evaluation for  " + rawPath + " generated an error, returning 404: " + contents.error);
