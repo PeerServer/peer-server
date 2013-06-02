@@ -1,6 +1,14 @@
 class window.ClientServerDataChannel extends ClientDataChannel
 
-  constructor: (@onConnectionCallback, @onDataCallback, @onReady, @onConnectionCloseCallback) ->
+  constructor: (options) ->
+    @onConnectionCallback = options.onConnectionCallback
+    @onDataCallback = options.onDataCallback
+    @onReady = options.onReady
+    @onConnectionCloseCallback = options.onConnectionCloseCallback
+    @id = options.desiredServerID
+    @onUnavailableID = options.onUnavailableIDCallback
+    @onInvalidID = options.onInvalidIDCallback
+
     super(@onDataCallback)
     @peer.on("connection", @onConnection)
 
@@ -14,3 +22,4 @@ class window.ClientServerDataChannel extends ClientDataChannel
     connection.on("data", @onData)
     connection.on "close", =>
       @onConnectionCloseCallback(connection)
+

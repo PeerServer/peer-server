@@ -10,4 +10,7 @@ $(document).ready ->
     routeCollection: routeCollection,
     userDatabase: userDatabase)
   clientServer = new ClientServer(
-    serverFileCollection, routeCollection, appView, userDatabase)
+    serverFileCollection: serverFileCollection,
+    routeCollection: routeCollection,
+    appView: appView,
+    userDatabase: userDatabase)
