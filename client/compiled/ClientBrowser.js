@@ -184,11 +184,15 @@
         oldScriptEl = scriptElements[_i];
         newScriptEl = document.createElement("script");
         newScriptEl.type = "text/javascript";
-        filename = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || "";
-        if (!scriptMapping[filename]) {
-          console.error("BAD: " + filename + "was not found in the script mapping. Script will not exist. This is because the script name got encoding-bork.");
+        if ($(oldScriptEl).attr("todo-replace") === "replace") {
+          filename = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || "";
+          if (!scriptMapping[filename]) {
+            console.error("BAD: " + filename + "was not found in the script mapping. Script will not exist. This is because the script name got encoding-bork.");
+          }
+          newScriptEl.text = scriptMapping[filename];
+        } else {
+          newScriptEl.text = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || "";
         }
-        newScriptEl.text = scriptMapping[filename];
         oldScriptEl.parentNode.insertBefore(newScriptEl, oldScriptEl);
         _results.push(oldScriptEl.parentNode.removeChild(oldScriptEl));
       }

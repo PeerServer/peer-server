@@ -143,15 +143,18 @@ class window.ClientBrowser
     for oldScriptEl in scriptElements
       newScriptEl = document.createElement("script")
       newScriptEl.type = "text/javascript"
-      # This is where the text we read out of oldScriptEl may have weird encodings (ie, &amp for &, etc)
-      # The weird encodings will break things (ie, if we tried to just put the script contents in directly)
-      # So we're going through the middle step of putting in the filename as an identifier instead.
-      # If the filename has weird encodings, though, all hell breaks loose since scriptMapping breaks.
-      filename = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || ""
-      if not scriptMapping[filename]
-        console.error("BAD: " + filename + "was not found in the script mapping. Script will not exist. This is because the script name got encoding-bork.")
-      newScriptEl.text = scriptMapping[filename]
-      # console.log "EXECUTE SCRIPTS index of &amp"
-      # console.log newScriptEl.text.indexOf("&amp")
+      if $(oldScriptEl).attr("todo-replace") is "replace"
+        # This is where the text we read out of oldScriptEl may have weird encodings (ie, &amp for &, etc)
+        # The weird encodings will break things (ie, if we tried to just put the script contents in directly)
+        # So we're going through the middle step of putting in the filename as an identifier instead.
+        # If the filename has weird encodings, though, all hell breaks loose since scriptMapping breaks.
+        filename = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || ""
+        if not scriptMapping[filename]
+          console.error("BAD: " + filename + "was not found in the script mapping. Script will not exist. This is because the script name got encoding-bork.")
+        newScriptEl.text = scriptMapping[filename]
+        # console.log "EXECUTE SCRIPTS index of &amp"
+        # console.log newScriptEl.text.indexOf("&amp")
+      else # Inline script
+        newScriptEl.text = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || ""
       oldScriptEl.parentNode.insertBefore(newScriptEl, oldScriptEl)
       oldScriptEl.parentNode.removeChild(oldScriptEl)

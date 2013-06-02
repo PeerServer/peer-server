@@ -42,15 +42,15 @@ class window.HTMLProcessor
     @completionCallback(@container[0].outerHTML)
 
   processImages: =>
-    @processElementsWithAttribute("img[src]", "src", "image")
+    @processElementsWithAttribute(@container.find("img[src]"), "src", "image")
         
   processScripts: =>
-    @processElementsWithAttribute("script[src]", "src", "script")
+    @processElementsWithAttribute(@container.find("script[src]"), "src", "script")
 
   processStyleSheets: =>
-    @processElementsWithAttribute("link[rel=\"stylesheet\"]", "href", "stylesheet")
-    @processElementsWithAttribute("link[rel=\'stylesheet\']", "href", "stylesheet")
-
+    elements = @container.find("link[rel=\"stylesheet\"]")
+    elements.add(@container.find("link[rel=\'stylesheet\']"))  # For Chrome, likely. Not needed for Firefox
+    @processElementsWithAttribute(elements, "href", "stylesheet")
 
   # Links are handled somewhat differently in that the contents cannot be injected on page load. 
   #   Instead, here we set up an onclick function for each anchor tag, and make the href a no-op (by 
@@ -79,8 +79,7 @@ class window.HTMLProcessor
   triggerOnParentString: (eventName, href) =>
     return "javascript:top.$(top.document).trigger('" + eventName + "', ['" + href + "']);return false;"
 
-  processElementsWithAttribute: (elSelector, attrSelector, type) =>
-    elements = @container.find(elSelector)
+  processElementsWithAttribute: (elements, attrSelector, type) =>
     elements.each (index, el) =>
       $el = $(el)
       filename = $el.attr(attrSelector)
@@ -115,37 +114,43 @@ class window.HTMLProcessor
     filename = @removeTrailingSlash(data.filename)
     fileContents = data.fileContents
     type = data.type  # Same as what we passed along in request file.
-    fileType = data.fileType  # IMG, JS, CS, HTML, etc.
+    fileType = data.fileType  # IMG, JS, CSS, HTML, etc.
 
-    # Handles an a href link file type being sent in. This should only occur when the user
-    #  has clicked an "a href" tag, and so we change the entire frame's contents
-    #  to be the received html file. 
+    # Handles a file type being sent in that refreshes the entire page. 
+    # Change the entire frame's contents to be the received html file. 
     # Setting the document inner HTML calls the webRTC method passed in, which initiates
     #   another round of setting up the HTML for the frame (with processing). 
     if type is "alink" or type is "backbutton" or type is "initialLoad" or type is "submit"
       @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename, "fileType": fileType}, type)
     else
-      $element = @requestedFilenamesToElement[filename]
-      if $element
-        if $element.attr("src") and $element[0].tagName is "IMG"
-          $element.attr("src", fileContents)
-        else if $element.attr("src") and $element[0].tagName is "SCRIPT"
-          $element.removeAttr("src")
-          @scriptMapping[data.filename] = fileContents
-          # TODO this is dangerous b/c we might get encoded if the filename has bad characters in it
-          #   (which I think is plausible), and then we're screwed when we try to find the non-encoded file name
-          #   contents using the encoded file name we pull out when we execute the script. It would be safest to include a 
-          #   unique ID with each file (perhaps imparted by the client-server filestore) that we can use instead. 
-          #   Basically any unique ID here is fine.
-          $element.append(data.filename)
-          # console.log "INDEX OF &AMP on insertion"
-          # console.log fileContents.indexOf("&amp")
-        else if $element[0].tagName is "LINK"
-          $element.replaceWith("<style>" + fileContents + "</style>")
-  #        @container.find("head").append($element)     
-        delete @requestedFilenamesToElement[filename]
-    @checkForProcessCompletion()
+      @handleSupportingFile(data, filename, fileContents, type, fileType)
+
+  handleSupportingFile: (data, filename, fileContents, type, fileType) =>
+    $element = @requestedFilenamesToElement[filename]
+    if $element
+      if $element.attr("src") and $element[0].tagName is "IMG"
+        $element.attr("src", fileContents)
+      else if $element.attr("src") and $element[0].tagName is "SCRIPT"
+        $element.removeAttr("src")  # TODO remove later?
+        $element.attr("todo-replace", "replace")
+        @scriptMapping[data.filename] = fileContents
+        # TODO this is dangerous b/c we might get encoded if the filename has bad characters in it
+        #   (which I think is plausible), and then we're screwed when we try to find the non-encoded file name
+        #   contents using the encoded file name we pull out when we execute the script. It would be safest to include a 
+        #   unique ID with each file (perhaps imparted by the client-server filestore) that we can use instead. 
+        #   Basically any unique ID here is fine.
+        $element.append(data.filename)
+        # console.log "INDEX OF &AMP on insertion"
+        # console.log fileContents.indexOf("&amp")
+      else if $element[0].tagName is "LINK"
+        $element.replaceWith("<style>" + fileContents + "</style>")
+        # @container.find("head").append($element)     
+      delete @requestedFilenamesToElement[filename]
+      @checkForProcessCompletion()
+    else 
+      console.error "received file not in request list: " + filename
 
   checkForProcessCompletion: =>
     if Object.keys(@requestedFilenamesToElement).length is 0 and @completionCallback
+      console.log "EXECUTING COMPLETION CALLBACK"
       @completionCallback(@container[0].outerHTML, @scriptMapping)

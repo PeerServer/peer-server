@@ -8,6 +8,7 @@
       this.setDocumentElementInnerHTML = setDocumentElementInnerHTML;
       this.getIDFn = getIDFn;
       this.checkForProcessCompletion = __bind(this.checkForProcessCompletion, this);
+      this.handleSupportingFile = __bind(this.handleSupportingFile, this);
       this.receiveFile = __bind(this.receiveFile, this);
       this.removeTrailingSlash = __bind(this.removeTrailingSlash, this);
       this.requestFile = __bind(this.requestFile, this);
@@ -68,16 +69,19 @@
     };
 
     HTMLProcessor.prototype.processImages = function() {
-      return this.processElementsWithAttribute("img[src]", "src", "image");
+      return this.processElementsWithAttribute(this.container.find("img[src]"), "src", "image");
     };
 
     HTMLProcessor.prototype.processScripts = function() {
-      return this.processElementsWithAttribute("script[src]", "src", "script");
+      return this.processElementsWithAttribute(this.container.find("script[src]"), "src", "script");
     };
 
     HTMLProcessor.prototype.processStyleSheets = function() {
-      this.processElementsWithAttribute("link[rel=\"stylesheet\"]", "href", "stylesheet");
-      return this.processElementsWithAttribute("link[rel=\'stylesheet\']", "href", "stylesheet");
+      var elements;
+
+      elements = this.container.find("link[rel=\"stylesheet\"]");
+      elements.add(this.container.find("link[rel=\'stylesheet\']"));
+      return this.processElementsWithAttribute(elements, "href", "stylesheet");
     };
 
     HTMLProcessor.prototype.processLinks = function() {
@@ -104,11 +108,9 @@
       return "javascript:top.$(top.document).trigger('" + eventName + "', ['" + href + "']);return false;";
     };
 
-    HTMLProcessor.prototype.processElementsWithAttribute = function(elSelector, attrSelector, type) {
-      var elements,
-        _this = this;
+    HTMLProcessor.prototype.processElementsWithAttribute = function(elements, attrSelector, type) {
+      var _this = this;
 
-      elements = this.container.find(elSelector);
       return elements.each(function(index, el) {
         var $el, filename;
 
@@ -150,38 +152,48 @@
     };
 
     HTMLProcessor.prototype.receiveFile = function(data) {
-      var $element, fileContents, fileType, filename, type;
+      var fileContents, fileType, filename, type;
 
       filename = this.removeTrailingSlash(data.filename);
       fileContents = data.fileContents;
       type = data.type;
       fileType = data.fileType;
       if (type === "alink" || type === "backbutton" || type === "initialLoad" || type === "submit") {
-        this.setDocumentElementInnerHTML({
+        return this.setDocumentElementInnerHTML({
           "fileContents": data.fileContents,
           "filename": filename,
           "fileType": fileType
         }, type);
       } else {
-        $element = this.requestedFilenamesToElement[filename];
-        if ($element) {
-          if ($element.attr("src") && $element[0].tagName === "IMG") {
-            $element.attr("src", fileContents);
-          } else if ($element.attr("src") && $element[0].tagName === "SCRIPT") {
-            $element.removeAttr("src");
-            this.scriptMapping[data.filename] = fileContents;
-            $element.append(data.filename);
-          } else if ($element[0].tagName === "LINK") {
-            $element.replaceWith("<style>" + fileContents + "</style>");
-          }
-          delete this.requestedFilenamesToElement[filename];
-        }
+        return this.handleSupportingFile(data, filename, fileContents, type, fileType);
       }
-      return this.checkForProcessCompletion();
+    };
+
+    HTMLProcessor.prototype.handleSupportingFile = function(data, filename, fileContents, type, fileType) {
+      var $element;
+
+      $element = this.requestedFilenamesToElement[filename];
+      if ($element) {
+        if ($element.attr("src") && $element[0].tagName === "IMG") {
+          $element.attr("src", fileContents);
+        } else if ($element.attr("src") && $element[0].tagName === "SCRIPT") {
+          $element.removeAttr("src");
+          $element.attr("todo-replace", "replace");
+          this.scriptMapping[data.filename] = fileContents;
+          $element.append(data.filename);
+        } else if ($element[0].tagName === "LINK") {
+          $element.replaceWith("<style>" + fileContents + "</style>");
+        }
+        delete this.requestedFilenamesToElement[filename];
+        return this.checkForProcessCompletion();
+      } else {
+        return console.error("received file not in request list: " + filename);
+      }
     };
 
     HTMLProcessor.prototype.checkForProcessCompletion = function() {
       if (Object.keys(this.requestedFilenamesToElement).length === 0 && this.completionCallback) {
+        console.log("EXECUTING COMPLETION CALLBACK");
         return this.completionCallback(this.container[0].outerHTML, this.scriptMapping);
       }
     };
