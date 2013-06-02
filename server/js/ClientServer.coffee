@@ -1,16 +1,41 @@
 class window.ClientServer
   
-  constructor: (@serverFileCollection, @routeCollection, @appView, @userDatabase) ->
+  constructor: (options) ->
+    @serverFileCollection = options.serverFileCollection
+    @routeCollection = options.routeCollection
+    @appView = options.appView
+    @userDatabase = options.userDatabase
+
+    @desiredServerID = @readDesiredServerIDFromURL()
+
     @eventTransmitter = new EventTransmitter()
     @userSessions = new UserSessions()
     @dataChannel = new ClientServerDataChannel(
-      @channelOnConnection, @channelConnectionOnData, @channelOnReady, @channelOnConnectionClose)
+      onConnectionCallback: @channelOnConnection,
+      onDataCallback: @channelConnectionOnData,
+      onReady: @channelOnReady,
+      onConnectionCloseCallback: @channelOnConnectionClose,
+      desiredServerID: @desiredServerID,
+      onUnavailableIDCallback: @channelOnUnavailableID,
+      onInvalidIDCallback: @channelOnInvalidID)
+
     @setUpReceiveEventCallbacks()
 
     @clientBrowserConnections = {}
 
   channelOnReady: =>
     @appView.trigger("setServerID", @dataChannel.id)
+
+  channelOnUnavailableID: =>
+    @appView.trigger("onUnavailableID", @desiredServerID)
+
+  channelOnInvalidID: =>
+    @appView.trigger("onInvalidID", @desiredServerID)
+
+  readDesiredServerIDFromURL: =>
+    if /\/server\//.test(location.pathname)
+      return location.pathname.replace(/\/server\//, "")
+    return null
 
   channelOnConnection: (connection) =>
     landingPage = @serverFileCollection.getLandingPage()
@@ -42,7 +67,7 @@ class window.ClientServer
     if data.type is "ajax"
       response = {
         fileContents: "",
-        type: data.type, 
+        type: data.type,
         textStatus: "error"
         errorThrown: errorMessage
         requestId: data.requestId
@@ -74,7 +99,7 @@ class window.ClientServer
     console.log "PARAMS: "
     console.log paramData
     slashedPath = "/" + path
-    foundRoute = @routeCollection.findRouteForPath(slashedPath)  
+    foundRoute = @routeCollection.findRouteForPath(slashedPath)
     # Check if path mapping or a static file for this path exists -- otherwise send failure
     if (foundRoute is null or foundRoute is undefined) and not @serverFileCollection.hasProductionFile(path)
       console.error "Error: Client requested " + rawPath + " which does not exist on server."

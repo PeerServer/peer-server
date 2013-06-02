@@ -7,13 +7,15 @@
   window.ClientServerDataChannel = (function(_super) {
     __extends(ClientServerDataChannel, _super);
 
-    function ClientServerDataChannel(onConnectionCallback, onDataCallback, onReady, onConnectionCloseCallback) {
-      this.onConnectionCallback = onConnectionCallback;
-      this.onDataCallback = onDataCallback;
-      this.onReady = onReady;
-      this.onConnectionCloseCallback = onConnectionCloseCallback;
+    function ClientServerDataChannel(options) {
       this.onConnection = __bind(this.onConnection, this);
-      this.onOpen = __bind(this.onOpen, this);
+      this.onOpen = __bind(this.onOpen, this);      this.onConnectionCallback = options.onConnectionCallback;
+      this.onDataCallback = options.onDataCallback;
+      this.onReady = options.onReady;
+      this.onConnectionCloseCallback = options.onConnectionCloseCallback;
+      this.id = options.desiredServerID;
+      this.onUnavailableID = options.onUnavailableIDCallback;
+      this.onInvalidID = options.onInvalidIDCallback;
       ClientServerDataChannel.__super__.constructor.call(this, this.onDataCallback);
       this.peer.on("connection", this.onConnection);
     }
@@ -40,3 +42,7 @@
   })(ClientDataChannel);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServerDataChannel.map
+*/

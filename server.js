@@ -11,7 +11,7 @@ var app = require('express')();
 
 /* Create the peer server for the app */
 var PeerServer = require('peer').PeerServer;
-var peerServer = new PeerServer({ port: 9000 });
+var peerServer = new PeerServer({ port: 9000, debug: true });
 
 /* Create the file server for the app */
 var server = require('http').createServer(app);
@@ -30,8 +30,12 @@ app.get('/server', function(req, res) {
 });
 
 app.get('/server/:filename(*)', function(req, res) {
-  var filename = req.params.filename;
-  res.sendfile(__dirname + '/server/' + filename);
+  var filename = __dirname + '/server/' + req.params.filename;
+  if (fs.existsSync(filename)) {
+    res.sendfile(filename);
+  } else {
+    res.sendfile(__dirname + '/server/index.html');
+  }
 });
 
 app.get('/connect/:serverid(*)', function(req, res) {

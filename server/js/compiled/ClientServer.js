@@ -3,11 +3,7 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   window.ClientServer = (function() {
-    function ClientServer(serverFileCollection, routeCollection, appView, userDatabase) {
-      this.serverFileCollection = serverFileCollection;
-      this.routeCollection = routeCollection;
-      this.appView = appView;
-      this.userDatabase = userDatabase;
+    function ClientServer(options) {
       this.getContentsForPath = __bind(this.getContentsForPath, this);
       this.parsePath = __bind(this.parsePath, this);
       this.serveFile = __bind(this.serveFile, this);
@@ -17,16 +13,46 @@
       this.channelConnectionOnData = __bind(this.channelConnectionOnData, this);
       this.channelOnConnectionClose = __bind(this.channelOnConnectionClose, this);
       this.channelOnConnection = __bind(this.channelOnConnection, this);
-      this.channelOnReady = __bind(this.channelOnReady, this);
+      this.readDesiredServerIDFromURL = __bind(this.readDesiredServerIDFromURL, this);
+      this.channelOnInvalidID = __bind(this.channelOnInvalidID, this);
+      this.channelOnUnavailableID = __bind(this.channelOnUnavailableID, this);
+      this.channelOnReady = __bind(this.channelOnReady, this);      this.serverFileCollection = options.serverFileCollection;
+      this.routeCollection = options.routeCollection;
+      this.appView = options.appView;
+      this.userDatabase = options.userDatabase;
+      this.desiredServerID = this.readDesiredServerIDFromURL();
       this.eventTransmitter = new EventTransmitter();
       this.userSessions = new UserSessions();
-      this.dataChannel = new ClientServerDataChannel(this.channelOnConnection, this.channelConnectionOnData, this.channelOnReady, this.channelOnConnectionClose);
+      this.dataChannel = new ClientServerDataChannel({
+        onConnectionCallback: this.channelOnConnection,
+        onDataCallback: this.channelConnectionOnData,
+        onReady: this.channelOnReady,
+        onConnectionCloseCallback: this.channelOnConnectionClose,
+        desiredServerID: this.desiredServerID,
+        onUnavailableIDCallback: this.channelOnUnavailableID,
+        onInvalidIDCallback: this.channelOnInvalidID
+      });
       this.setUpReceiveEventCallbacks();
       this.clientBrowserConnections = {};
     }
 
     ClientServer.prototype.channelOnReady = function() {
       return this.appView.trigger("setServerID", this.dataChannel.id);
+    };
+
+    ClientServer.prototype.channelOnUnavailableID = function() {
+      return this.appView.trigger("onUnavailableID", this.desiredServerID);
+    };
+
+    ClientServer.prototype.channelOnInvalidID = function() {
+      return this.appView.trigger("onInvalidID", this.desiredServerID);
+    };
+
+    ClientServer.prototype.readDesiredServerIDFromURL = function() {
+      if (/\/server\//.test(location.pathname)) {
+        return location.pathname.replace(/\/server\//, "");
+      }
+      return null;
     };
 
     ClientServer.prototype.channelOnConnection = function(connection) {
@@ -165,3 +191,7 @@
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServer.map
+*/
