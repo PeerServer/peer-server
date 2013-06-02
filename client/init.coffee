@@ -2,7 +2,7 @@
 
 $(document).ready ->
   document.getElementById("container").contentWindow.document.location.href = "/client/entryframe.html"
-
+  
   # This is an onload because the iframe will be loading the dummy src,
   #   and it needs to finish doing that otherwise the src will overwrite our innerHTML.
   document.getElementById("container").onload = (evt) =>

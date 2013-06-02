@@ -8,6 +8,7 @@ class window.AppView extends Backbone.View
     @serverFileCollection = options.serverFileCollection
     @routeCollection = options.routeCollection
     @userDatabase = options.userDatabase
+    serverAge = new ServerAge($(".server-age-wrapper"))
 
     @tmplEditPage = Handlebars.templates["edit-page"]
     @tmplDatabasePage = Handlebars.templates["database-page"]

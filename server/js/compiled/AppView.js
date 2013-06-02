@@ -23,9 +23,12 @@
     AppView.prototype.el = "#client-server";
 
     AppView.prototype.initialize = function(options) {
+      var serverAge;
+
       this.serverFileCollection = options.serverFileCollection;
       this.routeCollection = options.routeCollection;
       this.userDatabase = options.userDatabase;
+      serverAge = new ServerAge($(".server-age-wrapper"));
       this.tmplEditPage = Handlebars.templates["edit-page"];
       this.tmplDatabasePage = Handlebars.templates["database-page"];
       this.tmplTopbarButtons = Handlebars.templates["topbar-buttons"];
