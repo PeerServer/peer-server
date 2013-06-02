@@ -38,6 +38,7 @@
     AppView.prototype.setClientBrowserLink = function(serverID) {
       var link;
 
+      this.serverID = serverID;
       this.goToEditPage();
       link = window.location.origin + "/connect/" + serverID + "/";
       return this.clientBrowserLink.attr("href", link);
@@ -62,6 +63,7 @@
         userDatabase: this.userDatabase
       });
       return this.archiver = new ClientServerArchiver({
+        serverName: this.serverID,
         serverFileCollection: this.serverFileCollection,
         routeCollection: this.routeCollection,
         userDatabase: this.userDatabase,
@@ -107,3 +109,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=AppView.map
+*/

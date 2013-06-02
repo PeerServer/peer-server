@@ -14,3 +14,4 @@ $(document).ready ->
     routeCollection: routeCollection,
     appView: appView,
     userDatabase: userDatabase)
+

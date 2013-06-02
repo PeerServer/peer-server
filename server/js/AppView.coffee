@@ -19,6 +19,7 @@ class window.AppView extends Backbone.View
     @on("onInvalidID", @goToInvalidIDPage)
 
   setClientBrowserLink: (serverID) =>
+    @serverID = serverID
     @goToEditPage()
     link = window.location.origin + "/connect/" + serverID + "/"
     @clientBrowserLink.attr("href", link)
@@ -43,6 +44,7 @@ class window.AppView extends Backbone.View
       userDatabase: @userDatabase)
 
     @archiver = new ClientServerArchiver(
+      serverName: @serverID,
       serverFileCollection: @serverFileCollection,
       routeCollection: @routeCollection,
       userDatabase: @userDatabase,

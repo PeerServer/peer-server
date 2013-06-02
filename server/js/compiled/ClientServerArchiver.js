@@ -4,7 +4,8 @@
 
   window.ClientServerArchiver = (function() {
     function ClientServerArchiver(params) {
-      this.archive = __bind(this.archive, this);      this.serverFileCollection = params.serverFileCollection;
+      this.archive = __bind(this.archive, this);      this.serverName = params.serverName;
+      this.serverFileCollection = params.serverFileCollection;
       this.routeCollection = params.routeCollection;
       this.userDatabase = params.userDatabase;
       this.button = params.button;
@@ -12,7 +13,7 @@
     }
 
     ClientServerArchiver.prototype.archive = function() {
-      var content, developmentFolder, productionFolder, zip,
+      var $anchor, anchor, blob, developmentFolder, productionFolder, zip,
         _this = this;
 
       zip = new JSZip();
@@ -42,8 +43,17 @@
         return folder.file(route.get("name") + ".route.js", JSON.stringify(contents, null, " "));
       });
       zip.file("database.db", this.userDatabase.toString());
-      content = zip.generate();
-      return location.href = "data:application/zip;base64," + content;
+      blob = zip.generate({
+        type: "blob"
+      });
+      anchor = document.createElement("a");
+      anchor.href = window.URL.createObjectURL(blob);
+      anchor.download = "" + this.serverName + ".zip";
+      $anchor = $(anchor);
+      $anchor.hide();
+      $("body").append($anchor);
+      anchor.click();
+      return $anchor.remove();
     };
 
     return ClientServerArchiver;
@@ -51,3 +61,7 @@
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServerArchiver.map
+*/
