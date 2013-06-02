@@ -15,6 +15,7 @@
       this.goToUnavailableIDPage = __bind(this.goToUnavailableIDPage, this);
       this.goToDatabasePage = __bind(this.goToDatabasePage, this);
       this.goToEditPage = __bind(this.goToEditPage, this);
+      this.goToPage = __bind(this.goToPage, this);
       this.renderTopbarButtons = __bind(this.renderTopbarButtons, this);
       this.setClientBrowserLink = __bind(this.setClientBrowserLink, this);      _ref = AppView.__super__.constructor.apply(this, arguments);
       return _ref;
@@ -23,7 +24,8 @@
     AppView.prototype.el = "#client-server";
 
     AppView.prototype.initialize = function(options) {
-      var serverAge;
+      var serverAge,
+        _this = this;
 
       this.serverFileCollection = options.serverFileCollection;
       this.routeCollection = options.routeCollection;
@@ -33,27 +35,50 @@
       this.tmplDatabasePage = Handlebars.templates["database-page"];
       this.tmplTopbarButtons = Handlebars.templates["topbar-buttons"];
       this.tmplServerIDMessage = Handlebars.templates["server-id-message"];
+      this.routeMap = {
+        "edit": this.goToEditPage,
+        "database": this.goToDatabasePage
+      };
+      this.routeDefault = "edit";
+      this.routeCurrent = "";
       this.on("setServerID", this.setClientBrowserLink);
       this.on("onUnavailableID", this.goToUnavailableIDPage);
-      return this.on("onInvalidID", this.goToInvalidIDPage);
+      this.on("onInvalidID", this.goToInvalidIDPage);
+      return $(window).on("hashchange", function() {
+        return _this.goToPage();
+      });
     };
 
     AppView.prototype.setClientBrowserLink = function(serverID) {
       var link;
 
-      this.goToEditPage();
+      this.serverID = serverID;
+      this.goToPage();
       link = window.location.origin + "/connect/" + serverID + "/";
       return this.clientBrowserLink.attr("href", link);
     };
 
     AppView.prototype.renderTopbarButtons = function() {
+      $(".topbar-buttons").remove();
       $(".topbar").append(this.tmplTopbarButtons);
       this.clientBrowserLink = $(".navbar .browse");
-      this.archiveButton = $(".navbar .archive");
-      this.editLink = $(".navbar .edit");
-      this.databaseLink = $(".navbar .database");
-      this.editLink.click(this.goToEditPage);
-      return this.databaseLink.click(this.goToDatabasePage);
+      return this.archiveButton = $(".navbar .archive");
+    };
+
+    AppView.prototype.goToPage = function(slug) {
+      if (slug) {
+        location.hash = "#" + slug;
+      } else {
+        slug = location.hash.replace("#", "");
+      }
+      if (!this.routeMap[slug]) {
+        slug = this.routeDefault;
+      }
+      if (slug === this.routeCurrent) {
+        return;
+      }
+      this.routeCurrent = slug;
+      return this.routeMap[slug]();
     };
 
     AppView.prototype.goToEditPage = function() {
@@ -65,6 +90,7 @@
         userDatabase: this.userDatabase
       });
       return this.archiver = new ClientServerArchiver({
+        serverName: this.serverID,
         serverFileCollection: this.serverFileCollection,
         routeCollection: this.routeCollection,
         userDatabase: this.userDatabase,

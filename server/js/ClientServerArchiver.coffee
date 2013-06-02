@@ -1,6 +1,7 @@
 class window.ClientServerArchiver
   
   constructor: (params) ->
+    @serverName = params.serverName
     @serverFileCollection = params.serverFileCollection
     @routeCollection = params.routeCollection
     @userDatabase = params.userDatabase
@@ -36,6 +37,14 @@ class window.ClientServerArchiver
 
     zip.file("database.db", @userDatabase.toString())
 
-    content = zip.generate()
-    location.href = "data:application/zip;base64," + content
+    blob = zip.generate({type:"blob"})
+
+    anchor = document.createElement("a")
+    anchor.href = window.URL.createObjectURL(blob)
+    anchor.download = "#{@serverName}.zip"
+    $anchor = $(anchor)
+    $anchor.hide()
+    $("body").append($anchor)
+    anchor.click()
+    $anchor.remove()
 

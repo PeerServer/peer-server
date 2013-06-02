@@ -207,7 +207,7 @@ helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
   
 
 
-  return "<ul class=\"topbar-buttons nav pull-right\">\n  <li><a class=\"edit\" href=\"#\">Edit</a></li>\n  <li><a class=\"browse\" target=\"_blank\">Browse</a></li>\n  <li><a>Help</a></li>\n  <li><a>Settings</a></li>\n  <li><a class=\"database\" href=\"#\">Database</a></li>\n  <li><a class=\"archive\" href=\"#\">Download Website (ZIP)</a></li>\n</ul>\n\n";
+  return "<ul class=\"topbar-buttons nav pull-right\">\n  <li><a class=\"edit\" href=\"#edit\">Edit</a></li>\n  <li><a class=\"browse\" target=\"_blank\">Browse</a></li>\n  <li><a>Help</a></li>\n  <li><a>Settings</a></li>\n  <li><a class=\"database\" href=\"#database\">Database</a></li>\n  <li><a class=\"archive\" href=\"#\">Download Website (ZIP)</a></li>\n</ul>\n\n";
   });
 templates['user-database'] = template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [4,'>= 1.0.0'];
