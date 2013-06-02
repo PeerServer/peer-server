@@ -11,12 +11,7 @@ class window.RouteCollection extends Backbone.Collection
 
   findRouteForPath: (routePath) =>
     matchedRoute = @find (route) =>
-      if routePath.match(route.pathRegex)
-        console.log "matched path: " + routePath + " with " + route.routePath
-
-      return route.get("isProductionVersion") and
-        routePath.match(route.pathRegex) isnt null
-
+      return route.get("isProductionVersion") and routePath.match(route.pathRegex) isnt null
     return matchedRoute
 
   getRouteCode: (routePath) =>

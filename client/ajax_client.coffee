@@ -1,18 +1,14 @@
 '''
-  Handles outgoing and incoming AJAx Requests. 
-
-  Only implements a subset of ajax.
+  Tracks Ajax requests, implementing a subset of ajax.
 
   TODO put in support for jsonp cross-domain requests
 '''
 
 class window.AjaxClient
   constructor: (@sendEvent, @socketIdFcn) ->
-    # Do nothing
-    @outstandingRequests = {}
+    @outstandingRequests = {}  # Map of ajax requestId to callbacks.
   
   requestAjax: (path, options, successCallback, errorCallback) =>
-    console.log "sending ajax request for path: " + path + " on socket id " + @socketIdFcn()
     requestId = Math.random().toString(36).substr(2,14)
 
     if typeof callback isnt "undefined" and typeof callback isnt "function"
@@ -30,16 +26,9 @@ class window.AjaxClient
       "options": options
       "type": "ajax"
     }
-    # console.log "options: "
-    # console.log options
-    # console.log "sending ajax request:"
-    # console.log data
     @sendEvent("requestFile", data)
 
   receiveAjax: (data) =>
-    console.log "Received ajax response:" + data.requestId
-    console.log data
-
     if not data.requestId
       console.error "received AJAX response with no request ID"
       return

@@ -8,7 +8,6 @@
       this.getSession = __bind(this.getSession, this);
       this.removeSession = __bind(this.removeSession, this);
       this.addSession = __bind(this.addSession, this);      this.sessions = {};
-      console.log("sessions initialized");
       this.randomVal = CryptoJS.lib.WordArray.random(128 / 8);
       this.hash = CryptoJS.SHA256;
     }

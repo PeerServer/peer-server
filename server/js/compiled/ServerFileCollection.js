@@ -148,7 +148,7 @@
       page = this.find(function(serverFile) {
         return serverFile.get("name") === "404.html" && serverFile.get("isProductionVersion");
       });
-      console.log("get 404 page");
+      console.log("Returning 404 page.");
       if (page) {
         data = {
           fileContents: page.get("contents"),
@@ -220,7 +220,6 @@
         attrs = _.clone(serverFile.attributes);
         attrs.id = null;
         copy = new ServerFile(attrs);
-        console.log("creating production version: " + copy.get("name"));
         copy.set("isProductionVersion", true);
         _this.add(copy);
         return copy.save();

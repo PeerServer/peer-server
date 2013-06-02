@@ -98,7 +98,6 @@ class window.HTMLProcessor
   # Note that requestFile is also called externally (ie, by the global function that
   #   handles a href tags being clicked.)  
   requestFile: (filename, type) =>
-    console.log "sending socket id " + @getIDFn()
     data =
       "filename": filename
       "socketId": @getIDFn()
@@ -113,9 +112,7 @@ class window.HTMLProcessor
     return str
 
   receiveFile: (data) =>
-    #console.log("receive file", data)
     filename = @removeTrailingSlash(data.filename)
-    console.log "FILENAME: " + filename
     fileContents = data.fileContents
     type = data.type  # Same as what we passed along in request file.
     fileType = data.fileType  # IMG, JS, CS, HTML, etc.

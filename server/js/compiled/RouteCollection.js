@@ -33,9 +33,6 @@
         _this = this;
 
       matchedRoute = this.find(function(route) {
-        if (routePath.match(route.pathRegex)) {
-          console.log("matched path: " + routePath + " with " + route.routePath);
-        }
         return route.get("isProductionVersion") && routePath.match(route.pathRegex) !== null;
       });
       return matchedRoute;

@@ -17,9 +17,7 @@ class window.EventTransmitter
     messageEventData = JSON.parse(messageEventData)
     eventName = messageEventData.eventName
     messageData = messageEventData.data
-
-    console.log("receive event " + eventName, messageData)
-    
+    # console.log("receive event " + eventName, messageData)
     eventCallbacks = @eventCallbacks[eventName]
     if eventCallbacks
       for eventCallback in eventCallbacks

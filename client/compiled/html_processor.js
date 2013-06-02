@@ -131,7 +131,6 @@
     HTMLProcessor.prototype.requestFile = function(filename, type) {
       var data;
 
-      console.log("sending socket id " + this.getIDFn());
       data = {
         "filename": filename,
         "socketId": this.getIDFn(),
@@ -154,7 +153,6 @@
       var $element, fileContents, fileType, filename, type;
 
       filename = this.removeTrailingSlash(data.filename);
-      console.log("FILENAME: " + filename);
       fileContents = data.fileContents;
       type = data.type;
       fileType = data.fileType;

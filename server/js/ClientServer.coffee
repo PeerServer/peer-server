@@ -134,7 +134,6 @@ class window.ClientServer
       return ["", {}]
     pathDetails = URI.parse(fullPath)
     params = URI.parseQuery(pathDetails.query)
-    console.log params
     return [pathDetails.path, params]
 
   # Returns the contents for the given path with the params. 
@@ -150,12 +149,7 @@ class window.ClientServer
     # Otherwise, handle a dynamic path
     slashedPath = "/" + path
     # TODO flesh out with params, etc.
-    console.log "getting contents for path! "
-    console.log foundRoute.paramNames
     match = slashedPath.match(foundRoute.pathRegex)
-    console.log "Matching given path " + slashedPath
-    console.log "with found path " + foundRoute.get("routePath")
-    console.log "and results are: " + match
     runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), 
       @serverFileCollection.getContents, @userDatabase.database, @userSessions.getSession(socketId))
     return runRoute()

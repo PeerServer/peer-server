@@ -49,7 +49,6 @@ class window.ClientBrowser
     result = startPage + queryStr
     if not result or result == "null"
       result = ""
-    console.log "result: " + result
     return [serverId, result]
 
   sendEvent: (eventName, data) =>
@@ -80,7 +79,6 @@ class window.ClientBrowser
   setDocumentElementInnerHTML: (data, optionalInfo)=>
     html = data.fileContents
     path = @htmlProcessor.removeTrailingSlash(data.filename)
-    console.log path
     if optionalInfo isnt "backbutton" and optionalInfo isnt "initialLoad" # still do it for initialLoadDefault
       fullPath = @pathRoot + path
       window.history.pushState({"path": path}, fullPath, fullPath)
@@ -103,12 +101,10 @@ class window.ClientBrowser
   #  loaded in, and set the ajax function then. Might be worth a look in the future -- for now, this works.
   overrideAjaxForClient: =>
     if (document.getElementById("container").contentWindow.window.jQuery)
-      console.log "overriding jQuery ajax"
       document.getElementById("container").contentWindow.window.jQuery.ajax = (url, options) ->
         return window.clientBrowser.ajaxClient.requestAjax(url, options, options.success, options.error)
 
   overrideFormsForClient: =>
-      console.log "overriding forms"
       forms = $(document.getElementById("container").contentWindow.document.forms)
       forms.submit (evt) =>
         form = $(evt.target)
@@ -128,9 +124,9 @@ class window.ClientBrowser
       input = $(input)
       if $(input).attr("name")
         properties[$(input).attr("name")] = input.val()
-    console.log "FORM SUBMITTED"
-    console.log path
-    console.log properties
+    # console.log "FORM SUBMITTED"
+    # console.log path
+    # console.log properties
     data = {
       "filename": path,  # Path is more accurate than filename, but use filename for consistency.
       "socketId": @getID(),

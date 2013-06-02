@@ -86,7 +86,7 @@ class window.ServerFileCollection extends Backbone.Collection
     #  in the file collection, which they always should.
     page = @find (serverFile) ->
       return serverFile.get("name") is "404.html" and serverFile.get("isProductionVersion")
-    console.log "get 404 page"
+    console.log "Returning 404 page."
     if page
       data =
         fileContents: page.get("contents"),
@@ -127,7 +127,7 @@ class window.ServerFileCollection extends Backbone.Collection
        attrs = _.clone(serverFile.attributes)
        attrs.id = null
        copy = new ServerFile(attrs)
-       console.log "creating production version: " + copy.get("name")
+       # console.log "creating production version: " + copy.get("name")
        copy.set("isProductionVersion", true)
        @add(copy)
        copy.save()

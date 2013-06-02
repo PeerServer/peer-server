@@ -51,7 +51,6 @@
         dynamicParams = _.map(dynamicParams, function(param) {
           return '"' + param + '"';
         });
-        console.log("dynamic params: " + dynamicParams);
         text += dynamicParams.join(",") + ", ";
       }
       text += JSON.stringify(urlParams) + ")";
@@ -78,7 +77,7 @@
           }
         } catch (_error) {
           error = _error;
-          console.log("Eval error: " + error);
+          console.error("Eval error: " + error);
           error = "Evaluation error in function: " + error;
           _this.set("errorMessage", error);
           return {

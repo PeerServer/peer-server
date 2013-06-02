@@ -65,7 +65,6 @@
       if (!result || result === "null") {
         result = "";
       }
-      console.log("result: " + result);
       return [serverId, result];
     };
 
@@ -105,7 +104,6 @@
 
       html = data.fileContents;
       path = this.htmlProcessor.removeTrailingSlash(data.filename);
-      console.log(path);
       if (optionalInfo !== "backbutton" && optionalInfo !== "initialLoad") {
         fullPath = this.pathRoot + path;
         window.history.pushState({
@@ -129,7 +127,6 @@
 
     ClientBrowser.prototype.overrideAjaxForClient = function() {
       if ((document.getElementById("container").contentWindow.window.jQuery)) {
-        console.log("overriding jQuery ajax");
         return document.getElementById("container").contentWindow.window.jQuery.ajax = function(url, options) {
           return window.clientBrowser.ajaxClient.requestAjax(url, options, options.success, options.error);
         };
@@ -140,7 +137,6 @@
       var forms,
         _this = this;
 
-      console.log("overriding forms");
       forms = $(document.getElementById("container").contentWindow.document.forms);
       return forms.submit(function(evt) {
         var form, path;
@@ -168,9 +164,6 @@
           properties[$(input).attr("name")] = input.val();
         }
       }
-      console.log("FORM SUBMITTED");
-      console.log(path);
-      console.log(properties);
       data = {
         "filename": path,
         "socketId": this.getID(),

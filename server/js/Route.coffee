@@ -43,10 +43,8 @@ class window.Route extends Backbone.Model
     if dynamicParams and dynamicParams.length > 0
       dynamicParams = _.map dynamicParams, (param) ->
         return '"' + param + '"'  # Place all the parameter names in quotes, as they are strings.
-      console.log "dynamic params: " + dynamicParams
       text += dynamicParams.join(",") + ", "  # Pass in the dynamic url-path parameters
     text += JSON.stringify(urlParams) + ")"  # Pass in the get-url parameters
-    # console.log "Function: " + text
     fcn = =>
       database = userDatabase
       static_file = staticFileFcn
@@ -63,7 +61,7 @@ class window.Route extends Backbone.Model
         if evaluation  # Result should stay "" for functions that complete but don't return anything.
           result = evaluation
       catch error
-        console.log "Eval error: " + error
+        console.error "Eval error: " + error
         error = "Evaluation error in function: " + error
         @set("errorMessage", error)
         return {"error": error}

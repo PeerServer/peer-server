@@ -18,5 +18,4 @@ $(document).ready ->
   #   down to the htmlProcessor, which will handle fetching the file and responding to the fetched
   #   file to simulate page navigation. 
   $(document).on "relativeLinkClicked", (evt, href) =>
-    console.log "REQUESTING FILE " + href + "...."
     window.clientBrowser.htmlProcessor.requestFile(href, "alink")

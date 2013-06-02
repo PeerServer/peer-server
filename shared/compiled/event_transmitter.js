@@ -33,7 +33,6 @@
       messageEventData = JSON.parse(messageEventData);
       eventName = messageEventData.eventName;
       messageData = messageEventData.data;
-      console.log("receive event " + eventName, messageData);
       eventCallbacks = this.eventCallbacks[eventName];
       if (eventCallbacks) {
         _results = [];

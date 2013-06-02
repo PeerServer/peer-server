@@ -8,7 +8,6 @@
       return window.clientBrowser = new ClientBrowser(document.getElementById("container").contentWindow.document.documentElement);
     };
     return $(document).on("relativeLinkClicked", function(evt, href) {
-      console.log("REQUESTING FILE " + href + "....");
       return window.clientBrowser.htmlProcessor.requestFile(href, "alink");
     });
   });
