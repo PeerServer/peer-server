@@ -26,8 +26,10 @@ class window.RouteCollection extends Backbone.Collection
     _.each developmentFiles, (route) =>
       attrs = _.clone(route.attributes)
       attrs.id = null
-      copy = new Route(attrs)
-      copy.set("isProductionVersion", true)
-      @add(copy)
-      copy.save()
+      attrs.productionVersion = null
+      productionVersion = new Route(attrs)
+      productionVersion.set("isProductionVersion", true)
+      @add(productionVersion)
+      productionVersion.save()
+      route.save("productionVersion", productionVersion)
 

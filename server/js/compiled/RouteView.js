@@ -19,26 +19,32 @@
       this.renderFunctionSignature = __bind(this.renderFunctionSignature, this);
       this.focus = __bind(this.focus, this);
       this.render = __bind(this.render, this);
-      this.paramNamesToString = __bind(this.paramNamesToString, this);      _ref = RouteView.__super__.constructor.apply(this, arguments);
+      this.paramNamesToString = __bind(this.paramNamesToString, this);
+      this.initProductionRouteEvents = __bind(this.initProductionRouteEvents, this);      _ref = RouteView.__super__.constructor.apply(this, arguments);
       return _ref;
     }
 
     RouteView.prototype.initialize = function(options) {
-      this.productionRoute = options.productionRoute;
       this.tmplRoute = Handlebars.templates["route"];
       this.tmplFunctionSignature = Handlebars.templates["route-function-signature"];
       this.model.on("change:paramNames", this.renderFunctionSignature);
       this.model.on("change", this.renderValidationResult);
       this.model.on("destroy", this.onDestroy);
-      if (this.productionRoute) {
-        return this.productionRoute.on("change:errorMessage", this.updateErrorMessage);
-      }
+      this.initProductionRouteEvents();
+      return this.model.on("change:productionVersion", this.initProductionRouteEvents, this);
     };
 
     RouteView.prototype.events = {
       "keyup .path": "eventPathChange",
       "keyup .name": "eventNameChange",
       "remove": "onDestroy"
+    };
+
+    RouteView.prototype.initProductionRouteEvents = function() {
+      this.productionRoute = this.model.get("productionVersion");
+      if (this.productionRoute) {
+        return this.productionRoute.on("change:errorMessage", this.updateErrorMessage);
+      }
     };
 
     RouteView.prototype.paramNamesToString = function(paramNames) {
@@ -143,7 +149,8 @@
 
     RouteView.prototype.onDestroy = function() {
       this.aceEditor.destroy();
-      return $('.tipsy').remove();
+      $('.tipsy').remove();
+      return this.model.off(null, null, this);
     };
 
     return RouteView;

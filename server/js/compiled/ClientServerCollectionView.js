@@ -548,15 +548,10 @@
     };
 
     ClientServerCollectionView.prototype.selectRoute = function(route, listEl) {
-      var productionRoute, routeView;
+      var routeView;
 
-      productionRoute = this.routeCollection.findWhere({
-        name: route.get("name"),
-        isProductionVersion: true
-      });
       routeView = new RouteView({
-        model: route,
-        productionRoute: productionRoute
+        model: route
       });
       this.select(listEl, routeView);
       this.routeViewContainer.html(routeView.render().el);

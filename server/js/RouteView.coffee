@@ -1,7 +1,5 @@
 class window.RouteView extends Backbone.View
   initialize: (options) ->
-    @productionRoute = options.productionRoute
-
     @tmplRoute = Handlebars.templates["route"]
     @tmplFunctionSignature = Handlebars.templates["route-function-signature"]
 
@@ -9,13 +7,18 @@ class window.RouteView extends Backbone.View
     @model.on("change", @renderValidationResult)
     @model.on("destroy", @onDestroy)
 
-    if @productionRoute
-      @productionRoute.on("change:errorMessage", @updateErrorMessage)
+    @initProductionRouteEvents()
+    @model.on("change:productionVersion", @initProductionRouteEvents, @)
 
   events:
     "keyup .path": "eventPathChange"
     "keyup .name": "eventNameChange"
     "remove": "onDestroy"
+
+  initProductionRouteEvents: =>
+    @productionRoute = @model.get("productionVersion")
+    if @productionRoute
+      @productionRoute.on("change:errorMessage", @updateErrorMessage)
 
   paramNamesToString: (paramNames) =>
     if paramNames.length == 0
@@ -98,3 +101,4 @@ class window.RouteView extends Backbone.View
   onDestroy: =>
     @aceEditor.destroy()
     $('.tipsy').remove()
+    @model.off(null, null, @)

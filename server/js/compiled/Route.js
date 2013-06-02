@@ -29,6 +29,14 @@
       hasBeenEdited: false
     };
 
+    Route.prototype.relations = [
+      {
+        type: Backbone.HasOne,
+        key: "productionVersion",
+        relatedModel: "Route"
+      }
+    ];
+
     Route.prototype.initialize = function() {
       this.setParsedPath();
       this.set("errorMessage", "Path has not yet been executed.");
@@ -156,6 +164,10 @@
 
     return Route;
 
-  })(Backbone.Model);
+  })(Backbone.RelationalModel);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=Route.map
+*/

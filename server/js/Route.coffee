@@ -11,7 +11,7 @@
     - reserved words: database, static_file, params  (inspect getExecutableFunction for most up-to-date)
 '''
 
-class window.Route extends Backbone.Model
+class window.Route extends Backbone.RelationalModel
   defaults:
     errorMessage: ""  # An error message in the user's function.
     name: ""
@@ -21,6 +21,12 @@ class window.Route extends Backbone.Model
     options: {}
     isProductionVersion: false
     hasBeenEdited: false
+
+  relations: [{
+    type: Backbone.HasOne, # nature of the relationship
+    key: "productionVersion", # attribute of Route
+    relatedModel: "Route" # AssociatedModel for attribute key
+  }],
 
   initialize: ->
     @setParsedPath()

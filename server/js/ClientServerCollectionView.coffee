@@ -354,20 +354,9 @@ class window.ClientServerCollectionView extends Backbone.View
     listElTop = listEl.offset().top
 
     if $(window).scrollTop() < listElTop
-      # listEl[0].scrollIntoView()
       $(window).scrollTop(listElTop)
-      # $('html, body').animate({
-        # scrollTop: listEl.offset().top
-      # }, 100)
-      
-    # $('body').scrollTo(listEl)
 
     listEl.find("input").focus()
-    # console.log listEl
-      # $(window).scrollTop(listElTop)
-
-
-  # --- HELPER METHODS ---
   
   appendServerFileToFileList: (serverFile, listEl) =>
     section = null
@@ -400,9 +389,7 @@ class window.ClientServerCollectionView extends Backbone.View
     @fileViewContainer.show()
 
   selectRoute: (route, listEl) =>
-    productionRoute = @routeCollection.findWhere(
-      name: route.get("name"), isProductionVersion: true)
-    routeView = new RouteView(model: route, productionRoute: productionRoute)
+    routeView = new RouteView(model: route)
     
     @select(listEl, routeView)
     @routeViewContainer.html(routeView.render().el)

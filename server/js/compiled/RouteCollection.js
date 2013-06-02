@@ -58,14 +58,16 @@
         isProductionVersion: false
       });
       return _.each(developmentFiles, function(route) {
-        var attrs, copy;
+        var attrs, productionVersion;
 
         attrs = _.clone(route.attributes);
         attrs.id = null;
-        copy = new Route(attrs);
-        copy.set("isProductionVersion", true);
-        _this.add(copy);
-        return copy.save();
+        attrs.productionVersion = null;
+        productionVersion = new Route(attrs);
+        productionVersion.set("isProductionVersion", true);
+        _this.add(productionVersion);
+        productionVersion.save();
+        return route.save("productionVersion", productionVersion);
       });
     };
 
@@ -74,3 +76,7 @@
   })(Backbone.Collection);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=RouteCollection.map
+*/
