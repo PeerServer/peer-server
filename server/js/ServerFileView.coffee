@@ -46,4 +46,5 @@ class window.ServerFileView extends Backbone.View
     @model.save("contents", @aceEditor.getValue())
 
   onDestroy: =>
-    @aceEditor.destroy()
+    if @model.get("fileType") isnt ServerFile.fileTypeEnum.IMG
+      @aceEditor.destroy()

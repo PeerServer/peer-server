@@ -68,7 +68,9 @@
     };
 
     ServerFileView.prototype.onDestroy = function() {
-      return this.aceEditor.destroy();
+      if (this.model.get("fileType") !== ServerFile.fileTypeEnum.IMG) {
+        return this.aceEditor.destroy();
+      }
     };
 
     return ServerFileView;
