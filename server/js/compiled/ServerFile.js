@@ -95,7 +95,10 @@
           return ServerFile.fileTypeEnum.JS;
         case "handlebars":
           return ServerFile.fileTypeEnum.TEMPLATE;
+        case "tmpl":
+          return ServerFile.fileTypeEnum.TEMPLATE;
       }
+      console.error("Attempt to convert file name " + filename + " to file type failed, returning null.");
       return null;
     };
 

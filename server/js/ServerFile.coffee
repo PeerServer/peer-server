@@ -62,4 +62,6 @@ class window.ServerFile extends Backbone.Model
       when "css" then return ServerFile.fileTypeEnum.CSS
       when "js" then return ServerFile.fileTypeEnum.JS
       when "handlebars" then return ServerFile.fileTypeEnum.TEMPLATE
+      when "tmpl" then return ServerFile.fileTypeEnum.TEMPLATE
+    console.error "Attempt to convert file name " + filename + " to file type failed, returning null."
     return null
