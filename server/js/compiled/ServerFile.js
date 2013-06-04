@@ -104,7 +104,3 @@
   }).call(this, Backbone.Model);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=ServerFile.map
-*/

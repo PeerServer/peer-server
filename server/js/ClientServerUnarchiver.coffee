@@ -44,7 +44,7 @@ class window.ClientServerUnarchiver
     contents = JSON.parse(contents)
     name = name.replace(/\.route\.js$/, "")
     routePath = contents.routePath
-    routeCode = contents.routePath
+    routeCode = contents.routeCode
 
     route = new Route(
       name: name,

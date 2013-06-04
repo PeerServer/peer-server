@@ -76,7 +76,3 @@
   })(Backbone.Collection);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=RouteCollection.map
-*/
