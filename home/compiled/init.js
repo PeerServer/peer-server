@@ -12,11 +12,13 @@
         return window.location.href = "/server/" + name;
       }
     });
-    return $("#create-server").click(function(evt) {
-      var name;
+    return $(".create-server").click(function(evt) {
+      var name, newLink, template;
 
       name = $('#serverName').val();
-      return this.href = "/server/" + name;
+      template = $(this).attr("data-tmpl");
+      newLink = "/server/" + name + "?template=" + template;
+      return this.href = newLink;
     });
   });
 

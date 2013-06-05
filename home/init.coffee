@@ -8,6 +8,8 @@ $(document).ready ->
       name = $('#serverName').val()
       window.location.href = "/server/" + name
 
-  $("#create-server").click (evt) ->
+  $(".create-server").click (evt) ->
     name = $('#serverName').val()
-    this.href = "/server/" + name
+    template = $(this).attr("data-tmpl")
+    newLink = "/server/" + name + "?template=" + template
+    this.href = newLink

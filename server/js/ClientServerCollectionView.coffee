@@ -14,7 +14,7 @@ class window.ClientServerCollectionView extends Backbone.View
     @serverFileCollection = options.serverFileCollection
     @routeCollection = options.routeCollection
     @userDatabase = options.userDatabase
-
+    @handleZipFcn = options.handleZipFcn
     @activeView = null
 
     @fileViewContainer = @$("#file-view-container")
@@ -248,7 +248,7 @@ class window.ClientServerCollectionView extends Backbone.View
 
   handleFile: (file) =>
     if file.type is "application/zip"
-      @handleZipFile(file)
+      @handleZipFcn(file)
       return
 
     reader = new FileReader()
@@ -265,16 +265,6 @@ class window.ClientServerCollectionView extends Backbone.View
         name: file.name, size: file.size, type: file.type, contents: contents)
       @serverFileCollection.add(serverFile)
       serverFile.save()
-
-  handleZipFile: (file) =>
-    reader = new FileReader()
-    reader.readAsArrayBuffer(file)
-    reader.onload = (evt) =>
-      new ClientServerUnarchiver(
-        serverFileCollection: @serverFileCollection,
-        routeCollection: @routeCollection,
-        userDatabase: @userDatabase,
-        contents: evt.target.result)
 
   handleFileChanged: (model) =>
     model.save(hasBeenEdited: true)

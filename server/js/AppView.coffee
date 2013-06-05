@@ -40,6 +40,18 @@ class window.AppView extends Backbone.View
   updateConnectionCount: (count) =>
     @connectionDataView.model.set("count", count)
 
+
+  handleZipFile: (file) =>
+    reader = new FileReader()
+    reader.onload = (evt) =>
+      new ClientServerUnarchiver(
+        serverFileCollection: @serverFileCollection,
+        routeCollection: @routeCollection,
+        userDatabase: @userDatabase,
+        contents: evt.target.result)
+    reader.readAsArrayBuffer(file)
+
+
   renderTopbarButtons: =>
     $(".topbar-buttons").remove()
     $(".topbar").append(@tmplTopbarButtons)
@@ -68,7 +80,8 @@ class window.AppView extends Backbone.View
     @serverFileCollectionView = new ClientServerCollectionView(
       serverFileCollection: @serverFileCollection,
       routeCollection: @routeCollection,
-      userDatabase: @userDatabase)
+      userDatabase: @userDatabase, 
+      handleZipFcn: @handleZipFile)
 
     @archiver = new ClientServerArchiver(
       serverName: @serverID,

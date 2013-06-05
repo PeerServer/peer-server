@@ -26,7 +26,6 @@
       this.handleFileDeleted = __bind(this.handleFileDeleted, this);
       this.handleRouteNameChange = __bind(this.handleRouteNameChange, this);
       this.handleFileChanged = __bind(this.handleFileChanged, this);
-      this.handleZipFile = __bind(this.handleZipFile, this);
       this.handleFile = __bind(this.handleFile, this);
       this.eventDropFiles = __bind(this.eventDropFiles, this);
       this.eventUploadFiles = __bind(this.eventUploadFiles, this);
@@ -54,6 +53,7 @@
       this.serverFileCollection = options.serverFileCollection;
       this.routeCollection = options.routeCollection;
       this.userDatabase = options.userDatabase;
+      this.handleZipFcn = options.handleZipFcn;
       this.activeView = null;
       this.fileViewContainer = this.$("#file-view-container");
       this.routeViewContainer = this.$("#route-view-container");
@@ -336,7 +336,7 @@
         _this = this;
 
       if (file.type === "application/zip") {
-        this.handleZipFile(file);
+        this.handleZipFcn(file);
         return;
       }
       reader = new FileReader();
@@ -358,22 +358,6 @@
         });
         _this.serverFileCollection.add(serverFile);
         return serverFile.save();
-      };
-    };
-
-    ClientServerCollectionView.prototype.handleZipFile = function(file) {
-      var reader,
-        _this = this;
-
-      reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-      return reader.onload = function(evt) {
-        return new ClientServerUnarchiver({
-          serverFileCollection: _this.serverFileCollection,
-          routeCollection: _this.routeCollection,
-          userDatabase: _this.userDatabase,
-          contents: evt.target.result
-        });
       };
     };
 

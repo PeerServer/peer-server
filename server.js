@@ -38,6 +38,10 @@ app.get('/server/:filename(*)', function(req, res) {
   }
 });
 
+app.get('/template/:filename(*)', function(req, res) {
+  res.sendfile(__dirname + '/sample_servers/' + req.params.filename + '.zip');
+});
+
 app.get('/connect/:serverid(*)', function(req, res) {
   var serverid = req.params.serverid;
   res.sendfile(__dirname + '/client/index.html');

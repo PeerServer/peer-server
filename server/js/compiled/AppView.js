@@ -17,6 +17,7 @@
       this.goToEditPage = __bind(this.goToEditPage, this);
       this.goToPage = __bind(this.goToPage, this);
       this.renderTopbarButtons = __bind(this.renderTopbarButtons, this);
+      this.handleZipFile = __bind(this.handleZipFile, this);
       this.updateConnectionCount = __bind(this.updateConnectionCount, this);
       this.setClientBrowserLink = __bind(this.setClientBrowserLink, this);      _ref = AppView.__super__.constructor.apply(this, arguments);
       return _ref;
@@ -66,6 +67,22 @@
       return this.connectionDataView.model.set("count", count);
     };
 
+    AppView.prototype.handleZipFile = function(file) {
+      var reader,
+        _this = this;
+
+      reader = new FileReader();
+      reader.onload = function(evt) {
+        return new ClientServerUnarchiver({
+          serverFileCollection: _this.serverFileCollection,
+          routeCollection: _this.routeCollection,
+          userDatabase: _this.userDatabase,
+          contents: evt.target.result
+        });
+      };
+      return reader.readAsArrayBuffer(file);
+    };
+
     AppView.prototype.renderTopbarButtons = function() {
       $(".topbar-buttons").remove();
       $(".topbar").append(this.tmplTopbarButtons);
@@ -95,7 +112,8 @@
       this.serverFileCollectionView = new ClientServerCollectionView({
         serverFileCollection: this.serverFileCollection,
         routeCollection: this.routeCollection,
-        userDatabase: this.userDatabase
+        userDatabase: this.userDatabase,
+        handleZipFcn: this.handleZipFile
       });
       return this.archiver = new ClientServerArchiver({
         serverName: this.serverID,

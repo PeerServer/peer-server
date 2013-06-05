@@ -14,3 +14,10 @@ $(document).ready ->
     routeCollection: routeCollection,
     appView: appView,
     userDatabase: userDatabase)
+
+  params = URI.parseQuery(document.location.search)
+  if _.has(params, "template") and params.template isnt "blank"
+    templateUri = params.template
+    serverTemplate = new ServerTemplateModel(
+      templateUri: templateUri,
+      handleZipFcn: appView.handleZipFile)
