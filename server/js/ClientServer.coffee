@@ -112,7 +112,6 @@ class window.ClientServer
       fileType = @serverFileCollection.getFileType(path) 
     else 
       fileType = "UNKNOWN"
-      console.error "Unknown type for path: " + path
     contents = @getContentsForPath(path, paramData, foundRoute, data.socketId)
     # Check if following the path results in valid contents -- otherwise send failure
     if not contents or contents.error

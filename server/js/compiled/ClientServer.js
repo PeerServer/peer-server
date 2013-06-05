@@ -141,7 +141,6 @@
         fileType = this.serverFileCollection.getFileType(path);
       } else {
         fileType = "UNKNOWN";
-        console.error("Unknown type for path: " + path);
       }
       contents = this.getContentsForPath(path, paramData, foundRoute, data.socketId);
       if (!contents || contents.error) {
