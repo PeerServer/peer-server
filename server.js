@@ -53,6 +53,11 @@ app.get('/shared/:filename(*)', function(req, res) {
   res.sendfile(__dirname + '/shared/' + filename);
 });
 
+app.get('/home/:filename(*)', function(req, res) {
+  var filename = req.params.filename;
+  res.sendfile(__dirname + '/home/' + filename);
+});
+
 // /* Temporary mapping kept at the bottom just for testing test files 
 //     outside of the server browser. */
 // app.get('/test', function(req, res) {

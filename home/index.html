@@ -14,6 +14,7 @@
   <script src="/shared/lib/ace/mode-javascript.js"></script>
   <script src="/shared/lib/ace/mode-html.js"></script>
   <script src="/shared/lib/ace/mode-css.js"></script>
+  <script src="/home/compiled/init.js"></script>
 
   <style>
     div.top-header {
@@ -54,6 +55,9 @@
   </style>
 </head>
 <body>
+  <script>
+
+  </script>
 <div class="top-header">
   <div class="container">
     <h1>+PeerServer: A Server in a Browser <small class="subtitle-part">with WebRTC</small></h1>
@@ -66,7 +70,7 @@
     <div class="span1">
     </div>
     <div class="span10 goto-server-wrapper ">
-      <h5 class="goto-server"><input id="serverName" placeholder="Server Name?"> </input> <a class='btn btn-primary' onclick="this.href='/server/'+$('#serverName').val()" target="_blank" href="/server/">Create PeerServer</a></h5>
+      <h5 class="goto-server"><input id="serverName" placeholder="Server Name?"> </input> <a class='btn btn-primary' id="create-server" target="_blank" href="/server/">Create PeerServer</a></h5>
       <p><small>(Use <a href="http://www.mozilla.org/en-US/firefox/beta/" target="_blank">Firefox Beta</a> (version 22.0) until June 25, 2013)</small></p>
       </div>
     <div class="span1">
