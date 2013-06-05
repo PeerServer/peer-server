@@ -60,7 +60,10 @@ class window.Route extends Backbone.RelationalModel
       cryptoRandom = (value) ->
         return CryptoJS.lib.WordArray.random(value) + ""  # When called on a number, returns that number of random bytes in hex
       render_template = (filename, context) =>
-        return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context)
+        template = static_file(filename, context)
+        if not template or template.length is 0
+          throw "Template '" + filename + "' does not exist"
+        return window.UserTemplateRenderer.renderTemplate(template, context)
       result = ""
       try
         evaluation = eval(text)

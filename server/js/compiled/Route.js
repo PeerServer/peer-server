@@ -75,7 +75,13 @@
           return CryptoJS.lib.WordArray.random(value) + "";
         };
         render_template = function(filename, context) {
-          return window.UserTemplateRenderer.renderTemplate(static_file(filename, context), context);
+          var template;
+
+          template = static_file(filename, context);
+          if (!template || template.length === 0) {
+            throw "Template '" + filename + "' does not exist";
+          }
+          return window.UserTemplateRenderer.renderTemplate(template, context);
         };
         result = "";
         try {
