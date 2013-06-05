@@ -74,10 +74,17 @@ html, body {
 
 .route-help {
   line-height: 12px;
-  float: right;
   font-size: 11px;
-  padding: 0 4px;
-  width: 200px;
+}
+
+.route-help ul li:before{
+  content:"-";
+  position:relative;
+  left:-5px;
+}
+
+.route-help ul li {
+  text-indent:5px;
 }
 
 .route-path .help {
