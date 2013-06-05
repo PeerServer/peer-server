@@ -55,19 +55,15 @@
     };
 
     RouteView.prototype.render = function() {
-      var $el, errorMessage;
+      var $el;
 
       $el = $(this.el);
-      errorMessage = "";
-      if (this.productionRoute) {
-        errorMessage = this.productionRoute.get("errorMessage");
-      }
       $el.html(this.tmplRoute({
         name: this.model.get("name"),
         path: this.model.get("routePath"),
-        functionParams: this.paramNamesToString([]),
-        errorMessage: errorMessage
+        functionParams: this.paramNamesToString([])
       }));
+      this.updateErrorMessage();
       this.code = this.$(".code");
       this.path = this.$(".path");
       this.functionSignature = this.$(".function-signature");
@@ -109,8 +105,15 @@
     };
 
     RouteView.prototype.updateErrorMessage = function() {
-      if (this.productionRoute.get("errorMessage")) {
-        return $(this.el).find(".error-message").html(this.productionRoute.get("errorMessage"));
+      var errorMessage, errorMessageContainer;
+
+      errorMessageContainer = $(this.el).find(".error-message-container");
+      if (this.productionRoute && this.productionRoute.get("errorMessage")) {
+        errorMessage = errorMessageContainer.find(".error-message");
+        errorMessage.html(this.productionRoute.get("errorMessage"));
+        return errorMessageContainer.show();
+      } else {
+        return errorMessageContainer.hide();
       }
     };
 
@@ -158,3 +161,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=RouteView.map
+*/

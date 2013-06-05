@@ -16,6 +16,7 @@ html, body {
   margin-left: 3em;
   color: #fcfcfc;
 }
+
 .browse-container a:hover {
   text-decoration: none;
   background-color: #A5360F;
@@ -28,7 +29,14 @@ html, body {
   font-size: 90%;
 }
 
+.action-buttons {
+  position: fixed;
+  width: 280px;
+}
 
+.action-buttons li {
+  background-color: white;
+}
 
 #client-server {
   height: -moz-calc(100% - 40px);
@@ -50,7 +58,6 @@ html, body {
   padding: 10px;
 }
 
-
 .function-signature,
 .function-signature input {
   font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
@@ -67,10 +74,17 @@ html, body {
 
 .route-help {
   line-height: 12px;
-  float: right;
   font-size: 11px;
-  padding: 0 4px;
-  width: 200px;
+}
+
+.route-help ul li:before{
+  content:"-";
+  position:relative;
+  left:-5px;
+}
+
+.route-help ul li {
+  text-indent:5px;
 }
 
 .route-path .help {
@@ -138,6 +152,10 @@ html, body {
   margin-left: 10px;
   width: 280px;  
   float: left;
+}
+
+.file-list-container {
+  margin-top: 130px;
 }
 
 #file-view-container {
