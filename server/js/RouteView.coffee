@@ -28,15 +28,12 @@ class window.RouteView extends Backbone.View
   render: =>
     $el = $(@el)
 
-    errorMessage = ""
-    if @productionRoute
-      errorMessage = @productionRoute.get("errorMessage")
-
     $el.html @tmplRoute
       name: @model.get("name"),
       path: @model.get("routePath"),
-      functionParams: @paramNamesToString([]),
-      errorMessage: errorMessage
+      functionParams: @paramNamesToString([])
+
+    @updateErrorMessage()
 
     @code = @$(".code")
     @path = @$(".path")
@@ -70,8 +67,14 @@ class window.RouteView extends Backbone.View
     return editor
 
   updateErrorMessage: =>
-    if @productionRoute.get("errorMessage")
-      $(@el).find(".error-message").html(@productionRoute.get("errorMessage"))
+    errorMessageContainer = $(@el).find(".error-message-container")
+    if @productionRoute and @productionRoute.get("errorMessage")
+      errorMessage = errorMessageContainer.find(".error-message")
+      errorMessage.html(@productionRoute.get("errorMessage"))
+      errorMessageContainer.show()
+    else
+      errorMessageContainer.hide()
+
 
   updateContents: =>
     @model.save("routeCode", @aceEditor.getValue())
