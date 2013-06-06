@@ -93,6 +93,8 @@ class window.ClientServer
   serveFile: (data) =>
     # console.log "FILENAME: " + data.filename
     rawPath = data.filename || ""
+    if _.isObject(rawPath)  # In case the user passed an object with a url field instead.
+      rawPath = rawPath.url
     [path, paramData] = @parsePath(rawPath)
     if data.options and data.options.data  # Happens for ajax and form submits
       # Merge in any extra parameters passed with the ajax request. 
