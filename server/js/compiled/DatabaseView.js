@@ -63,3 +63,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=DatabaseView.map
+*/

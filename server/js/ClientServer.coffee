@@ -125,6 +125,7 @@ class window.ClientServer
     # if contents.result and contents.result.extra is "redirect"  # Option to also return a function to be executed
     #   contents.result.fcn()
     # Construct the response to send with the contents
+    console.log fileType
     response = {
       filename: rawPath,
       fileContents: contents.result,

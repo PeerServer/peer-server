@@ -246,3 +246,7 @@
   })(Backbone.Collection);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFileCollection.map
+*/
