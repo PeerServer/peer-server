@@ -65,6 +65,9 @@ class window.ClientServerCollectionView extends Backbone.View
     
     "click .file-list li[data-cid]": "eventSelectFile"
     "dblclick .file-list li[data-cid]": "eventRenameFile"
+    "mouseenter .file-list li[data-cid]": "eventMouseEnterFile"
+    "mouseleave .file-list li[data-cid]": "eventMouseLeaveFile"
+    "click .file-list li[data-cid] .delete": "eventDeleteClicked"
     
     "click .upload-files": "eventUploadFiles"
     "click .save-changes": "eventSaveChanges"
@@ -176,6 +179,17 @@ class window.ClientServerCollectionView extends Backbone.View
 
     return false
 
+  eventMouseEnterFile: (event) =>
+    target = $(event.currentTarget)
+    target.find(".delete").removeClass("hide")
+
+  eventMouseLeaveFile: (event) =>
+    target = $(event.currentTarget)
+    target.find(".delete").addClass("hide")
+
+  eventDeleteClicked: (event) =>
+    event.stopPropagation()
+
   eventRenameFile: (event) =>
     target = $(event.currentTarget)
     serverFile = @serverFileCollection.get(target.attr("data-cid"))
@@ -184,8 +198,9 @@ class window.ClientServerCollectionView extends Backbone.View
 
   eventDeleteFileConfirmed: (resource) =>
     resource.destroy()
-    @activeView.remove() if @activeView
-    @activeView = null
+    if @activeView and @activeView.model is resource
+      @activeView.remove()
+      @activeView = null
 
   clearAll: =>
     while model = @serverFileCollection.first()

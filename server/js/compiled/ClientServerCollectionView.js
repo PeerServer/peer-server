@@ -35,6 +35,9 @@
       this.clearAll = __bind(this.clearAll, this);
       this.eventDeleteFileConfirmed = __bind(this.eventDeleteFileConfirmed, this);
       this.eventRenameFile = __bind(this.eventRenameFile, this);
+      this.eventDeleteClicked = __bind(this.eventDeleteClicked, this);
+      this.eventMouseLeaveFile = __bind(this.eventMouseLeaveFile, this);
+      this.eventMouseEnterFile = __bind(this.eventMouseEnterFile, this);
       this.eventSelectFile = __bind(this.eventSelectFile, this);
       this.resetClicksOnFileList = __bind(this.resetClicksOnFileList, this);
       this.setupConfirm = __bind(this.setupConfirm, this);
@@ -98,6 +101,9 @@
       "keypress .file-list li[data-cid] input": "eventKeypressWhileRenaming",
       "click .file-list li[data-cid]": "eventSelectFile",
       "dblclick .file-list li[data-cid]": "eventRenameFile",
+      "mouseenter .file-list li[data-cid]": "eventMouseEnterFile",
+      "mouseleave .file-list li[data-cid]": "eventMouseLeaveFile",
+      "click .file-list li[data-cid] .delete": "eventDeleteClicked",
       "click .upload-files": "eventUploadFiles",
       "click .save-changes": "eventSaveChanges",
       "click .create-menu .html": "eventCreateHTML",
@@ -233,6 +239,24 @@
       return false;
     };
 
+    ClientServerCollectionView.prototype.eventMouseEnterFile = function(event) {
+      var target;
+
+      target = $(event.currentTarget);
+      return target.find(".delete").removeClass("hide");
+    };
+
+    ClientServerCollectionView.prototype.eventMouseLeaveFile = function(event) {
+      var target;
+
+      target = $(event.currentTarget);
+      return target.find(".delete").addClass("hide");
+    };
+
+    ClientServerCollectionView.prototype.eventDeleteClicked = function(event) {
+      return event.stopPropagation();
+    };
+
     ClientServerCollectionView.prototype.eventRenameFile = function(event) {
       var serverFile, target;
 
@@ -246,10 +270,10 @@
 
     ClientServerCollectionView.prototype.eventDeleteFileConfirmed = function(resource) {
       resource.destroy();
-      if (this.activeView) {
+      if (this.activeView && this.activeView.model === resource) {
         this.activeView.remove();
+        return this.activeView = null;
       }
-      return this.activeView = null;
     };
 
     ClientServerCollectionView.prototype.clearAll = function() {
