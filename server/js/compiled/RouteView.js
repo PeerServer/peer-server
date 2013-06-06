@@ -9,6 +9,7 @@
     __extends(RouteView, _super);
 
     function RouteView() {
+      this.replaceTooltipsy = __bind(this.replaceTooltipsy, this);
       this.onDestroy = __bind(this.onDestroy, this);
       this.renderValidationResult = __bind(this.renderValidationResult, this);
       this.eventNameChange = __bind(this.eventNameChange, this);
@@ -39,6 +40,10 @@
       "keyup .name": "eventNameChange",
       "remove": "onDestroy"
     };
+
+    RouteView.nameErrorText = "Invalid name";
+
+    RouteView.pathErrorText = "Invalid route path";
 
     RouteView.prototype.initProductionRouteEvents = function() {
       this.productionRoute = this.model.get("productionVersion");
@@ -71,18 +76,8 @@
       this.aceEditor.getSession().setValue(this.model.get("routeCode"));
       this.aceEditor.on("change", this.updateContents);
       this.renderFunctionSignature();
-      $(this.name).tooltipsy({
-        content: "Invalid name",
-        hideEvent: "",
-        showEvent: "",
-        offset: [0, 1]
-      });
-      $(this.path).tooltipsy({
-        content: "Invalid route path",
-        hideEvent: "",
-        showEvent: "",
-        offset: [0, 1]
-      });
+      this.replaceTooltipsy(null, this.name, RouteView.nameErrorText);
+      this.replaceTooltipsy(null, this.path, RouteView.pathErrorText);
       return this;
     };
 
@@ -92,11 +87,15 @@
     };
 
     RouteView.prototype.renderFunctionSignature = function() {
+      var newName;
+
       this.functionSignature.html(this.tmplFunctionSignature({
         name: this.model.get("name"),
         parameterString: this.paramNamesToString(this.model.get("paramNames"))
       }));
-      return this.name = this.$(".name");
+      newName = this.$(".name");
+      this.replaceTooltipsy(this.name, newName, RouteView.nameErrorText);
+      return this.name = newName;
     };
 
     RouteView.prototype.createEditor = function(elem) {
@@ -145,23 +144,39 @@
     RouteView.prototype.renderValidationResult = function(model, error) {
       this.model.isValid();
       error = this.model.validationError;
-      if (error && error.name) {
-        this.name.data('tooltipsy').show();
-      } else {
-        this.name.data('tooltipsy').hide();
+      if ($(this.name).data('tooltipsy')) {
+        if (error && error.name) {
+          $(this.name).data('tooltipsy').show();
+        } else {
+          $(this.name).data('tooltipsy').hide();
+        }
       }
-      if (error && error.routePath) {
-        return this.path.data('tooltipsy').show();
-      } else {
-        return this.path.data('tooltipsy').hide();
+      if ($(this.path).data('tooltipsy')) {
+        if (error && error.routePath) {
+          return $(this.path).data('tooltipsy').show();
+        } else {
+          return $(this.path).data('tooltipsy').hide();
+        }
       }
     };
 
     RouteView.prototype.onDestroy = function() {
       this.aceEditor.destroy();
-      this.name.data('tooltipsy').destroy();
-      this.path.data('tooltipsy').destroy();
+      $(this.name).data('tooltipsy').destroy();
+      $(this.path).data('tooltipsy').destroy();
       return this.model.off(null, null, this);
+    };
+
+    RouteView.prototype.replaceTooltipsy = function(oldTooltipsyEl, newTooltipsyEl, text) {
+      if (oldTooltipsyEl) {
+        $(oldTooltipsyEl).data('tooltipsy').destroy();
+      }
+      return $(newTooltipsyEl).tooltipsy({
+        content: text,
+        hideEvent: "",
+        showEvent: "",
+        offset: [0, 1]
+      });
     };
 
     return RouteView;
