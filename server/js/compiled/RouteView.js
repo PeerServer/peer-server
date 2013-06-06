@@ -71,13 +71,13 @@
       this.aceEditor.getSession().setValue(this.model.get("routeCode"));
       this.aceEditor.on("change", this.updateContents);
       this.renderFunctionSignature();
-      this.name.tooltipsy({
+      $(this.name).tooltipsy({
         content: "Invalid name",
         hideEvent: "",
         showEvent: "",
         offset: [0, 1]
       });
-      this.path.tooltipsy({
+      $(this.path).tooltipsy({
         content: "Invalid route path",
         hideEvent: "",
         showEvent: "",

@@ -45,13 +45,13 @@ class window.RouteView extends Backbone.View
 
     @renderFunctionSignature()
 
-    @name.tooltipsy({
+    $(@name).tooltipsy({
         content: "Invalid name",
         hideEvent: "",
         showEvent: "",
         offset: [0, 1]
     })
-    @path.tooltipsy({
+    $(@path).tooltipsy({
         content: "Invalid route path",
         hideEvent: "",
         showEvent: "",
