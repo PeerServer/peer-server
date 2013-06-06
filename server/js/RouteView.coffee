@@ -15,6 +15,9 @@ class window.RouteView extends Backbone.View
     "keyup .name": "eventNameChange"
     "remove": "onDestroy"
 
+  @nameErrorText: "Invalid name"
+  @pathErrorText: "Invalid route path"
+
   initProductionRouteEvents: =>
     @productionRoute = @model.get("productionVersion")
     if @productionRoute
@@ -45,18 +48,8 @@ class window.RouteView extends Backbone.View
 
     @renderFunctionSignature()
 
-    $(@name).tooltipsy({
-        content: "Invalid name",
-        hideEvent: "",
-        showEvent: "",
-        offset: [0, 1]
-    })
-    $(@path).tooltipsy({
-        content: "Invalid route path",
-        hideEvent: "",
-        showEvent: "",
-        offset: [0, 1]
-    })
+    @replaceTooltipsy(null, @name, RouteView.nameErrorText)
+    @replaceTooltipsy(null, @path, RouteView.pathErrorText)
 
     return @
 
@@ -68,7 +61,10 @@ class window.RouteView extends Backbone.View
     @functionSignature.html(@tmplFunctionSignature(
       name: @model.get("name"),
       parameterString: @paramNamesToString(@model.get("paramNames"))))
-    @name = @$(".name")
+
+    newName = @$(".name")
+    @replaceTooltipsy(@name, newName, RouteView.nameErrorText)
+    @name = newName
 
   createEditor: (elem) =>
     editor = ace.edit(elem[0])
@@ -104,18 +100,32 @@ class window.RouteView extends Backbone.View
     @model.isValid()
     error = @model.validationError
 
-    if error and error.name
-      @name.data('tooltipsy').show()
-    else
-      @name.data('tooltipsy').hide()
+    if $(@name).data('tooltipsy')
+      if error and error.name
+        $(@name).data('tooltipsy').show()
+      else
+        $(@name).data('tooltipsy').hide()
 
-    if error and error.routePath
-      @path.data('tooltipsy').show()
-    else
-      @path.data('tooltipsy').hide()
+    if $(@path).data('tooltipsy')
+      if error and error.routePath
+        $(@path).data('tooltipsy').show()
+      else
+        $(@path).data('tooltipsy').hide()
 
   onDestroy: =>
     @aceEditor.destroy()
-    @name.data('tooltipsy').destroy()
-    @path.data('tooltipsy').destroy()
+    $(@name).data('tooltipsy').destroy()
+    $(@path).data('tooltipsy').destroy()
     @model.off(null, null, @)
+
+
+  replaceTooltipsy: (oldTooltipsyEl, newTooltipsyEl, text) =>
+    if oldTooltipsyEl
+      $(oldTooltipsyEl).data('tooltipsy').destroy()
+
+    $(newTooltipsyEl).tooltipsy({
+      content: text,
+      hideEvent: "",
+      showEvent: "",
+      offset: [0, 1]
+    })
