@@ -18,7 +18,6 @@
       contents = params.contents;
       this.clearAll();
       zip = new JSZip(contents);
-      console.log(zip);
       productionFiles = zip.filter(function(relativePath, file) {
         return /^live_version\/.+/.test(relativePath);
       });

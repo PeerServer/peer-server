@@ -10,8 +10,6 @@ class window.ClientServerUnarchiver
 
     zip = new JSZip(contents)
 
-    console.log(zip)
-
     productionFiles = zip.filter (relativePath, file) =>
       return /^live_version\/.+/.test(relativePath)
 

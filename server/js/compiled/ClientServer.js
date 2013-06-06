@@ -154,7 +154,6 @@
         this.sendFailure(data, "Internal server error");
         return;
       }
-      console.log(fileType);
       response = {
         filename: rawPath,
         fileContents: contents.result,

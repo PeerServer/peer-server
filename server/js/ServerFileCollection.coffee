@@ -7,13 +7,15 @@ class window.ServerFileCollection extends Backbone.Collection
 
   initialize: ->
     @on("add", @onServerFileAdded)
-    @on("reset", @checkForNoFiles)
 
   initLocalStorage: (namespace) =>
     @localStorage = new Backbone.LocalStorage(namespace + "-ServerFileCollection")
     @fetch(success: @checkForNoFiles)
+    @on("reset", @checkForNoFiles)
 
   onServerFileAdded: (serverFile) =>
+    return if @overwriteRequiredPages(serverFile)
+
     serverFilesWithName = @filter (otherServerFile) ->
       return serverFile.get("name") is otherServerFile.get("name") \
         and not serverFile.get("isProductionVersion") \
@@ -32,6 +34,31 @@ class window.ServerFileCollection extends Backbone.Collection
         serverFile.save("name", newName)
         index++
       numToAppend++
+
+  overwriteRequiredPages: (serverFile) =>
+    didOverwrite = false
+
+    _.each ["index.html", "404.html"], (pageName) =>
+      if pageName is "index.html"
+        defaultPage = @indexTemplate
+      else
+        defaultPage = @template404
+
+      if serverFile.get("name") is pageName and not serverFile.get("isProductionVersion")
+
+        serverFilesWithName = @filter (otherServerFile) ->
+          return serverFile.get("name") is otherServerFile.get("name") \
+            and not serverFile.get("isProductionVersion") \
+            and not otherServerFile.get("isProductionVersion") \
+            and serverFile isnt otherServerFile
+
+        _.each serverFilesWithName, (serverFileWithName) =>
+          if serverFileWithName.get("contents") is defaultPage
+            serverFileWithName.destroy()
+            serverFile.set("isRequired", true)
+            didOverwrite = true
+
+    return didOverwrite
       
   isFilenameInUse: (filename) =>
     result = @find (serverFile) ->

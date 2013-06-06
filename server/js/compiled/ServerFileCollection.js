@@ -20,6 +20,7 @@
       this.checkForNoFiles = __bind(this.checkForNoFiles, this);
       this.filenameAndExtension = __bind(this.filenameAndExtension, this);
       this.isFilenameInUse = __bind(this.isFilenameInUse, this);
+      this.overwriteRequiredPages = __bind(this.overwriteRequiredPages, this);
       this.onServerFileAdded = __bind(this.onServerFileAdded, this);
       this.initLocalStorage = __bind(this.initLocalStorage, this);      _ref = ServerFileCollection.__super__.constructor.apply(this, arguments);
       return _ref;
@@ -28,20 +29,23 @@
     ServerFileCollection.prototype.model = ServerFile;
 
     ServerFileCollection.prototype.initialize = function() {
-      this.on("add", this.onServerFileAdded);
-      return this.on("reset", this.checkForNoFiles);
+      return this.on("add", this.onServerFileAdded);
     };
 
     ServerFileCollection.prototype.initLocalStorage = function(namespace) {
       this.localStorage = new Backbone.LocalStorage(namespace + "-ServerFileCollection");
-      return this.fetch({
+      this.fetch({
         success: this.checkForNoFiles
       });
+      return this.on("reset", this.checkForNoFiles);
     };
 
     ServerFileCollection.prototype.onServerFileAdded = function(serverFile) {
       var filenameAndExtension, index, newName, numToAppend, serverFilesWithName, _results;
 
+      if (this.overwriteRequiredPages(serverFile)) {
+        return;
+      }
       serverFilesWithName = this.filter(function(otherServerFile) {
         return serverFile.get("name") === otherServerFile.get("name") && !serverFile.get("isProductionVersion") && !otherServerFile.get("isProductionVersion");
       });
@@ -61,6 +65,35 @@
         _results.push(numToAppend++);
       }
       return _results;
+    };
+
+    ServerFileCollection.prototype.overwriteRequiredPages = function(serverFile) {
+      var didOverwrite,
+        _this = this;
+
+      didOverwrite = false;
+      _.each(["index.html", "404.html"], function(pageName) {
+        var defaultPage, serverFilesWithName;
+
+        if (pageName === "index.html") {
+          defaultPage = _this.indexTemplate;
+        } else {
+          defaultPage = _this.template404;
+        }
+        if (serverFile.get("name") === pageName && !serverFile.get("isProductionVersion")) {
+          serverFilesWithName = _this.filter(function(otherServerFile) {
+            return serverFile.get("name") === otherServerFile.get("name") && !serverFile.get("isProductionVersion") && !otherServerFile.get("isProductionVersion") && serverFile !== otherServerFile;
+          });
+          return _.each(serverFilesWithName, function(serverFileWithName) {
+            if (serverFileWithName.get("contents") === defaultPage) {
+              serverFileWithName.destroy();
+              serverFile.set("isRequired", true);
+              return didOverwrite = true;
+            }
+          });
+        }
+      });
+      return didOverwrite;
     };
 
     ServerFileCollection.prototype.isFilenameInUse = function(filename) {
