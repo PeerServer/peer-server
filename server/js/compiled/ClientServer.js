@@ -4,6 +4,9 @@
 
   window.ClientServer = (function() {
     function ClientServer(options) {
+      this.removePeerFromClientBrowserResourceRequests = __bind(this.removePeerFromClientBrowserResourceRequests, this);
+      this.onResourceChange = __bind(this.onResourceChange, this);
+      this.recordResourceRequest = __bind(this.recordResourceRequest, this);
       this.getContentsForPath = __bind(this.getContentsForPath, this);
       this.parsePath = __bind(this.parsePath, this);
       this.serveFile = __bind(this.serveFile, this);
@@ -34,6 +37,10 @@
       });
       this.setUpReceiveEventCallbacks();
       this.clientBrowserConnections = {};
+      this.isPushChangesEnabled = false;
+      this.clientBrowserResourceRequests = {};
+      this.serverFileCollection.on("change", this.onResourceChange);
+      this.routeCollection.on("change", this.onResourceChange);
     }
 
     ClientServer.prototype.channelOnReady = function() {
@@ -78,7 +85,8 @@
       if (connection && connection.peer && _.has(this.clientBrowserConnections, connection.peer)) {
         delete this.clientBrowserConnections[connection.peer];
       }
-      return this.appView.updateConnectionCount(_.size(this.clientBrowserConnections));
+      this.appView.updateConnectionCount(_.size(this.clientBrowserConnections));
+      return this.removePeerFromClientBrowserResourceRequests(connection.peer);
     };
 
     ClientServer.prototype.channelConnectionOnData = function(data) {
@@ -121,7 +129,7 @@
     };
 
     ClientServer.prototype.serveFile = function(data) {
-      var contents, extraParams, fileType, foundRoute, name, paramData, path, rawPath, response, slashedPath, val, _ref;
+      var contents, extraParams, fileType, foundRoute, foundServerFile, name, paramData, path, rawPath, response, slashedPath, val, _ref;
 
       rawPath = data.filename || "";
       _ref = this.parsePath(rawPath), path = _ref[0], paramData = _ref[1];
@@ -138,6 +146,10 @@
       }
       slashedPath = "/" + path;
       foundRoute = this.routeCollection.findRouteForPath(slashedPath);
+      foundServerFile = this.serverFileCollection.findWhere({
+        name: path,
+        isProductionVersion: true
+      });
       if ((foundRoute === null || foundRoute === void 0) && !this.serverFileCollection.hasProductionFile(path)) {
         console.error("Error: Client requested " + rawPath + " which does not exist on server.");
         this.sendFailure(data, "Not found");
@@ -162,6 +174,8 @@
       };
       if (data.type === "ajax") {
         response.requestId = data.requestId;
+      } else {
+        this.recordResourceRequest(data.socketId, data, foundServerFile, foundRoute);
       }
       return this.sendEventTo(data.socketId, "receiveFile", response);
     };
@@ -189,6 +203,66 @@
       match = slashedPath.match(foundRoute.pathRegex);
       runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), this.serverFileCollection.getContents, this.userDatabase.database, this.userSessions.getSession(socketId));
       return runRoute();
+    };
+
+    ClientServer.prototype.recordResourceRequest = function(peerID, data, foundServerFile, foundRoute) {
+      var resource, resourceName;
+
+      if (!this.isPushChangesEnabled) {
+        return;
+      }
+      if (!((foundServerFile && foundServerFile.get("fileType") === ServerFile.fileTypeEnum.HTML) || foundRoute)) {
+        return;
+      }
+      resource = null;
+      if (foundServerFile) {
+        resource = foundServerFile;
+      } else if (foundRoute) {
+        resource = foundRoute;
+      }
+      if (!resource) {
+        return;
+      }
+      resourceName = resource.get("name");
+      this.removePeerFromClientBrowserResourceRequests(peerID);
+      if (!this.clientBrowserResourceRequests[resourceName]) {
+        this.clientBrowserResourceRequests[resourceName] = [];
+      }
+      return this.clientBrowserResourceRequests[resourceName].push({
+        peerID: peerID,
+        data: data
+      });
+    };
+
+    ClientServer.prototype.onResourceChange = function(resource) {
+      var interestedPeers,
+        _this = this;
+
+      if (!this.isPushChangesEnabled) {
+        return;
+      }
+      if (!resource.get("isProductionVersion")) {
+        return;
+      }
+      interestedPeers = this.clientBrowserResourceRequests[resource.get("name")];
+      return _.each(interestedPeers, function(interestedPeer) {
+        return _this.serveFile(interestedPeer.data);
+      });
+    };
+
+    ClientServer.prototype.removePeerFromClientBrowserResourceRequests = function(peerID) {
+      var resourceNames,
+        _this = this;
+
+      if (!this.isPushChangesEnabled) {
+        return;
+      }
+      resourceNames = _.keys(this.clientBrowserResourceRequests);
+      return _.each(resourceNames, function(resourceName) {
+        return _this.clientBrowserResourceRequests[resourceName] = _.filter(_this.clientBrowserResourceRequests[resourceName], function(interestedPeer) {
+          return interestedPeer.peerID !== peerID;
+        });
+      });
     };
 
     return ClientServer;

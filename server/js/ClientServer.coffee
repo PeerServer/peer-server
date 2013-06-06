@@ -23,6 +23,11 @@ class window.ClientServer
 
     @clientBrowserConnections = {}
 
+    @isPushChangesEnabled = false
+    @clientBrowserResourceRequests = {}
+    @serverFileCollection.on("change", @onResourceChange)
+    @routeCollection.on("change", @onResourceChange)
+
   channelOnReady: =>
     serverID = @dataChannel.id
     @appView.trigger("setServerID", serverID)
@@ -56,6 +61,7 @@ class window.ClientServer
     @userSessions.removeSession(connection.peer) if connection and connection.peer
     delete @clientBrowserConnections[connection.peer] if connection and connection.peer and _.has(@clientBrowserConnections, connection.peer)
     @appView.updateConnectionCount(_.size(@clientBrowserConnections))
+    @removePeerFromClientBrowserResourceRequests(connection.peer)
 
   channelConnectionOnData: (data) =>
     @eventTransmitter.receiveEvent(data)
@@ -98,30 +104,39 @@ class window.ClientServer
       # Merge in any extra parameters passed with the ajax request. 
       if typeof(data.options.data) is "string"
         extraParams = URI.parseQuery(paramData) # TODO test, should return object mapping of get params in data.options.data
-      else 
+      else
         extraParams = data.options.data
       for name, val of extraParams
         paramData[name] = val
+    
     # console.log "Parsed path: " + path
     # console.log "PARAMS: "
     # console.log paramData
+    
     slashedPath = "/" + path
+    
     foundRoute = @routeCollection.findRouteForPath(slashedPath)
+    foundServerFile = @serverFileCollection.findWhere(name: path, isProductionVersion: true)
+    
     # Check if path mapping or a static file for this path exists -- otherwise send failure
     if (foundRoute is null or foundRoute is undefined) and not @serverFileCollection.hasProductionFile(path)
       console.error "Error: Client requested " + rawPath + " which does not exist on server."
       @sendFailure(data, "Not found")
       return
+
     if foundRoute is null or foundRoute is undefined
       fileType = @serverFileCollection.getFileType(path) 
     else 
       fileType = "UNKNOWN"
+
     contents = @getContentsForPath(path, paramData, foundRoute, data.socketId)
+
     # Check if following the path results in valid contents -- otherwise send failure
     if not contents or contents.error
       console.error "Error: Function evaluation for  " + rawPath + " generated an error, returning 404: " + contents.error
       @sendFailure(data, "Internal server error")
       return
+
     # if contents.result and contents.result.extra is "redirect"  # Option to also return a function to be executed
     #   contents.result.fcn()
     # Construct the response to send with the contents
@@ -131,8 +146,12 @@ class window.ClientServer
       type: data.type,
       fileType: fileType
     }
+
     if data.type is "ajax"
       response.requestId = data.requestId
+    else
+      @recordResourceRequest(data.socketId, data, foundServerFile, foundRoute)
+
     @sendEventTo(data.socketId, "receiveFile", response)
 
   parsePath: (fullPath) =>
@@ -159,3 +178,48 @@ class window.ClientServer
     runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), 
       @serverFileCollection.getContents, @userDatabase.database, @userSessions.getSession(socketId))
     return runRoute()
+
+
+  recordResourceRequest: (peerID, data, foundServerFile, foundRoute) =>
+    return if not @isPushChangesEnabled
+
+    return if not ((foundServerFile and foundServerFile.get("fileType") is ServerFile.fileTypeEnum.HTML) or
+                    foundRoute)
+
+    resource = null
+    if foundServerFile
+      resource = foundServerFile
+    else if foundRoute
+      resource = foundRoute
+    return if not resource
+
+    resourceName = resource.get("name")
+
+    @removePeerFromClientBrowserResourceRequests(peerID)
+
+    if not @clientBrowserResourceRequests[resourceName]
+      @clientBrowserResourceRequests[resourceName] = []
+
+    @clientBrowserResourceRequests[resourceName].push(peerID: peerID, data: data)
+
+
+  onResourceChange: (resource) =>
+    return if not @isPushChangesEnabled
+
+    return if not resource.get("isProductionVersion")
+
+    interestedPeers = @clientBrowserResourceRequests[resource.get("name")]
+    _.each interestedPeers, (interestedPeer) =>
+      @serveFile(interestedPeer.data)
+
+
+  removePeerFromClientBrowserResourceRequests: (peerID) =>
+    return if not @isPushChangesEnabled
+
+    resourceNames = _.keys(@clientBrowserResourceRequests)
+
+    _.each resourceNames, (resourceName) =>
+      @clientBrowserResourceRequests[resourceName] =
+        _.filter @clientBrowserResourceRequests[resourceName], (interestedPeer) =>
+          return interestedPeer.peerID isnt peerID
+
