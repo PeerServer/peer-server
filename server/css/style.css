@@ -107,13 +107,19 @@ html, body {
   margin-top: 40px;
   margin-left: -40%;
   left: 50%;
-  background: #FCEFD4;
+  /*background: #FCEFD4;*/
   text-align: center;
-  border: 1px solid #FAE1C6;
+  /*border: 1px solid #FAE1C6;*/
+  background-color: #E7B8D1;
+    border: 1px solid #DE9ECB;
+    color: #772953;
   border-radius: 0px 0px 10px 10px;
   z-index: 5;
 }
-
+#save-notification a {
+  font-weight:bold;
+  color: #772953;
+}
 #server-id-message {
   margin: 50px 10px 10px 10px;
   text-align: center;
