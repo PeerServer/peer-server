@@ -2,6 +2,14 @@ html, body {
   height: 100%;
 }
 
+.tooltipsy {
+  padding: 5px;
+  max-width: 200px;
+  color: #eee;
+  background-color: rgba(0,0,0,0.75);
+  border-radius: 3px;
+}
+
 .browse-container {
   float: left;
   font-size: 1.2em;

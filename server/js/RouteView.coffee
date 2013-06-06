@@ -45,13 +45,24 @@ class window.RouteView extends Backbone.View
 
     @renderFunctionSignature()
 
-    @name.tipsy(fallback: "Invalid name", trigger: "manual")
-    @path.tipsy(fallback: "Invalid route path", trigger: "manual")
+    @name.tooltipsy({
+        content: "Invalid name",
+        hideEvent: "",
+        showEvent: "",
+        offset: [0, 1]
+    })
+    @path.tooltipsy({
+        content: "Invalid route path",
+        hideEvent: "",
+        showEvent: "",
+        offset: [0, 1]
+    })
 
     return @
 
   focus: =>
     @name.focus()
+    @renderValidationResult()
 
   renderFunctionSignature: =>
     @functionSignature.html(@tmplFunctionSignature(
@@ -82,26 +93,29 @@ class window.RouteView extends Backbone.View
   eventPathChange: (event) =>
     target = $(event.currentTarget)
     @model.save("routePath", target.val())
+    @renderValidationResult()
 
   eventNameChange: (event) =>
     target = $(event.currentTarget)
     @model.save("name", target.val())
+    @renderValidationResult()
 
   renderValidationResult: (model, error) =>
     @model.isValid()
     error = @model.validationError
 
     if error and error.name
-      @name.tipsy("show")
+      @name.data('tooltipsy').show()
     else
-      @name.tipsy("hide")
+      @name.data('tooltipsy').hide()
 
     if error and error.routePath
-      @path.tipsy("show")
+      @path.data('tooltipsy').show()
     else
-      @path.tipsy("hide")
+      @path.data('tooltipsy').hide()
 
   onDestroy: =>
     @aceEditor.destroy()
-    $('.tipsy').remove()
+    @name.data('tooltipsy').destroy()
+    @path.data('tooltipsy').destroy()
     @model.off(null, null, @)

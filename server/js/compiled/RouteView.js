@@ -71,19 +71,24 @@
       this.aceEditor.getSession().setValue(this.model.get("routeCode"));
       this.aceEditor.on("change", this.updateContents);
       this.renderFunctionSignature();
-      this.name.tipsy({
-        fallback: "Invalid name",
-        trigger: "manual"
+      this.name.tooltipsy({
+        content: "Invalid name",
+        hideEvent: "",
+        showEvent: "",
+        offset: [0, 1]
       });
-      this.path.tipsy({
-        fallback: "Invalid route path",
-        trigger: "manual"
+      this.path.tooltipsy({
+        content: "Invalid route path",
+        hideEvent: "",
+        showEvent: "",
+        offset: [0, 1]
       });
       return this;
     };
 
     RouteView.prototype.focus = function() {
-      return this.name.focus();
+      this.name.focus();
+      return this.renderValidationResult();
     };
 
     RouteView.prototype.renderFunctionSignature = function() {
@@ -125,34 +130,37 @@
       var target;
 
       target = $(event.currentTarget);
-      return this.model.save("routePath", target.val());
+      this.model.save("routePath", target.val());
+      return this.renderValidationResult();
     };
 
     RouteView.prototype.eventNameChange = function(event) {
       var target;
 
       target = $(event.currentTarget);
-      return this.model.save("name", target.val());
+      this.model.save("name", target.val());
+      return this.renderValidationResult();
     };
 
     RouteView.prototype.renderValidationResult = function(model, error) {
       this.model.isValid();
       error = this.model.validationError;
       if (error && error.name) {
-        this.name.tipsy("show");
+        this.name.data('tooltipsy').show();
       } else {
-        this.name.tipsy("hide");
+        this.name.data('tooltipsy').hide();
       }
       if (error && error.routePath) {
-        return this.path.tipsy("show");
+        return this.path.data('tooltipsy').show();
       } else {
-        return this.path.tipsy("hide");
+        return this.path.data('tooltipsy').hide();
       }
     };
 
     RouteView.prototype.onDestroy = function() {
       this.aceEditor.destroy();
-      $('.tipsy').remove();
+      this.name.data('tooltipsy').destroy();
+      this.path.data('tooltipsy').destroy();
       return this.model.off(null, null, this);
     };
 
