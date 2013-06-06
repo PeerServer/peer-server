@@ -50,13 +50,13 @@ class window.ServerFileCollection extends Backbone.Collection
           return serverFile.get("name") is otherServerFile.get("name") \
             and not serverFile.get("isProductionVersion") \
             and not otherServerFile.get("isProductionVersion") \
-            and serverFile isnt otherServerFile
+            and serverFile isnt otherServerFile \
+            and otherServerFile.get("contents") is defaultPage
 
         _.each serverFilesWithName, (serverFileWithName) =>
-          if serverFileWithName.get("contents") is defaultPage
-            serverFileWithName.destroy()
-            serverFile.set("isRequired", true)
-            didOverwrite = true
+          serverFileWithName.destroy()
+          serverFile.set("isRequired", true)
+          didOverwrite = true
 
     return didOverwrite
       

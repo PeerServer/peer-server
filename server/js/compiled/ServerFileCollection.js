@@ -82,14 +82,12 @@
         }
         if (serverFile.get("name") === pageName && !serverFile.get("isProductionVersion")) {
           serverFilesWithName = _this.filter(function(otherServerFile) {
-            return serverFile.get("name") === otherServerFile.get("name") && !serverFile.get("isProductionVersion") && !otherServerFile.get("isProductionVersion") && serverFile !== otherServerFile;
+            return serverFile.get("name") === otherServerFile.get("name") && !serverFile.get("isProductionVersion") && !otherServerFile.get("isProductionVersion") && serverFile !== otherServerFile && otherServerFile.get("contents") === defaultPage;
           });
           return _.each(serverFilesWithName, function(serverFileWithName) {
-            if (serverFileWithName.get("contents") === defaultPage) {
-              serverFileWithName.destroy();
-              serverFile.set("isRequired", true);
-              return didOverwrite = true;
-            }
+            serverFileWithName.destroy();
+            serverFile.set("isRequired", true);
+            return didOverwrite = true;
           });
         }
       });
