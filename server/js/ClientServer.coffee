@@ -25,7 +25,7 @@ class window.ClientServer
 
   channelOnReady: =>
     serverID = @dataChannel.id
-    @appView.trigger("setServerID", )
+    @appView.trigger("setServerID", serverID)
     @serverFileCollection.initLocalStorage(serverID)
     @routeCollection.initLocalStorage(serverID)
     @userDatabase.initLocalStorage(serverID)

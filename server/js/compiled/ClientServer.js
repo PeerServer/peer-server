@@ -40,7 +40,7 @@
       var serverID;
 
       serverID = this.dataChannel.id;
-      this.appView.trigger("setServerID");
+      this.appView.trigger("setServerID", serverID);
       this.serverFileCollection.initLocalStorage(serverID);
       this.routeCollection.initLocalStorage(serverID);
       return this.userDatabase.initLocalStorage(serverID);
