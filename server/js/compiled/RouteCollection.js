@@ -12,15 +12,17 @@
       this.createProductionVersion = __bind(this.createProductionVersion, this);
       this.getRouteCode = __bind(this.getRouteCode, this);
       this.findRouteForPath = __bind(this.findRouteForPath, this);
-      this.comparator = __bind(this.comparator, this);      _ref = RouteCollection.__super__.constructor.apply(this, arguments);
+      this.comparator = __bind(this.comparator, this);
+      this.initLocalStorage = __bind(this.initLocalStorage, this);      _ref = RouteCollection.__super__.constructor.apply(this, arguments);
       return _ref;
     }
 
     RouteCollection.prototype.model = Route;
 
-    RouteCollection.prototype.localStorage = new Backbone.LocalStorage("RouteCollection");
+    RouteCollection.prototype.initialize = function(options) {};
 
-    RouteCollection.prototype.initialize = function(options) {
+    RouteCollection.prototype.initLocalStorage = function(namespace) {
+      this.localStorage = new Backbone.LocalStorage(namespace + "-RouteCollection");
       return this.fetch();
     };
 

@@ -1,9 +1,10 @@
 class window.RouteCollection extends Backbone.Collection
   model: Route
-
-  localStorage: new Backbone.LocalStorage("RouteCollection")
   
   initialize: (options) ->
+
+  initLocalStorage: (namespace) =>
+    @localStorage = new Backbone.LocalStorage(namespace + "-RouteCollection")
     @fetch()
 
   comparator: (route) =>

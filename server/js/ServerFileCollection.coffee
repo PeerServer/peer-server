@@ -5,11 +5,12 @@
 class window.ServerFileCollection extends Backbone.Collection
   model: ServerFile
 
-  localStorage: new Backbone.LocalStorage("ServerFileCollection")
-
   initialize: ->
     @on("add", @onServerFileAdded)
     @on("reset", @checkForNoFiles)
+
+  initLocalStorage: (namespace) =>
+    @localStorage = new Backbone.LocalStorage(namespace + "-ServerFileCollection")
     @fetch(success: @checkForNoFiles)
 
   onServerFileAdded: (serverFile) =>

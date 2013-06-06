@@ -20,17 +20,20 @@
       this.checkForNoFiles = __bind(this.checkForNoFiles, this);
       this.filenameAndExtension = __bind(this.filenameAndExtension, this);
       this.isFilenameInUse = __bind(this.isFilenameInUse, this);
-      this.onServerFileAdded = __bind(this.onServerFileAdded, this);      _ref = ServerFileCollection.__super__.constructor.apply(this, arguments);
+      this.onServerFileAdded = __bind(this.onServerFileAdded, this);
+      this.initLocalStorage = __bind(this.initLocalStorage, this);      _ref = ServerFileCollection.__super__.constructor.apply(this, arguments);
       return _ref;
     }
 
     ServerFileCollection.prototype.model = ServerFile;
 
-    ServerFileCollection.prototype.localStorage = new Backbone.LocalStorage("ServerFileCollection");
-
     ServerFileCollection.prototype.initialize = function() {
       this.on("add", this.onServerFileAdded);
-      this.on("reset", this.checkForNoFiles);
+      return this.on("reset", this.checkForNoFiles);
+    };
+
+    ServerFileCollection.prototype.initLocalStorage = function(namespace) {
+      this.localStorage = new Backbone.LocalStorage(namespace + "-ServerFileCollection");
       return this.fetch({
         success: this.checkForNoFiles
       });

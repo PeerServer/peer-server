@@ -37,7 +37,13 @@
     }
 
     ClientServer.prototype.channelOnReady = function() {
-      return this.appView.trigger("setServerID", this.dataChannel.id);
+      var serverID;
+
+      serverID = this.dataChannel.id;
+      this.appView.trigger("setServerID");
+      this.serverFileCollection.initLocalStorage(serverID);
+      this.routeCollection.initLocalStorage(serverID);
+      return this.userDatabase.initLocalStorage(serverID);
     };
 
     ClientServer.prototype.channelOnUnavailableID = function() {

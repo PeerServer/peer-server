@@ -24,7 +24,11 @@ class window.ClientServer
     @clientBrowserConnections = {}
 
   channelOnReady: =>
-    @appView.trigger("setServerID", @dataChannel.id)
+    serverID = @dataChannel.id
+    @appView.trigger("setServerID", )
+    @serverFileCollection.initLocalStorage(serverID)
+    @routeCollection.initLocalStorage(serverID)
+    @userDatabase.initLocalStorage(serverID)
 
   channelOnUnavailableID: =>
     @appView.trigger("onUnavailableID", @desiredServerID)

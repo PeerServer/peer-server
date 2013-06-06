@@ -7,7 +7,9 @@ class window.UserDatabase
 
   constructor: ->
     @database = TAFFY()
-    @database.store("UserDatabase")
+
+  initLocalStorage: (namespace) =>
+    @database.store(namespace + "-UserDatabase")
 
   toString: (pretty) =>
     if pretty

@@ -8,9 +8,13 @@
       this.clear = __bind(this.clear, this);
       this.runQuery = __bind(this.runQuery, this);
       this.fromJSONArray = __bind(this.fromJSONArray, this);
-      this.toString = __bind(this.toString, this);      this.database = TAFFY();
-      this.database.store("UserDatabase");
+      this.toString = __bind(this.toString, this);
+      this.initLocalStorage = __bind(this.initLocalStorage, this);      this.database = TAFFY();
     }
+
+    UserDatabase.prototype.initLocalStorage = function(namespace) {
+      return this.database.store(namespace + "-UserDatabase");
+    };
 
     UserDatabase.prototype.toString = function(pretty) {
       if (pretty) {
