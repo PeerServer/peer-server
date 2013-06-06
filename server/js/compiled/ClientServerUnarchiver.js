@@ -8,6 +8,7 @@
       this.addServerFile = __bind(this.addServerFile, this);
       this.addRoute = __bind(this.addRoute, this);
       this.processFile = __bind(this.processFile, this);
+      this.clearAll = __bind(this.clearAll, this);
       var contents, database, developmentFiles, productionFiles, zip,
         _this = this;
 
@@ -15,7 +16,9 @@
       this.routeCollection = params.routeCollection;
       this.userDatabase = params.userDatabase;
       contents = params.contents;
+      this.clearAll();
       zip = new JSZip(contents);
+      console.log(zip);
       productionFiles = zip.filter(function(relativePath, file) {
         return /^live_version\/.+/.test(relativePath);
       });
@@ -29,6 +32,20 @@
         this.userDatabase.fromJSONArray(database.data);
       }
     }
+
+    ClientServerUnarchiver.prototype.clearAll = function() {
+      var model;
+
+      while (model = this.serverFileCollection.first()) {
+        model.destroy();
+      }
+      while (model = this.routeCollection.first()) {
+        model.destroy();
+      }
+      this.serverFileCollection.reset();
+      this.routeCollection.reset();
+      return this.userDatabase.clear();
+    };
 
     ClientServerUnarchiver.prototype.processFile = function(isProductionVersion, file) {
       var contents, ext, fileType, isRoute, name;

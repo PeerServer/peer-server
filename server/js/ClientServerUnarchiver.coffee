@@ -6,7 +6,11 @@ class window.ClientServerUnarchiver
     @userDatabase = params.userDatabase
     contents = params.contents
 
+    @clearAll()
+
     zip = new JSZip(contents)
+
+    console.log(zip)
 
     productionFiles = zip.filter (relativePath, file) =>
       return /^live_version\/.+/.test(relativePath)
@@ -20,6 +24,16 @@ class window.ClientServerUnarchiver
     database = zip.file("database.db")
     if database
       @userDatabase.fromJSONArray(database.data)
+
+  # TODO unify clearing code with server collection view
+  clearAll: =>
+    while model = @serverFileCollection.first()
+      model.destroy()
+    while model = @routeCollection.first()
+      model.destroy()
+    @serverFileCollection.reset()
+    @routeCollection.reset()
+    @userDatabase.clear()
 
   processFile: (isProductionVersion, file) =>
     name = file.name.replace(/^(live|edited)_version\//, "")

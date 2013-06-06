@@ -195,7 +195,6 @@ class window.ClientServerCollectionView extends Backbone.View
     @serverFileCollection.reset()
     @routeCollection.reset()
     @userDatabase.clear()
-    @addAll()
 
   eventKeyDown: (event) =>
     # This condition evaluates to true if CTRL-s or CMD-s are pressed.
@@ -247,7 +246,7 @@ class window.ClientServerCollectionView extends Backbone.View
     return false
 
   handleFile: (file) =>
-    if file.type is "application/zip"
+    if file.type is "application/zip" or file.type is "application/x-zip"
       @handleZipFile(file)
       return
 

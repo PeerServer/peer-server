@@ -117,44 +117,44 @@ class window.ServerFileCollection extends Backbone.Collection
       contents = serverFile.get("contents")
     return contents
 
-   createProductionVersion: =>
-     productionFiles = @where(isProductionVersion: true)
-     _.each productionFiles, (serverFile) =>
-       serverFile.destroy()
+  createProductionVersion: =>
+    productionFiles = @where(isProductionVersion: true)
+    _.each productionFiles, (serverFile) =>
+      serverFile.destroy()
 
-     developmentFiles = @where(isProductionVersion: false)
-     _.each developmentFiles, (serverFile) =>
-       attrs = _.clone(serverFile.attributes)
-       attrs.id = null
-       copy = new ServerFile(attrs)
-       # console.log "creating production version: " + copy.get("name")
-       copy.set("isProductionVersion", true)
-       @add(copy)
-       copy.save()
+    developmentFiles = @where(isProductionVersion: false)
+    _.each developmentFiles, (serverFile) =>
+      attrs = _.clone(serverFile.attributes)
+      attrs.id = null
+      copy = new ServerFile(attrs)
+      # console.log "creating production version: " + copy.get("name")
+      copy.set("isProductionVersion", true)
+      @add(copy)
+      copy.save()
 
-    # Iterates over the development files,
-    # calling fn on each development file
-    forEachDevelopmentFile: (fn) =>
-      @each (serverFile) ->
-        if not serverFile.get("isProductionVersion")
-          fn(serverFile)
+  # Iterates over the development files,
+  # calling fn on each development file
+  forEachDevelopmentFile: (fn) =>
+    @each (serverFile) ->
+      if not serverFile.get("isProductionVersion")
+        fn(serverFile)
 
-    # --- DEFAULT FILE TEMPLATES ---
+  # --- DEFAULT FILE TEMPLATES ---
 
-    indexTemplate: """
-      <html>
-        <body>
-          Hello, world.
-        </body>
-      </html>
-      """
+  indexTemplate: """
+    <html>
+      <body>
+        Hello, world.
+      </body>
+    </html>
+    """
 
-    template404: """
-      <html>
-        <body>
-          404 - page not found
-        </body>
-      </html>
-      """
+  template404: """
+    <html>
+      <body>
+        404 - page not found
+      </body>
+    </html>
+    """
 
 

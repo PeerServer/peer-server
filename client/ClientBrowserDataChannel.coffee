@@ -5,7 +5,7 @@ class window.ClientBrowserDataChannel extends ClientDataChannel
 
   onOpen: (id) =>
     super(id)
-    @connection = @peer.connect(@desiredServer, { reliable: true })
+    @connection = @peer.connect(@desiredServer, { reliable: true, serialization: "json" })
     @connection.on("data", @onData)
 
   send: (data) =>

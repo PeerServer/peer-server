@@ -263,8 +263,7 @@
       }
       this.serverFileCollection.reset();
       this.routeCollection.reset();
-      this.userDatabase.clear();
-      return this.addAll();
+      return this.userDatabase.clear();
     };
 
     ClientServerCollectionView.prototype.eventKeyDown = function(event) {
@@ -335,7 +334,7 @@
       var fileType, reader,
         _this = this;
 
-      if (file.type === "application/zip") {
+      if (file.type === "application/zip" || file.type === "application/x-zip") {
         this.handleZipFile(file);
         return;
       }
@@ -566,3 +565,7 @@
   })(Backbone.View);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServerCollectionView.map
+*/

@@ -21,16 +21,15 @@
     };
 
     EventTransmitter.prototype.sendEvent = function(dataChannel, eventName, data) {
-      return dataChannel.send(JSON.stringify({
+      return dataChannel.send({
         "eventName": eventName,
         "data": data
-      }));
+      });
     };
 
     EventTransmitter.prototype.receiveEvent = function(messageEventData) {
       var eventCallback, eventCallbacks, eventName, messageData, _i, _len, _results;
 
-      messageEventData = JSON.parse(messageEventData);
       eventName = messageEventData.eventName;
       messageData = messageEventData.data;
       eventCallbacks = this.eventCallbacks[eventName];
@@ -49,3 +48,7 @@
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=event_transmitter.map
+*/

@@ -11,10 +11,11 @@ class window.EventTransmitter
   
   sendEvent: (dataChannel, eventName, data) =>
     #console.log("send event " + eventName, JSON.stringify({ "eventName": eventName, "data": data }))
-    dataChannel.send(JSON.stringify({ "eventName": eventName, "data": data }))
+    # console.log JSON.stringify({ "eventName": eventName, "data": data })
+    # dataChannel.send(JSON.stringify({ "eventName": eventName, "data": data }))
+    dataChannel.send({ "eventName": eventName, "data": data })
 
   receiveEvent: (messageEventData) =>
-    messageEventData = JSON.parse(messageEventData)
     eventName = messageEventData.eventName
     messageData = messageEventData.data
     # console.log("receive event " + eventName, messageData)

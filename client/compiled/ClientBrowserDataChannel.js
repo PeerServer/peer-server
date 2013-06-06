@@ -18,7 +18,8 @@
     ClientBrowserDataChannel.prototype.onOpen = function(id) {
       ClientBrowserDataChannel.__super__.onOpen.call(this, id);
       this.connection = this.peer.connect(this.desiredServer, {
-        reliable: true
+        reliable: true,
+        serialization: "json"
       });
       return this.connection.on("data", this.onData);
     };
@@ -32,3 +33,7 @@
   })(ClientDataChannel);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientBrowserDataChannel.map
+*/
