@@ -23,6 +23,7 @@
     DatabaseView.prototype.initialize = function(options) {
       this.userDatabase = options.userDatabase;
       this.tmplUserDatabase = Handlebars.templates["user-database"];
+      this.userDatabase.on("initLocalStorage", this.render);
       return this.render();
     };
 
@@ -48,6 +49,9 @@
       var json, query, result;
 
       query = this.aceEditor.getValue();
+      if (!/return/.test(query)) {
+        query += "return db().get();";
+      }
       result = this.userDatabase.runQuery(query);
       json = JSON.stringify(result, null, 4);
       this.output.text(json);

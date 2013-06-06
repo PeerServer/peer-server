@@ -7,6 +7,7 @@ class window.DatabaseView extends Backbone.View
   initialize: (options)->
     @userDatabase = options.userDatabase
     @tmplUserDatabase = Handlebars.templates["user-database"]
+    @userDatabase.on("initLocalStorage", @render)
     @render()
 
   render: =>
@@ -29,6 +30,8 @@ class window.DatabaseView extends Backbone.View
 
   runQuery: =>
     query = @aceEditor.getValue()
+    if not /return/.test(query)
+        query += "return db().get();"
     result = @userDatabase.runQuery(query)
     json = JSON.stringify(result, null, 4)
     @output.text(json)

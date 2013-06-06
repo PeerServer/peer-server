@@ -3,13 +3,14 @@
 
   Might be extended to back up the database to local storage, a zip file, etc.
 '''
-class window.UserDatabase
+class window.UserDatabase extends Backbone.Model
 
-  constructor: ->
+  initialize: ->
     @database = TAFFY()
 
   initLocalStorage: (namespace) =>
     @database.store(namespace + "-UserDatabase")
+    @trigger("initLocalStorage")
 
   toString: (pretty) =>
     if pretty
