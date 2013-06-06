@@ -29,15 +29,6 @@ html, body {
   font-size: 90%;
 }
 
-.action-buttons {
-  position: fixed;
-  width: 280px;
-}
-
-.action-buttons li {
-  background-color: white;
-}
-
 #client-server {
   height: -moz-calc(100% - 40px);
 }
@@ -155,7 +146,7 @@ html, body {
 }
 
 .file-list-container {
-  margin-top: 130px;
+  margin-top: 0px;
 }
 
 #file-view-container {
