@@ -84,8 +84,12 @@ class window.HTMLProcessor
       $el = $(el)
       filename = $el.attr(attrSelector)
       if @isInternalFile(filename)
-        @requestedFilenamesToElement[filename] = $el
-        @requestFile(filename, type)
+        if filename of @requestedFilenamesToElement
+          @requestedFilenamesToElement[filename].push($el)  
+          # Do not need to request this file because a request is already pending for it.
+        else
+          @requestedFilenamesToElement[filename] = [$el]
+          @requestFile(filename, type)
 
   isInternalFile: (filename) =>
     # TODO hack -- basically, an internal file can't start with "#" and shouldn't match http/https.
@@ -124,30 +128,41 @@ class window.HTMLProcessor
     else
       @handleSupportingFile(data, filename, fileContents, type, fileType)
 
-  handleSupportingFile: (data, filename, fileContents, type, fileType) =>
-    $element = @requestedFilenamesToElement[filename]
-    if $element
-      if $element.attr("src") and $element[0].tagName is "IMG"
-        $element.attr("src", fileContents)
-      else if $element.attr("src") and $element[0].tagName is "SCRIPT"
-        $element.removeAttr("src")  # TODO remove later?
-        $element.attr("todo-replace", "replace")
-        @scriptMapping[data.filename] = fileContents
-        # TODO this is dangerous b/c we might get encoded if the filename has bad characters in it
-        #   (which I think is plausible), and then we're screwed when we try to find the non-encoded file name
-        #   contents using the encoded file name we pull out when we execute the script. It would be safest to include a 
-        #   unique ID with each file (perhaps imparted by the client-server filestore) that we can use instead. 
-        #   Basically any unique ID here is fine.
-        $element.append(data.filename)
-        # console.log "INDEX OF &AMP on insertion"
-        # console.log fileContents.indexOf("&amp")
-      else if $element[0].tagName is "LINK"
-        $element.replaceWith("<style>" + fileContents + "</style>")
-        # @container.find("head").append($element)     
-      delete @requestedFilenamesToElement[filename]
-      @checkForProcessCompletion()
+
+  handleFileForElem: ($element, data, filename, fileContents) =>
+    if not $element
+      console.error "element is null: " + filename
+      return
+    if $element.attr("src") and $element[0].tagName is "IMG"
+      $element.attr("src", fileContents)
+    else if $element.attr("src") and $element[0].tagName is "SCRIPT"
+      $element.removeAttr("src")  # TODO remove later?
+      $element.attr("todo-replace", "replace")
+      @scriptMapping[data.filename] = fileContents
+      # TODO this is dangerous b/c we might get encoded if the filename has bad characters in it
+      #   (which I think is plausible), and then we're screwed when we try to find the non-encoded file name
+      #   contents using the encoded file name we pull out when we execute the script. It would be safest to include a 
+      #   unique ID with each file (perhaps imparted by the client-server filestore) that we can use instead. 
+      #   Basically any unique ID here is fine.
+      $element.append(data.filename)
+      # console.log "INDEX OF &AMP on insertion"
+      # console.log fileContents.indexOf("&amp")
+    else if $element[0].tagName is "LINK"
+      $element.replaceWith("<style>" + fileContents + "</style>")
     else 
+      console.log "unknown element type, could not be processed:"
+      console.log $element
+    
+
+  handleSupportingFile: (data, filename, fileContents, type, fileType) =>
+    elems = @requestedFilenamesToElement[filename]
+    if not elems 
       console.error "received file not in request list: " + filename
+      return
+    for $element in elems
+      @handleFileForElem($element, data, filename, fileContents)
+    delete @requestedFilenamesToElement[filename]
+    @checkForProcessCompletion()
 
   checkForProcessCompletion: =>
     if Object.keys(@requestedFilenamesToElement).length is 0 and @completionCallback
