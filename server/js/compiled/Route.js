@@ -160,7 +160,7 @@
       if (_.has(attrs, "name") && !/^[$A-Z_][0-9A-Z_$]*$/i.test(attrs.name)) {
         invalid.name = true;
       }
-      if (_.has(attrs, "routePath") && !(attrs.routePath === "/" || /^(\/([A-Z\d_-]+|<[A-Z\d_-]+>))+$/i.test(attrs.routePath))) {
+      if (_.has(attrs, "routePath") && !/^(\/([A-Z\d_-]+|<[A-Z\d_-]+>))+$/i.test(attrs.routePath)) {
         invalid.routePath = true;
       }
       if (!_.isEmpty(invalid)) {
