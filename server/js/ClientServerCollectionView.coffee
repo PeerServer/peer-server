@@ -358,7 +358,7 @@ class window.ClientServerCollectionView extends Backbone.View
     listElTop = listEl.offset().top
 
     if $(window).scrollTop() < listElTop
-      $(window).scrollTop(listElTop)
+      $(window).scrollTop(listElTop - 60)
 
     listEl.find("input").focus()
   
