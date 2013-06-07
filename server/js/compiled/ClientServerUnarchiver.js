@@ -94,8 +94,7 @@
         fileType: fileType,
         isProductionVersion: isProductionVersion
       });
-      this.serverFileCollection.add(serverFile);
-      return serverFile.save();
+      return this.serverFileCollection.add(serverFile);
     };
 
     ClientServerUnarchiver.prototype.alterContentsForImage = function(ext, contents) {
@@ -113,3 +112,7 @@
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServerUnarchiver.map
+*/
