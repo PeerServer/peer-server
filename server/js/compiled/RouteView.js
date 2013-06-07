@@ -109,12 +109,28 @@
     };
 
     RouteView.prototype.updateErrorMessage = function() {
-      var errorMessage, errorMessageContainer;
+      var displayWithClass, errorMessage, errorMessageContainer, message, startsWith,
+        _this = this;
 
+      startsWith = function(str, start) {
+        return str.slice(0, start.length) === start;
+      };
+      displayWithClass = function(errorMessage, className) {
+        console.log('display iwth cclass' + className);
+        return $(errorMessage).removeClass("alert-error").removeClass("alert-block").removeClass("alert-success").addClass(className);
+      };
       errorMessageContainer = $(this.el).find(".error-message-container");
       if (this.productionRoute && this.productionRoute.get("errorMessage")) {
         errorMessage = errorMessageContainer.find(".error-message");
-        errorMessage.html(this.productionRoute.get("errorMessage"));
+        message = this.productionRoute.get("errorMessage");
+        errorMessage.html(message);
+        if (startsWith(message, "Success: ")) {
+          displayWithClass(errorMessageContainer, "alert-success");
+        } else if (startsWith(message, "Note: ")) {
+          displayWithClass(errorMessageContainer, "alert-block");
+        } else {
+          displayWithClass(errorMessageContainer, "alert-error");
+        }
         return errorMessageContainer.show();
       } else {
         return errorMessageContainer.hide();

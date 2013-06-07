@@ -16,6 +16,7 @@ class window.RouteCollection extends Backbone.Collection
     route = new Route(
       name: "default",
       routePath: "/index",
+      errorMessage: "Note: Path has not yet been executed.",
       routeCode: "return static_file('index.html')  // Change if desired",
       isProductionVersion: desiredVersion)
     @add(route)

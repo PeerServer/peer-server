@@ -74,10 +74,22 @@ class window.RouteView extends Backbone.View
     return editor
 
   updateErrorMessage: =>
+    startsWith = (str, start) ->
+      return str.slice(0, start.length) is start
+    displayWithClass = (errorMessage, className) =>
+      console.log 'display iwth cclass' + className
+      $(errorMessage).removeClass("alert-error").removeClass("alert-block").removeClass("alert-success").addClass(className)
     errorMessageContainer = $(@el).find(".error-message-container")
     if @productionRoute and @productionRoute.get("errorMessage")
       errorMessage = errorMessageContainer.find(".error-message")
-      errorMessage.html(@productionRoute.get("errorMessage"))
+      message = @productionRoute.get("errorMessage")
+      errorMessage.html(message)
+      if startsWith(message, "Success: ")
+        displayWithClass(errorMessageContainer, "alert-success") 
+      else if startsWith(message, "Note: ")
+        displayWithClass(errorMessageContainer, "alert-block")
+      else 
+        displayWithClass(errorMessageContainer, "alert-error")
       errorMessageContainer.show()
     else
       errorMessageContainer.hide()

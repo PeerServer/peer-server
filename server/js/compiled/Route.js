@@ -39,7 +39,7 @@
 
     Route.prototype.initialize = function() {
       this.setParsedPath();
-      this.set("errorMessage", "Path has not yet been executed.");
+      this.set("errorMessage", "Note: Path has not yet been executed.");
       return this.on("change:routePath", this.setParsedPath);
     };
 
@@ -92,13 +92,13 @@
         } catch (_error) {
           error = _error;
           console.error("Eval error: " + error);
-          error = "Evaluation error in function: " + error;
+          error = "Error: evaluation error on function execution: " + error;
           _this.set("errorMessage", error);
           return {
             "error": error
           };
         }
-        _this.set("errorMessage", "Last execution at " + _this.getPrettyCurrentDate() + " was successful!");
+        _this.set("errorMessage", "Success: Last execution at " + _this.getPrettyCurrentDate() + " was successful!");
         return {
           "result": result
         };

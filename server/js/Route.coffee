@@ -30,7 +30,8 @@ class window.Route extends Backbone.RelationalModel
 
   initialize: ->
     @setParsedPath()
-    @set("errorMessage", "Path has not yet been executed.")
+    # Silly hack here: neutral messages must start with "Note: " to have the right color.
+    @set("errorMessage", "Note: Path has not yet been executed.")
     # console.log "Parsed route: " + @get("routePath") + " " + @pathRegex + " " + @paramNames
     @on("change:routePath", @setParsedPath)
 
@@ -71,10 +72,11 @@ class window.Route extends Backbone.RelationalModel
           result = evaluation
       catch error
         console.error "Eval error: " + error
-        error = "Evaluation error in function: " + error
+        error = "Error: evaluation error on function execution: " + error
         @set("errorMessage", error)
         return {"error": error}
-      @set("errorMessage", "Last execution at " + @getPrettyCurrentDate() +  " was successful!") # reset the error message to null after successful evaluation.
+      # Silly hack here: success messages must start with "Success: " to have the right color.
+      @set("errorMessage", "Success: Last execution at " + @getPrettyCurrentDate() +  " was successful!") # reset the error message to null after successful evaluation.
       return {"result": result}
     return fcn
 

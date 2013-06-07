@@ -1,7 +1,9 @@
-<div class="error-message-container alert alert-error">
+<div class="error-message-container alert alert-block">
   <div class="error-message">
     {{#if errorMessage}}
       {{errorMessage}}
+    {{else}}
+      Path has not yet been executed.
     {{/if}}
   </div>
 </div>
