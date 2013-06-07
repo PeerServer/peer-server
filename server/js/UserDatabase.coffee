@@ -7,6 +7,7 @@ class window.UserDatabase extends Backbone.Model
 
   initialize: ->
     @database = TAFFY()
+    @database.settings(onDBChange: @onDBChange)
 
   initLocalStorage: (namespace) =>
     @database.store(namespace + "-UserDatabase")
@@ -26,4 +27,7 @@ class window.UserDatabase extends Backbone.Model
 
   clear: =>
     @database().remove()
+
+  onDBChange: =>
+    @trigger("onDBChange")
 

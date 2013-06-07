@@ -10,6 +10,7 @@
     __extends(UserDatabase, _super);
 
     function UserDatabase() {
+      this.onDBChange = __bind(this.onDBChange, this);
       this.clear = __bind(this.clear, this);
       this.runQuery = __bind(this.runQuery, this);
       this.fromJSONArray = __bind(this.fromJSONArray, this);
@@ -19,7 +20,10 @@
     }
 
     UserDatabase.prototype.initialize = function() {
-      return this.database = TAFFY();
+      this.database = TAFFY();
+      return this.database.settings({
+        onDBChange: this.onDBChange
+      });
     };
 
     UserDatabase.prototype.initLocalStorage = function(namespace) {
@@ -49,8 +53,16 @@
       return this.database().remove();
     };
 
+    UserDatabase.prototype.onDBChange = function() {
+      return this.trigger("onDBChange");
+    };
+
     return UserDatabase;
 
   })(Backbone.Model);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=UserDatabase.map
+*/
