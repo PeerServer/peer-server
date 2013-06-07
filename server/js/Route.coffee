@@ -42,8 +42,8 @@ class window.Route extends Backbone.RelationalModel
     paramNames = @get("paramNames")
     if paramNames and paramNames.length > 0
       text += paramNames.join(", ") + ", "
-    text += "params" + ") {"
-    text += @get("routeCode") + "})"
+    text += "params" + ") {\n"
+    text += @get("routeCode") + "\n })"
     # Now invoke the function with the appropriate parameters
     text += "("
     if dynamicParams and dynamicParams.length > 0

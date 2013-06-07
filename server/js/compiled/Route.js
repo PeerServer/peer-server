@@ -52,8 +52,8 @@
       if (paramNames && paramNames.length > 0) {
         text += paramNames.join(", ") + ", ";
       }
-      text += "params" + ") {";
-      text += this.get("routeCode") + "})";
+      text += "params" + ") {\n";
+      text += this.get("routeCode") + "\n })";
       text += "(";
       if (dynamicParams && dynamicParams.length > 0) {
         dynamicParams = _.map(dynamicParams, function(param) {
