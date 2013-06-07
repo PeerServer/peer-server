@@ -48,7 +48,3 @@
   })();
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=event_transmitter.map
-*/

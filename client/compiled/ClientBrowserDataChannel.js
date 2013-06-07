@@ -33,7 +33,3 @@
   })(ClientDataChannel);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=ClientBrowserDataChannel.map
-*/

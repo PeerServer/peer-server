@@ -54,7 +54,3 @@
   })(Backbone.Model);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=UserDatabase.map
-*/
