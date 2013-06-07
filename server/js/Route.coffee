@@ -125,7 +125,7 @@ class window.Route extends Backbone.RelationalModel
     # Route path matches multiple groups of
     # "letters,digits,_,-" or "<letters,digits,_,->"
     # that begin with a "/"
-    if _.has(attrs, "routePath") and not /^(\/([A-Z\d_-]+|<[A-Z\d_-]+>))+$/i.test(attrs.routePath)
+    if _.has(attrs, "routePath") and not (attrs.routePath is "/" or /^(\/([A-Z\d_-]+|<[A-Z\d_-]+>))+$/i.test(attrs.routePath))
       invalid.routePath = true
 
     if not _.isEmpty(invalid)
