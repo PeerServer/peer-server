@@ -41,30 +41,28 @@
     };
 
     ServerFileCollection.prototype.onServerFileAdded = function(serverFile) {
-      var filenameAndExtension, index, newName, numToAppend, serverFilesWithName, _results;
+      var filenameAndExtension, index, newName, numToAppend, serverFilesWithName;
 
-      if (this.overwriteRequiredPages(serverFile)) {
-        return;
-      }
-      serverFilesWithName = this.filter(function(otherServerFile) {
-        return serverFile.get("name") === otherServerFile.get("name") && !serverFile.get("isProductionVersion") && !otherServerFile.get("isProductionVersion");
-      });
-      _.sortBy(serverFilesWithName, function(otherServerFile) {
-        return otherServerFile.get("dateCreated");
-      });
-      numToAppend = 1;
-      index = 1;
-      _results = [];
-      while (index < serverFilesWithName.length) {
-        filenameAndExtension = this.filenameAndExtension(serverFile.get("name"));
-        newName = filenameAndExtension.filename + "-" + numToAppend + filenameAndExtension.ext;
-        if (!this.isFilenameInUse(newName)) {
-          serverFile.save("name", newName);
-          index++;
+      if (!this.overwriteRequiredPages(serverFile)) {
+        serverFilesWithName = this.filter(function(otherServerFile) {
+          return serverFile.get("name") === otherServerFile.get("name") && !serverFile.get("isProductionVersion") && !otherServerFile.get("isProductionVersion");
+        });
+        _.sortBy(serverFilesWithName, function(otherServerFile) {
+          return otherServerFile.get("dateCreated");
+        });
+        numToAppend = 1;
+        index = 1;
+        while (index < serverFilesWithName.length) {
+          filenameAndExtension = this.filenameAndExtension(serverFile.get("name"));
+          newName = filenameAndExtension.filename + "-" + numToAppend + filenameAndExtension.ext;
+          if (!this.isFilenameInUse(newName)) {
+            serverFile.save("name", newName);
+            index++;
+          }
+          numToAppend++;
         }
-        _results.push(numToAppend++);
       }
-      return _results;
+      return serverFile.save();
     };
 
     ServerFileCollection.prototype.overwriteRequiredPages = function(serverFile) {
@@ -82,7 +80,7 @@
         }
         if (serverFile.get("name") === pageName && !serverFile.get("isProductionVersion")) {
           serverFilesWithName = _this.filter(function(otherServerFile) {
-            return serverFile.get("name") === otherServerFile.get("name") && !serverFile.get("isProductionVersion") && !otherServerFile.get("isProductionVersion") && serverFile !== otherServerFile && otherServerFile.get("contents") === defaultPage;
+            return serverFile.get("name") === otherServerFile.get("name") && serverFile !== otherServerFile && otherServerFile.get("contents") === defaultPage;
           });
           return _.each(serverFilesWithName, function(serverFileWithName) {
             serverFileWithName.destroy();
@@ -278,3 +276,7 @@
   })(Backbone.Collection);
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ServerFileCollection.map
+*/

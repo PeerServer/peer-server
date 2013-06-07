@@ -4,6 +4,7 @@
 
   window.ClientServer = (function() {
     function ClientServer(options) {
+      this.onDBChange = __bind(this.onDBChange, this);
       this.removePeerFromClientBrowserResourceRequests = __bind(this.removePeerFromClientBrowserResourceRequests, this);
       this.onResourceChange = __bind(this.onResourceChange, this);
       this.recordResourceRequest = __bind(this.recordResourceRequest, this);
@@ -38,9 +39,12 @@
       this.setUpReceiveEventCallbacks();
       this.clientBrowserConnections = {};
       this.isPushChangesEnabled = false;
-      this.clientBrowserResourceRequests = {};
-      this.serverFileCollection.on("change", this.onResourceChange);
-      this.routeCollection.on("change", this.onResourceChange);
+      if (this.isPushChangesEnabled) {
+        this.clientBrowserResourceRequests = {};
+        this.serverFileCollection.on("change", this.onResourceChange);
+        this.routeCollection.on("change", this.onResourceChange);
+        this.userDatabase.on("onDBChange", this.onDBChange);
+      }
     }
 
     ClientServer.prototype.channelOnReady = function() {
@@ -279,8 +283,38 @@
       });
     };
 
+    ClientServer.prototype.onDBChange = function() {
+      var resourceNames,
+        _this = this;
+
+      if (!this.isPushChangesEnabled) {
+        return;
+      }
+      resourceNames = _.keys(this.clientBrowserResourceRequests);
+      return _.each(resourceNames, function(resourceName) {
+        var interestedPeers, route;
+
+        route = _this.routeCollection.findWhere({
+          name: resourceName,
+          isProductionVersion: true
+        });
+        if (route && /database\.insert\(|database\(.*?\)\.remove\(|database\(.*?\)\.update\(/.test(route.get("routeCode"))) {
+          return;
+        }
+        interestedPeers = _this.clientBrowserResourceRequests[resourceName];
+        return _.each(interestedPeers, function(interestedPeer) {
+          console.log("interestedPeer", interestedPeer);
+          return _this.serveFile(interestedPeer.data);
+        });
+      });
+    };
+
     return ClientServer;
 
   })();
 
 }).call(this);
+
+/*
+//@ sourceMappingURL=ClientServer.map
+*/

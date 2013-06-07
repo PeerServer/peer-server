@@ -73,7 +73,6 @@ class window.ClientServerUnarchiver
       fileType: fileType,
       isProductionVersion: isProductionVersion)
     @serverFileCollection.add(serverFile)
-    serverFile.save()
 
   alterContentsForImage: (ext, contents) =>
     contents = btoa(contents)

@@ -14,26 +14,27 @@ class window.ServerFileCollection extends Backbone.Collection
     @on("reset", @checkForNoFiles)
 
   onServerFileAdded: (serverFile) =>
-    return if @overwriteRequiredPages(serverFile)
+    if not @overwriteRequiredPages(serverFile)
+      serverFilesWithName = @filter (otherServerFile) ->
+        return serverFile.get("name") is otherServerFile.get("name") \
+          and not serverFile.get("isProductionVersion") \
+          and not otherServerFile.get("isProductionVersion")
 
-    serverFilesWithName = @filter (otherServerFile) ->
-      return serverFile.get("name") is otherServerFile.get("name") \
-        and not serverFile.get("isProductionVersion") \
-        and not otherServerFile.get("isProductionVersion")
+      _.sortBy serverFilesWithName, (otherServerFile) ->
+        return otherServerFile.get("dateCreated")
 
-    _.sortBy serverFilesWithName, (otherServerFile) ->
-      return otherServerFile.get("dateCreated")
+      numToAppend = 1
+      index = 1
+      while index < serverFilesWithName.length
+        filenameAndExtension = @filenameAndExtension(serverFile.get("name"))
+        newName = filenameAndExtension.filename +
+          "-" + numToAppend + filenameAndExtension.ext
+        if not @isFilenameInUse(newName)
+          serverFile.save("name", newName)
+          index++
+        numToAppend++
 
-    numToAppend = 1
-    index = 1
-    while index < serverFilesWithName.length
-      filenameAndExtension = @filenameAndExtension(serverFile.get("name"))
-      newName = filenameAndExtension.filename +
-        "-" + numToAppend + filenameAndExtension.ext
-      if not @isFilenameInUse(newName)
-        serverFile.save("name", newName)
-        index++
-      numToAppend++
+    serverFile.save()
 
   overwriteRequiredPages: (serverFile) =>
     didOverwrite = false
@@ -48,8 +49,6 @@ class window.ServerFileCollection extends Backbone.Collection
 
         serverFilesWithName = @filter (otherServerFile) ->
           return serverFile.get("name") is otherServerFile.get("name") \
-            and not serverFile.get("isProductionVersion") \
-            and not otherServerFile.get("isProductionVersion") \
             and serverFile isnt otherServerFile \
             and otherServerFile.get("contents") is defaultPage
 

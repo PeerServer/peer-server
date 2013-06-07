@@ -13,7 +13,7 @@ class window.ServerTemplateModel extends Backbone.Model
     # Use XML so that zip encodings don't break. 
     request = new XMLHttpRequest()
     request.open("GET", "/template/" + @templateUri, true)
-    request.responseType = 'blob';
+    request.responseType = 'blob'
 
     _this = @
     request.onreadystatechange = (evt) ->

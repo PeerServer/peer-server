@@ -80,7 +80,7 @@ class window.AppView extends Backbone.View
     @serverFileCollectionView = new ClientServerCollectionView(
       serverFileCollection: @serverFileCollection,
       routeCollection: @routeCollection,
-      userDatabase: @userDatabase, 
+      userDatabase: @userDatabase,
       handleZipFcn: @handleZipFile)
 
     @archiver = new ClientServerArchiver(

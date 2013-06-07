@@ -23,10 +23,13 @@ class window.ClientServer
 
     @clientBrowserConnections = {}
 
+    # TODO ensure that this is false
     @isPushChangesEnabled = false
-    @clientBrowserResourceRequests = {}
-    @serverFileCollection.on("change", @onResourceChange)
-    @routeCollection.on("change", @onResourceChange)
+    if @isPushChangesEnabled
+      @clientBrowserResourceRequests = {}
+      @serverFileCollection.on("change", @onResourceChange)
+      @routeCollection.on("change", @onResourceChange)
+      @userDatabase.on("onDBChange", @onDBChange)
 
   channelOnReady: =>
     serverID = @dataChannel.id
@@ -234,4 +237,19 @@ class window.ClientServer
       @clientBrowserResourceRequests[resourceName] =
         _.filter @clientBrowserResourceRequests[resourceName], (interestedPeer) =>
           return interestedPeer.peerID isnt peerID
+
+
+  onDBChange: =>
+    return if not @isPushChangesEnabled
+
+    resourceNames = _.keys(@clientBrowserResourceRequests)
+    _.each resourceNames, (resourceName) =>
+      #TODO make this not a hack
+      route = @routeCollection.findWhere(name: resourceName, isProductionVersion: true)
+      return if route and /database\.insert\(|database\(.*?\)\.remove\(|database\(.*?\)\.update\(/.test(route.get("routeCode"))
+
+      interestedPeers = @clientBrowserResourceRequests[resourceName]
+      _.each interestedPeers, (interestedPeer) =>
+        console.log "interestedPeer", interestedPeer
+        @serveFile(interestedPeer.data)
 
