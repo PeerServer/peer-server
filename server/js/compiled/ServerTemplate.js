@@ -45,7 +45,3 @@
   })(Backbone.Model);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=ServerTemplate.map
-*/

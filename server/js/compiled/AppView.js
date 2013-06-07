@@ -162,7 +162,3 @@
   })(Backbone.View);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=AppView.map
-*/
