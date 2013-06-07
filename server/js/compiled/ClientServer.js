@@ -132,6 +132,9 @@
       var contents, extraParams, fileType, foundRoute, foundServerFile, name, paramData, path, rawPath, response, slashedPath, val, _ref;
 
       rawPath = data.filename || "";
+      if (_.isObject(rawPath)) {
+        rawPath = rawPath.url;
+      }
       _ref = this.parsePath(rawPath), path = _ref[0], paramData = _ref[1];
       if (data.options && data.options.data) {
         if (typeof data.options.data === "string") {

@@ -161,7 +161,11 @@ class window.ClientBrowser
         newScriptEl.text = scriptMapping[filename]
         # console.log "EXECUTE SCRIPTS index of &amp"
         # console.log newScriptEl.text.indexOf("&amp")
-      else # Inline script
+
+      else if not $(oldScriptEl).attr("src")  # Inline script
         newScriptEl.text = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || ""
+      else # External
+        $(newScriptEl).attr("src", $(oldScriptEl).attr("src"))
+
       oldScriptEl.parentNode.insertBefore(newScriptEl, oldScriptEl)
       oldScriptEl.parentNode.removeChild(oldScriptEl)

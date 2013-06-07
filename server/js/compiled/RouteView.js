@@ -184,7 +184,3 @@
   })(Backbone.View);
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=RouteView.map
-*/

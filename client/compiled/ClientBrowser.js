@@ -201,8 +201,10 @@
             console.error("BAD: " + filename + "was not found in the script mapping. Script will not exist. This is because the script name got encoding-bork.");
           }
           newScriptEl.text = scriptMapping[filename];
-        } else {
+        } else if (!$(oldScriptEl).attr("src")) {
           newScriptEl.text = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || "";
+        } else {
+          $(newScriptEl).attr("src", $(oldScriptEl).attr("src"));
         }
         oldScriptEl.parentNode.insertBefore(newScriptEl, oldScriptEl);
         _results.push(oldScriptEl.parentNode.removeChild(oldScriptEl));
