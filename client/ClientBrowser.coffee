@@ -102,6 +102,7 @@ class window.ClientBrowser
         @overrideAjaxForClient()
         @overrideFormsForClient()
 
+
   # TODO handle jsonp cross-domain.
   # Note: There will sadly be problems if a script uses $.ajax before this code is executed. 
   #  The only way to get around this I think would be to explicitly identify when jQuery is being 

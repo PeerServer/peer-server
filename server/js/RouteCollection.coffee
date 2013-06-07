@@ -6,6 +6,20 @@ class window.RouteCollection extends Backbone.Collection
   initLocalStorage: (namespace) =>
     @localStorage = new Backbone.LocalStorage(namespace + "-RouteCollection")
     @fetch()
+    @initDefaultRoute(true)  # Add a default production route if needed 
+    @initDefaultRoute(false)  # Add a default development route if needed
+
+  initDefaultRoute: (desiredVersion) =>
+    existing = @find (route) =>
+      return route.get("isProductionVersion") is desiredVersion and "/index".match(route.pathRegex) isnt null
+    return if existing
+    route = new Route(
+      name: "default",
+      routePath: "/index",
+      routeCode: "return static_file('index.html')  // Change if desired",
+      isProductionVersion: desiredVersion)
+    @add(route)
+    route.save()
 
   comparator: (route) =>
     return route.get("routePath")

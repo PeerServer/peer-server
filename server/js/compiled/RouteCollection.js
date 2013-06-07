@@ -13,6 +13,7 @@
       this.getRouteCode = __bind(this.getRouteCode, this);
       this.findRouteForPath = __bind(this.findRouteForPath, this);
       this.comparator = __bind(this.comparator, this);
+      this.initDefaultRoute = __bind(this.initDefaultRoute, this);
       this.initLocalStorage = __bind(this.initLocalStorage, this);      _ref = RouteCollection.__super__.constructor.apply(this, arguments);
       return _ref;
     }
@@ -23,7 +24,29 @@
 
     RouteCollection.prototype.initLocalStorage = function(namespace) {
       this.localStorage = new Backbone.LocalStorage(namespace + "-RouteCollection");
-      return this.fetch();
+      this.fetch();
+      this.initDefaultRoute(true);
+      return this.initDefaultRoute(false);
+    };
+
+    RouteCollection.prototype.initDefaultRoute = function(desiredVersion) {
+      var existing, route,
+        _this = this;
+
+      existing = this.find(function(route) {
+        return route.get("isProductionVersion") === desiredVersion && "/index".match(route.pathRegex) !== null;
+      });
+      if (existing) {
+        return;
+      }
+      route = new Route({
+        name: "default",
+        routePath: "/index",
+        routeCode: "return static_file('index.html')  // Change if desired",
+        isProductionVersion: desiredVersion
+      });
+      this.add(route);
+      return route.save();
     };
 
     RouteCollection.prototype.comparator = function(route) {

@@ -55,7 +55,17 @@ class window.ClientServer
     @userSessions.addSession(connection.peer)
     @appView.updateConnectionCount(_.size(@clientBrowserConnections))
     
+    foundRoute = @routeCollection.findRouteForPath("/index")
+    # Check if path mapping or a static file for /index exists -- otherwise send index.html
+    if foundRoute isnt null and foundRoute isnt undefined
+      contents = @getContentsForPath("/index", {}, foundRoute, connection.peer)
+      if contents and not contents.error
+        landingPage =
+          fileContents: contents.result,
+          filename: "index",
+          type: "text/html"
     @eventTransmitter.sendEvent(connection, "initialLoad", landingPage)
+
 
   channelOnConnectionClose: (connection) =>
     @userSessions.removeSession(connection.peer) if connection and connection.peer

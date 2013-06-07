@@ -69,12 +69,23 @@
     };
 
     ClientServer.prototype.channelOnConnection = function(connection) {
-      var landingPage;
+      var contents, foundRoute, landingPage;
 
       landingPage = this.serverFileCollection.getLandingPage();
       this.clientBrowserConnections[connection.peer] = connection;
       this.userSessions.addSession(connection.peer);
       this.appView.updateConnectionCount(_.size(this.clientBrowserConnections));
+      foundRoute = this.routeCollection.findRouteForPath("/index");
+      if (foundRoute !== null && foundRoute !== void 0) {
+        contents = this.getContentsForPath("/index", {}, foundRoute, connection.peer);
+        if (contents && !contents.error) {
+          landingPage = {
+            fileContents: contents.result,
+            filename: "index",
+            type: "text/html"
+          };
+        }
+      }
       return this.eventTransmitter.sendEvent(connection, "initialLoad", landingPage);
     };
 
