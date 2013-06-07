@@ -41,7 +41,7 @@
     UserDatabase.prototype.runQuery = function(query) {
       var code;
 
-      code = "(function(db) { " + query + " }).call(null, this.database)";
+      code = "(function(database) { " + query + " }).call(null, this.database)";
       return eval(code);
     };
 

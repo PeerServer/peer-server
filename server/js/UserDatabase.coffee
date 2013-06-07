@@ -21,7 +21,7 @@ class window.UserDatabase extends Backbone.Model
     @database.insert(array)
 
   runQuery: (query) =>
-    code = "(function(db) { " + query + " }).call(null, this.database)"
+    code = "(function(database) { " + query + " }).call(null, this.database)"
     return eval(code)
 
   clear: =>

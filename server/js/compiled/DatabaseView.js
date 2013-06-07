@@ -50,7 +50,7 @@
 
       query = this.aceEditor.getValue();
       if (!/return/.test(query)) {
-        query += "return db().get();";
+        query += "return database().get();";
       }
       result = this.userDatabase.runQuery(query);
       json = JSON.stringify(result, null, 4);

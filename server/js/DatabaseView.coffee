@@ -31,7 +31,7 @@ class window.DatabaseView extends Backbone.View
   runQuery: =>
     query = @aceEditor.getValue()
     if not /return/.test(query)
-        query += "return db().get();"
+        query += "return database().get();"
     result = @userDatabase.runQuery(query)
     json = JSON.stringify(result, null, 4)
     @output.text(json)

@@ -1,5 +1,21 @@
 <div class="container-fluid">
 
+  <div class="row">
+    <div class="span10 offset1">
+      <br />
+        <ul style="list-style:none">
+          <li>Insert an item: <code>database.insert({"type": "sometype", "aField": "someValue"});
+</code></li>
+          <li>Look up a single item: <code>return database({"type": "sometype", "anotherField": "someValue"}).first()</code></li>
+          <li>Iterate over values: <code>database({"type":"sometype"}).each(function(thedata) {console.log(thedata.type)})</code></li>
+          <li>Count items matching a query: <code>database({"type": "sometype", "aField": "someField"}).count()</code></li>
+          <li>Order the results: <code>database().order("aField")</code></li>
+          <li>Update all matching entries: <code>database().update("aField","value")</code></li>
+          <li>More at <a href="http://www.taffydb.com/workingwithdata">TaffyDB reference page</a>.</li>
+        </ul>
+      </p>
+    </div>
+  </div>
   <div class="row-fluid">
 
     <div class="span6">
