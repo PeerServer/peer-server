@@ -496,7 +496,7 @@
       listEl = $("li[data-cid=" + serverFile.cid + "]");
       listElTop = listEl.offset().top;
       if ($(window).scrollTop() < listElTop) {
-        $(window).scrollTop(listElTop);
+        $(window).scrollTop(listElTop - 60);
       }
       return listEl.find("input").focus();
     };
