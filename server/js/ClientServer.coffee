@@ -23,7 +23,7 @@ class window.ClientServer
 
     @clientBrowserConnections = {}
 
-    # TODO set to false
+    # TODO ensure that this is false
     @isPushChangesEnabled = false
     if @isPushChangesEnabled
       @clientBrowserResourceRequests = {}
