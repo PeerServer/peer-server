@@ -116,7 +116,6 @@
         return str.slice(0, start.length) === start;
       };
       displayWithClass = function(errorMessage, className) {
-        console.log('display iwth cclass' + className);
         return $(errorMessage).removeClass("alert-error").removeClass("alert-block").removeClass("alert-success").addClass(className);
       };
       errorMessageContainer = $(this.el).find(".error-message-container");

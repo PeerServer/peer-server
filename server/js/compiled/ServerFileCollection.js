@@ -123,7 +123,6 @@
       if (this.length > 0) {
         return;
       }
-      console.log("loading stuff");
       index = new ServerFile({
         name: "index.html",
         size: 0,

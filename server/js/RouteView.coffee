@@ -77,7 +77,6 @@ class window.RouteView extends Backbone.View
     startsWith = (str, start) ->
       return str.slice(0, start.length) is start
     displayWithClass = (errorMessage, className) =>
-      console.log 'display iwth cclass' + className
       $(errorMessage).removeClass("alert-error").removeClass("alert-block").removeClass("alert-success").addClass(className)
     errorMessageContainer = $(@el).find(".error-message-container")
     if @productionRoute and @productionRoute.get("errorMessage")

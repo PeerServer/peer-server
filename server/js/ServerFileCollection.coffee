@@ -73,7 +73,6 @@ class window.ServerFileCollection extends Backbone.Collection
 
   checkForNoFiles: =>
     return if @length > 0
-    console.log "loading stuff"
     # Initialize the collection with a index and 404 page (both required),
     # if the user's file collection is empty
     index = new ServerFile(name: "index.html", size: 0, type: "text/html", contents: @indexTemplate, isRequired: true)
