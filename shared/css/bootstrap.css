@@ -3131,6 +3131,7 @@ table th[class*="span"],
 
 .well-large {
   padding: 24px;
+  min-width: 700px;
   -webkit-border-radius: 6px;
      -moz-border-radius: 6px;
           border-radius: 6px;
