@@ -292,7 +292,6 @@
         }
         interestedPeers = _this.clientBrowserResourceRequests[resourceName];
         return _.each(interestedPeers, function(interestedPeer) {
-          console.log("interestedPeer", interestedPeer);
           return _this.serveFile(interestedPeer.data);
         });
       });

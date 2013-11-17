@@ -12,7 +12,7 @@ class window.HTMLProcessor
     container = document.createElement("html")
     container.innerHTML = html.replace(/<\/?html>/g, "")
     @container = $(container)
-    
+
     @processTitle()
     @processImages()
     @processScripts()
@@ -34,7 +34,7 @@ class window.HTMLProcessor
     container = document.createElement("html")
     @container = $(container)
     # Set the style so that the image is centered
-    # TODO: possibly soup this up with zooming in and out of images (just requires a script 
+    # TODO: possibly soup this up with zooming in and out of images (just requires a script
     #  listening to the window size and resizing if needed, plus a zoom-in zoom-out cursor)
     img = "<img style='text-align:center; position:absolute; margin:auto; top:0;right:0;bottom:0;left:0;' "
     img += " src='" + html + "' />"
@@ -43,7 +43,7 @@ class window.HTMLProcessor
 
   processImages: =>
     @processElementsWithAttribute(@container.find("img[src]"), "src", "image")
-        
+
   processScripts: =>
     @processElementsWithAttribute(@container.find("script[src]"), "src", "script")
 
@@ -52,8 +52,8 @@ class window.HTMLProcessor
     elements.add(@container.find("link[rel=\'stylesheet\']"))  # For Chrome, likely. Not needed for Firefox
     @processElementsWithAttribute(elements, "href", "stylesheet")
 
-  # Links are handled somewhat differently in that the contents cannot be injected on page load. 
-  #   Instead, here we set up an onclick function for each anchor tag, and make the href a no-op (by 
+  # Links are handled somewhat differently in that the contents cannot be injected on page load.
+  #   Instead, here we set up an onclick function for each anchor tag, and make the href a no-op (by
   #   placing return false in the onclick function.)
   #   External anchor tags are handled by having them open in a new window ("_blank"). Another option
   #   here would be to have them open in the top window (ie, the main actual window rather than the frame)
@@ -63,8 +63,9 @@ class window.HTMLProcessor
     elements = @container.find("a[href]")
     elements.each (index, el) =>
       $el = $(el)
-      href = $el.attr("href")  # Don't change the href so that the hover behavior is correct -- instead, it 
-      # will be ignored because onclick returns false. 
+      # Don't change the href so that the hover behavior is correct --
+      # instead, it will be ignored because onclick returns false.
+      href = $el.attr("href")
       # Ignore local links
       if href[0] is "#"
         return
@@ -74,8 +75,8 @@ class window.HTMLProcessor
         $el.attr("target", "_blank")
 
 
-  # Triggers an event on the top (actual) window, passing in href as the parameter. 
-  #  The return false is important so that the href portion of the link is ignored. 
+  # Triggers an event on the top (actual) window, passing in href as the parameter.
+  #  The return false is important so that the href portion of the link is ignored.
   triggerOnParentString: (eventName, href) =>
     return "javascript:top.$(top.document).trigger('" + eventName + "', ['" + href + "']);return false;"
 
@@ -85,20 +86,20 @@ class window.HTMLProcessor
       filename = $el.attr(attrSelector)
       if @isInternalFile(filename)
         if filename of @requestedFilenamesToElement
-          @requestedFilenamesToElement[filename].push($el)  
+          @requestedFilenamesToElement[filename].push($el)
           # Do not need to request this file because a request is already pending for it.
         else
           @requestedFilenamesToElement[filename] = [$el]
           @requestFile(filename, type)
 
   isInternalFile: (filename) =>
-    # TODO hack -- basically, an internal file can't start with "#" and shouldn't match http/https.
+    # Hack -- basically, an internal file can't start with "#" and shouldn't match http/https.
     if (filename[0] != "#" and filename.match(/(?:https?:\/\/)|(?:data:)/) is null)
       return true
     return false
 
   # Note that requestFile is also called externally (ie, by the global function that
-  #   handles a href tags being clicked.)  
+  #   handles a href tags being clicked.)
   requestFile: (filename, type) =>
     data =
       "filename": filename
@@ -119,10 +120,10 @@ class window.HTMLProcessor
     type = data.type  # Same as what we passed along in request file.
     fileType = data.fileType  # IMG, JS, CSS, HTML, etc.
 
-    # Handles a file type being sent in that refreshes the entire page. 
-    # Change the entire frame's contents to be the received html file. 
+    # Handles a file type being sent in that refreshes the entire page.
+    # Change the entire frame's contents to be the received html file.
     # Setting the document inner HTML calls the webRTC method passed in, which initiates
-    #   another round of setting up the HTML for the frame (with processing). 
+    #   another round of setting up the HTML for the frame (with processing).
     if type is "alink" or type is "backbutton" or type is "initialLoad" or type is "submit"
       @setDocumentElementInnerHTML({"fileContents": data.fileContents, "filename": filename, "fileType": fileType}, type)
     else
@@ -139,24 +140,22 @@ class window.HTMLProcessor
       $element.removeAttr("src")  # TODO remove later?
       $element.attr("todo-replace", "replace")
       @scriptMapping[data.filename] = fileContents
-      # TODO this is dangerous b/c we might get encoded if the filename has bad characters in it
+      # NOTE: this is dangerous b/c we might get encoded if the filename has bad characters in it
       #   (which I think is plausible), and then we're screwed when we try to find the non-encoded file name
-      #   contents using the encoded file name we pull out when we execute the script. It would be safest to include a 
-      #   unique ID with each file (perhaps imparted by the client-server filestore) that we can use instead. 
+      #   contents using the encoded file name we pull out when we execute the script. It would be safest to include a
+      #   unique ID with each file (perhaps imparted by the client-server filestore) that we can use instead.
       #   Basically any unique ID here is fine.
       $element.append(data.filename)
-      # console.log "INDEX OF &AMP on insertion"
-      # console.log fileContents.indexOf("&amp")
     else if $element[0].tagName is "LINK"
       $element.replaceWith("<style>" + fileContents + "</style>")
-    else 
+    else
       console.log "unknown element type, could not be processed:"
       console.log $element
-    
+
 
   handleSupportingFile: (data, filename, fileContents, type, fileType) =>
     elems = @requestedFilenamesToElement[filename]
-    if not elems 
+    if not elems
       console.error "received file not in request list: " + filename
       return
     for $element in elems
@@ -166,5 +165,4 @@ class window.HTMLProcessor
 
   checkForProcessCompletion: =>
     if Object.keys(@requestedFilenamesToElement).length is 0 and @completionCallback
-      console.log "EXECUTING COMPLETION CALLBACK"
       @completionCallback(@container[0].outerHTML, @scriptMapping)

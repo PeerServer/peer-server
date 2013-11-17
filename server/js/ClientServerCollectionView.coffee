@@ -1,9 +1,6 @@
 '''
   Display and organization of the user-uploaded file collection.
   Edit/Done modes for saving.
-
-  TODO handle bug of initial non-index, non-404 html files saved in localstorage returining a 404
-    due to there being no initial production version of them formed.
 '''
 
 
@@ -36,7 +33,7 @@ class window.ClientServerCollectionView extends Backbone.View
 
     @render()
     @addAll()
-    
+
     @serverFileCollection.bind("add", @addOneServerFile)
     @serverFileCollection.bind("reset", @addAll)
     @serverFileCollection.bind("change:contents", @handleFileChanged)
@@ -58,17 +55,17 @@ class window.ClientServerCollectionView extends Backbone.View
   events:
     "dragover .file-drop": "preventDefault"
     "drop .file-drop": "eventDropFiles"
-    
+
     "click .file-list li[data-cid] input": "preventDefault"
     "blur .file-list li[data-cid] input": "eventDoneNamingFile"
     "keypress .file-list li[data-cid] input": "eventKeypressWhileRenaming"
-    
+
     "click .file-list li[data-cid]": "eventSelectFile"
     "dblclick .file-list li[data-cid]": "eventRenameFile"
     "mouseenter .file-list li[data-cid]": "eventMouseEnterFile"
     "mouseleave .file-list li[data-cid]": "eventMouseLeaveFile"
     "click .file-list li[data-cid] .delete": "eventDeleteClicked"
-    
+
     "click .upload-files": "eventUploadFiles"
     "click .save-changes": "eventSaveChanges"
 
@@ -92,6 +89,8 @@ class window.ClientServerCollectionView extends Backbone.View
 
     @renderFileLists()
 
+  # TODO (already fixed?) Handle bug where initial non-index, non-404 html files saved in localstorage return a 404
+  #  due to there being no initial production version of them formed.
   renderFileLists: =>
     @fileListContainer.html(@tmplFileLists)
     @fileLists = @$(".file-list")
@@ -118,7 +117,7 @@ class window.ClientServerCollectionView extends Backbone.View
       @saveNotification.show()
     else
       @saveNotification.hide()
-    
+
   addAll: =>
     @renderFileLists()
     @routeViewContainer.hide()
@@ -253,11 +252,11 @@ class window.ClientServerCollectionView extends Backbone.View
   eventDropFiles: (event) =>
     # Prevent the page from opening the file directly on drop.
     event.preventDefault()
-    
+
     droppedFiles = event.originalEvent.dataTransfer.files
     for file in droppedFiles
       @handleFile(file)
-      
+
     return false
 
   handleFile: (file) =>
@@ -291,7 +290,7 @@ class window.ClientServerCollectionView extends Backbone.View
     @$("[data-cid=#{model.cid}]").remove()
 
   # --- CREATION METHODS ---
-  
+
   eventCreateHTML: =>
     serverFile = new ServerFile(type: "text/html")
     @createFile(serverFile)
@@ -330,7 +329,7 @@ class window.ClientServerCollectionView extends Backbone.View
     serverFile = @serverFileCollection.get(listEl.attr("data-cid"))
     # TODO validate name
     serverFile.save(name: target.val())
-    
+
     newListEl = @tmplServerFileListItem(
       cid: serverFile.cid,
       name: serverFile.get("name"),
@@ -361,7 +360,7 @@ class window.ClientServerCollectionView extends Backbone.View
       $(window).scrollTop(listElTop - 60)
 
     listEl.find("input").focus()
-  
+
   appendServerFileToFileList: (serverFile, listEl) =>
     section = null
     if serverFile.get("isRequired")
@@ -374,7 +373,7 @@ class window.ClientServerCollectionView extends Backbone.View
         when ServerFile.fileTypeEnum.IMG       then section = @imageFileList
         when ServerFile.fileTypeEnum.TEMPLATE  then section = @templateFileList
         else                              console.error("Error: Could not find proper place for file. " + serverFile.get("name"))
-    
+
     if section
       section.append(listEl)
 
@@ -394,13 +393,13 @@ class window.ClientServerCollectionView extends Backbone.View
 
   selectRoute: (route, listEl) =>
     routeView = new RouteView(model: route)
-    
+
     @select(listEl, routeView)
     @routeViewContainer.html(routeView.render().el)
 
     @uploadFilesRegion.hide()
     @fileViewContainer.hide()
     @routeViewContainer.show()
-    
+
     routeView.focus()
 

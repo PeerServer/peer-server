@@ -66,14 +66,14 @@ class window.ClientBrowser
       else # Load in the default start page.
         @setDocumentElementInnerHTML(data, "initialLoadDefault")
 
-    @eventTransmitter.addEventCallback("receiveFile", @receiveFileDispatch)    
+    @eventTransmitter.addEventCallback("receiveFile", @receiveFileDispatch)
 
-  # Responds to receiving a file over the data channel, dispatching the file to the 
+  # Responds to receiving a file over the data channel, dispatching the file to the
   #   appropriate handler. Ajax files go to the ajax handler, others go to html processor.
   receiveFileDispatch: (data) =>
     if data.type is "ajax"
       @ajaxClient.receiveAjax(data)
-    else 
+    else
       @htmlProcessor.receiveFile(data)
 
   getFullPath: (path) =>
@@ -103,9 +103,8 @@ class window.ClientBrowser
         @overrideFormsForClient()
 
 
-  # TODO handle jsonp cross-domain.
-  # Note: There will sadly be problems if a script uses $.ajax before this code is executed. 
-  #  The only way to get around this I think would be to explicitly identify when jQuery is being 
+  # Note: There will sadly be problems if a script uses $.ajax before this code is executed.
+  #  The only way to get around this I think would be to explicitly identify when jQuery is being
   #  loaded in, and set the ajax function then. Might be worth a look in the future -- for now, this works.
   overrideAjaxForClient: =>
     if (document.getElementById("container").contentWindow.window.jQuery)
@@ -123,18 +122,15 @@ class window.ClientBrowser
         @handleFormSubmit(form, path)
         return false  # Stop the form from actually redirecting.
 
-  # Responds to a form being submitted that needs to hit the path, possibly with 
+  # Responds to a form being submitted that needs to hit the path, possibly with
   #  form input attributes. Parses out the input attributes and dispatches a request
-  #  with the form. 
+  #  with the form.
   handleFormSubmit: (form, path) =>
     properties = {}
     for input in form.find(":input")
       input = $(input)
       if $(input).attr("name")
         properties[$(input).attr("name")] = input.val()
-    # console.log "FORM SUBMITTED"
-    # console.log path
-    # console.log properties
     data = {
       "filename": path,  # Path is more accurate than filename, but use filename for consistency.
       "socketId": @getID(),
@@ -158,10 +154,8 @@ class window.ClientBrowser
         # If the filename has weird encodings, though, all hell breaks loose since scriptMapping breaks.
         filename = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || ""
         if not scriptMapping[filename]
-          console.error("BAD: " + filename + "was not found in the script mapping. Script will not exist. This is because the script name got encoding-bork.")
+          console.error("Error: " + filename + "was not found in the script mapping. Script will not exist. The script name has bad encoding.")
         newScriptEl.text = scriptMapping[filename]
-        # console.log "EXECUTE SCRIPTS index of &amp"
-        # console.log newScriptEl.text.indexOf("&amp")
 
       else if not $(oldScriptEl).attr("src")  # Inline script
         newScriptEl.text = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || ""

@@ -10,8 +10,8 @@ class window.ServerFile extends Backbone.Model
     dateCreated: null
     hasBeenEdited: false
 
-  # TODO -- if these are updated to be static, note that there is a
-  #  dependency on the client-side at least for images.
+  # If these are updated, note that there are dependencies on the client-side
+  # for rendering.
   @fileTypeEnum:
     HTML: "HTML",
     CSS: "CSS",

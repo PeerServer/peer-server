@@ -58,7 +58,7 @@ class window.ServerFileCollection extends Backbone.Collection
           didOverwrite = true
 
     return didOverwrite
-      
+
   isFilenameInUse: (filename) =>
     result = @find (serverFile) ->
       return serverFile.get("name") is filename \
@@ -79,7 +79,7 @@ class window.ServerFileCollection extends Backbone.Collection
     notFound = new ServerFile(name: "404.html", size: 0, type: "text/html", contents: @template404, isRequired: true)
     @add(index)
     @add(notFound)
-    
+
     index.save()
     notFound.save()
 
@@ -153,7 +153,6 @@ class window.ServerFileCollection extends Backbone.Collection
       attrs = _.clone(serverFile.attributes)
       attrs.id = null
       copy = new ServerFile(attrs)
-      # console.log "creating production version: " + copy.get("name")
       copy.set("isProductionVersion", true)
       @add(copy)
       copy.save()

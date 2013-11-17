@@ -1,12 +1,12 @@
 '''
-  Defines the Route model for handing dynamic paths and 
+  Defines the Route model for handing dynamic paths and
   defined path parameters.
 
-  TODO: there should be verification on the UI-end that only valid Routes are initialized.
-  Specifically: 
+  There is verification on the UI-end that only valid Routes are initialized.
+  Specifically:
     - name should be a valid Javascript function name (nonempty, no invalid characters, no spaces, etc)
     - routePath should be a valid path (tokens separated by / without invalid characters in the tokens.
-        some of the tokens can be of the form <token> but there shouldn't be any other angle-brackets 
+        some of the tokens can be of the form <token> but there shouldn't be any other angle-brackets
         except at the start and end.)
     - reserved words: database, static_file, params  (inspect getExecutableFunction for most up-to-date)
 '''
@@ -35,7 +35,7 @@ class window.Route extends Backbone.RelationalModel
     # console.log "Parsed route: " + @get("routePath") + " " + @pathRegex + " " + @paramNames
     @on("change:routePath", @setParsedPath)
 
-  # Creates the text of a function that can be eval'd to obtain a renderable result. 
+  # Creates the text of a function that can be eval'd to obtain a renderable result.
   # Passes in the param names in order, and a final parameter called "params" containing
   #  the url-parameters (ie, get parameters foo and bar for "page?foo=f&bar=b")
   getExecutableFunction: (urlParams, dynamicParams, staticFileFcn, userDatabase, clientSession) =>

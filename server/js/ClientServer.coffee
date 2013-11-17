@@ -1,5 +1,5 @@
 class window.ClientServer
-  
+
   constructor: (options) ->
     @serverFileCollection = options.serverFileCollection
     @routeCollection = options.routeCollection
@@ -57,7 +57,7 @@ class window.ClientServer
     @clientBrowserConnections[connection.peer] = connection
     @userSessions.addSession(connection.peer)
     @appView.updateConnectionCount(_.size(@clientBrowserConnections))
-    
+
     foundRoute = @routeCollection.findRouteForPath("/index")
     # Check if path mapping or a static file for /index exists -- otherwise send index.html
     if foundRoute isnt null and foundRoute isnt undefined
@@ -86,7 +86,7 @@ class window.ClientServer
     connection = @clientBrowserConnections[socketId]
     @eventTransmitter.sendEvent(connection, eventName, data)
 
-  # The client-browser requested a file or path that resulted in an error. 
+  # The client-browser requested a file or path that resulted in an error.
   # The file might not exist, or evaluating the path may result in an error
   #  due to the user writing broken server code for the path.
   sendFailure: (data, errorMessage) =>
@@ -110,29 +110,23 @@ class window.ClientServer
     @sendEventTo(data.socketId, "receiveFile", response)
 
   serveFile: (data) =>
-    # console.log "FILENAME: " + data.filename
     rawPath = data.filename || ""
     if _.isObject(rawPath)  # In case the user passed an object with a url field instead.
       rawPath = rawPath.url
     [path, paramData] = @parsePath(rawPath)
     if data.options and data.options.data  # Happens for ajax and form submits
-      # Merge in any extra parameters passed with the ajax request. 
+      # Merge in any extra parameters passed with the ajax request.
       if typeof(data.options.data) is "string"
-        extraParams = URI.parseQuery(paramData) # TODO test, should return object mapping of get params in data.options.data
+        extraParams = URI.parseQuery(paramData) # Return object mapping of get params in data.options.data
       else
         extraParams = data.options.data
       for name, val of extraParams
         paramData[name] = val
-    
-    # console.log "Parsed path: " + path
-    # console.log "PARAMS: "
-    # console.log paramData
-    
     slashedPath = "/" + path
-    
+
     foundRoute = @routeCollection.findRouteForPath(slashedPath)
     foundServerFile = @serverFileCollection.findWhere(name: path, isProductionVersion: true)
-    
+
     # Check if path mapping or a static file for this path exists -- otherwise send failure
     if (foundRoute is null or foundRoute is undefined) and not @serverFileCollection.hasProductionFile(path)
       console.error "Error: Client requested " + rawPath + " which does not exist on server."
@@ -140,8 +134,8 @@ class window.ClientServer
       return
 
     if foundRoute is null or foundRoute is undefined
-      fileType = @serverFileCollection.getFileType(path) 
-    else 
+      fileType = @serverFileCollection.getFileType(path)
+    else
       fileType = "UNKNOWN"
 
     contents = @getContentsForPath(path, paramData, foundRoute, data.socketId)
@@ -176,21 +170,21 @@ class window.ClientServer
     params = URI.parseQuery(pathDetails.query)
     return [pathDetails.path, params]
 
-  # Returns the contents for the given path with the params. 
-  # foundRoute is an optional parameter that must be the corresponding dynamic path 
-  #   if the path is a dynamic path (ie, if the path is in the routecollection), or null 
-  #   if the path is a static file. 
+  # Returns the contents for the given path with the params.
+  # foundRoute is an optional parameter that must be the corresponding dynamic path
+  #   if the path is a dynamic path (ie, if the path is in the routecollection), or null
+  #   if the path is a static file.
   # Returns either the html string, or null if none can be found.
   #
-  # TODO handle leading slash and handle "./file" -- currently breaks
+  # TODO (?) handle leading slash and handle "./file"
   getContentsForPath: (path, paramData, foundRoute, socketId) =>
     if foundRoute is null or foundRoute is undefined
       return {"result": @serverFileCollection.getContents(path)}
     # Otherwise, handle a dynamic path
     slashedPath = "/" + path
-    # TODO flesh out with params, etc.
+    # TODO (?) flesh out with params, etc.
     match = slashedPath.match(foundRoute.pathRegex)
-    runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1), 
+    runRoute = foundRoute.getExecutableFunction(paramData, match.slice(1),
       @serverFileCollection.getContents, @userDatabase.database, @userSessions.getSession(socketId))
     return runRoute()
 
@@ -209,20 +203,15 @@ class window.ClientServer
     return if not resource
 
     resourceName = resource.get("name")
-
     @removePeerFromClientBrowserResourceRequests(peerID)
-
     if not @clientBrowserResourceRequests[resourceName]
       @clientBrowserResourceRequests[resourceName] = []
-
     @clientBrowserResourceRequests[resourceName].push(peerID: peerID, data: data)
 
 
   onResourceChange: (resource) =>
     return if not @isPushChangesEnabled
-
     return if not resource.get("isProductionVersion")
-
     interestedPeers = @clientBrowserResourceRequests[resource.get("name")]
     _.each interestedPeers, (interestedPeer) =>
       @serveFile(interestedPeer.data)
@@ -244,12 +233,11 @@ class window.ClientServer
 
     resourceNames = _.keys(@clientBrowserResourceRequests)
     _.each resourceNames, (resourceName) =>
-      #TODO make this not a hack
+      # This is a bit of a hack -- not currently used experiment for push-on-DB-change functionality.
       route = @routeCollection.findWhere(name: resourceName, isProductionVersion: true)
       return if route and /database\.insert\(|database\(.*?\)\.remove\(|database\(.*?\)\.update\(/.test(route.get("routeCode"))
 
       interestedPeers = @clientBrowserResourceRequests[resourceName]
       _.each interestedPeers, (interestedPeer) =>
-        console.log "interestedPeer", interestedPeer
         @serveFile(interestedPeer.data)
 

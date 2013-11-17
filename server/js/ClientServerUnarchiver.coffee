@@ -1,5 +1,5 @@
 class window.ClientServerUnarchiver
-  
+
   constructor: (params) ->
     @serverFileCollection = params.serverFileCollection
     @routeCollection = params.routeCollection
@@ -23,7 +23,7 @@ class window.ClientServerUnarchiver
     if database
       @userDatabase.fromJSONArray(database.data)
 
-  # TODO unify clearing code with server collection view
+  # TODO (?) Unify clearing code with server collection view
   clearAll: =>
     while model = @serverFileCollection.first()
       model.destroy()

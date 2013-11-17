@@ -1,0 +1,30 @@
+ div.top-header {
+  background-color: #EA551F;
+  -moz-border-radius: 0px;
+  -webkit-border-radius: 0px;
+  border-radius: 0px;
+  padding: 60px;
+  padding-bottom: 30px;
+  margin-bottom: 40px;
+  line-height: 39px;
+  font-size: 18px;
+}
+.subtitle-part {
+  color: #555;
+}
+.subtitle-part-two {
+  color: #333;
+}
+.goto-server-wrapper {
+  text-align: center;
+}
+.goto-server input {
+  border: 1px solid #CC641F;
+  padding: 3px;
+  letter-spacing: 1px;
+  margin: 5px;
+  color: #663210;
+}
+#serverName {
+  width: 200px;
+}

@@ -1,13 +1,11 @@
 '''
   Tracks Ajax requests, implementing a subset of ajax.
-
-  TODO put in support for jsonp cross-domain requests
 '''
 
 class window.AjaxClient
   constructor: (@sendEvent, @socketIdFcn) ->
     @outstandingRequests = {}  # Map of ajax requestId to callbacks.
-  
+
   requestAjax: (path, options, successCallback, errorCallback) =>
     requestId = Math.random().toString(36).substr(2,14)
 
@@ -42,5 +40,5 @@ class window.AjaxClient
     if not data.errorThrown
       request.successCallback(data.fileContents)
     else
-      # TODO later: first argument should techically be a jqXHR object.
+      # TODO (low priority): first argument should technically be a jqXHR object.
       request.errorCallback({}, data.textStatus, data.errorThrown)
