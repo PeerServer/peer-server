@@ -19,8 +19,10 @@ class window.ClientBrowser
     @setUpReceiveEventCallbacks(startPage)
 
     window.onpopstate = (evt) =>
-      filename = evt.state.path
-      @htmlProcessor.requestFile(filename, "backbutton")
+      # Chrome calls onpopstate on initial load, in which case evt has no state
+      if evt.state
+        filename = evt.state.path
+        @htmlProcessor.requestFile(filename, "backbutton")
 
   # Returns the client-server's own data channel id.
   getID: =>

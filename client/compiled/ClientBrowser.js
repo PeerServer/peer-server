@@ -28,8 +28,10 @@
       this.setUpReceiveEventCallbacks(startPage);
       window.onpopstate = function(evt) {
         var filename;
-        filename = evt.state.path;
-        return _this.htmlProcessor.requestFile(filename, "backbutton");
+        if (evt.state) {
+          filename = evt.state.path;
+          return _this.htmlProcessor.requestFile(filename, "backbutton");
+        }
       };
     }
 
@@ -188,7 +190,7 @@
         if ($(oldScriptEl).attr("todo-replace") === "replace") {
           filename = oldScriptEl.text || oldScriptEl.textContent || oldScriptEl.innerHTML || "";
           if (!scriptMapping[filename]) {
-            console.error("BAD: " + filename + "was not found in the script mapping. Script will not exist. This is because the script name got encoding-bork.");
+            console.error("Error: " + filename + "was not found in the script mapping. Script will not exist. The script name has bad encoding.");
           }
           newScriptEl.text = scriptMapping[filename];
         } else if (!$(oldScriptEl).attr("src")) {
