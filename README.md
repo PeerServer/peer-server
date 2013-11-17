@@ -1,5 +1,7 @@
-# PeerServer: A Server in the Browser with WebRTC
+## PeerServer: A Server in the Browser with WebRTC
+
 Sophia Westwood and Brie Bunge
+
 (sophia@cs.stanford.edu, @sophiawestwood) (brie@cs.stanford.edu)
 
 ## About
@@ -13,5 +15,9 @@ Check it out and create a server! Visit [peer-server.com](http://www.peer-server
 
 ## Running the project locally
 After running git clone:
-Run `./scripts/coffee.sh` to compile the Coffeescript files and `./scripts/handlebars.sh` to compile the Handlebars files. Then, run  `./scripts/server.sh` to start the server. You should now be able to access `http://localhost:8890/server` and `http://localhost:8890/client` successfully!
+From the `scripts` directory, run `coffee.sh` to compile the Coffeescript files and `handlebars.sh` to compile the Handlebars files.
+
+Then, run  `server.sh` to start the server.
+
+You should now be able to access `http://localhost:8890/server` and `http://localhost:8890/client` successfully!
 
