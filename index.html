@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Peer-server by PeerServer</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Peer-server</h1>
+        <p class="header"></p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/PeerServer/peer-server/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/PeerServer/peer-server/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/PeerServer/peer-server">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/PeerServer">PeerServer</a></p>
+
+
+      </header>
+      <section>
+        <h2>
+<a name="peerserver-a-server-in-the-browser-with-webrtc" class="anchor" href="#peerserver-a-server-in-the-browser-with-webrtc"><span class="octicon octicon-link"></span></a>PeerServer: A Server in the Browser with WebRTC</h2>
+
+<p>Sophia Westwood and Brie Bunge</p>
+
+<p>(<a href="mailto:sophia@cs.stanford.edu">sophia@cs.stanford.edu</a>, @sophiawestwood) (<a href="mailto:brie@cs.stanford.edu">brie@cs.stanford.edu</a>)</p>
+
+<h3>
+<a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>About</h3>
+
+<p>PeerServer is a peer-to-peer client server using WebRTC, where your browser acts as a server for other browsers across WebRTC peer-to-peer data channels. You can create a client-server within your browser tab, upload content, and generate dynamic content using a mock-database, templating system, and sessions. Any client browser that connects to your client server will behave as if it is talking to a traditional server while in fact exclusively hitting your server.</p>
+
+<p>This system allows you to quickly create a decentralized, short-lived web application where all the content lives within your browser. The traditional server only performs the initial handshake between the client-browsers and the client-server; your browser serves all other content peer-to-peer.</p>
+
+<p>We built PeerServer in 8 weeks for our Stanford senior project in Spring 2013.</p>
+
+<p>Check it out and create a server! Visit <a href="http://www.peer-server.com">peer-server.com</a> or follow instructions to run locally.</p>
+
+<h3>
+<a name="running-the-project-locally" class="anchor" href="#running-the-project-locally"><span class="octicon octicon-link"></span></a>Running the project locally</h3>
+
+<p>After running git clone:
+From the <code>scripts</code> directory, run <code>coffee.sh</code> to compile the Coffeescript files and <code>handlebars.sh</code> to compile the Handlebars files.</p>
+
+<p>Then, run  <code>server.sh</code> to start the server.</p>
+
+<p>You should now be able to access <code>http://localhost:8890</code> successfully!</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-42333100-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
