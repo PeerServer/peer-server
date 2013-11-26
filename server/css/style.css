@@ -155,7 +155,7 @@ html, body {
   padding-top: 10px;
   height: 100%;
   margin-left: 10px;
-  width: 280px;  
+  width: 280px;
   float: left;
 }
 
@@ -189,17 +189,17 @@ html, body {
   display: none;
   height: 400px;
   width: 100%;
-  display: table; 
+  display: table;
 }
 
 .file-drop-inner h3 {
-  display: table-cell; 
-  vertical-align: middle; 
+  display: table-cell;
+  vertical-align: middle;
   text-align: center;
 }
 
 #file-view-container > div,
-#file-view-container .row-fluid, 
+#file-view-container .row-fluid,
 #file-view-container .file-contents {
   height: 100%
 }
