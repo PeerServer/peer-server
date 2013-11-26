@@ -38,7 +38,9 @@ html, body {
 }
 
 #client-server {
+  height: calc(100% - 40px);
   height: -moz-calc(100% - 40px);
+  height: -webkit-calc(100% - 40px);
 }
 
 #client-server-collection-view {
@@ -63,7 +65,9 @@ html, body {
 }
 
 .function-signature {
+  width: calc(100% - 214px);
   width: -moz-calc(100% - 214px);
+  width: -webkit-calc(100% - 214px);
   word-wrap: break-word;
 }
 
@@ -145,8 +149,12 @@ html, body {
 .main-pane {
   padding-top: 10px;
   margin-left: 300px;
+  width: calc(100% - 310px);
   width: -moz-calc(100% - 310px);
+  width: -webkit-calc(100% - 310px);
+  height: calc(100% - 84px);
   height: -moz-calc(100% - 84px);
+  height: -webkit-calc(100% - 84px);
   position: fixed;
   z-index: 1;
 }
@@ -169,7 +177,9 @@ html, body {
 }
 
 #route-view-container .code-container {
+  height: calc(100% - 210px);
   height: -moz-calc(100% - 210px);
+  height: -webkit-calc(100% - 210px);
 }
 
 #route-view-container .code {
@@ -177,7 +187,9 @@ html, body {
 }
 
 #route-view-container .function {
+  height: calc(100% - 58px);
   height: -moz-calc(100% - 58px);
+  height: -webkit-calc(100% - 58px);
   overflow-y: auto;
 }
 
@@ -201,7 +213,7 @@ html, body {
 #file-view-container > div,
 #file-view-container .row-fluid,
 #file-view-container .file-contents {
-  height: 100%
+  height: 100%;
 }
 
 #route-view-container,
@@ -216,6 +228,7 @@ html, body {
   background-color: rgb(238, 238, 238);
   background-repeat: repeat-x;
   background-image: -moz-linear-gradient(center top , rgb(245, 245, 245) 0%, rgb(238, 238, 238) 100%);
+  background-image: -webkit-linear-gradient(center top , rgb(245, 245, 245) 0%, rgb(238, 238, 238) 100%);
   border: 1px solid rgb(229, 229, 229);
   border-radius: 4px 4px 4px 4px;
 }
