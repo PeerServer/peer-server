@@ -11,7 +11,7 @@ This system allows you to quickly create a decentralized, short-lived web applic
 
 We built PeerServer in 8 weeks for our Stanford senior project in Spring 2013.
 
-![poster](http://i.imgur.com/nLEVcya.jpg)
+![poster](http://farm6.staticflickr.com/5505/12141206363_140ba3310d_b.jpg)
 
 ### Getting Started
 
@@ -21,8 +21,8 @@ This tutorial will walk you through how to make the canonical "Hello, world." pa
 
 1. Go to [www.peer-server.com](http://www.peer-server.com/)
 2. Type your server name in the input field. _Note: If the server name is already taken, you will be prompted to choose another name._
-3. Click the "Create PeerServer" button. You will be asked to select a template. For the purposes of this tutorial, you should choose "Empty Template." But, feel free to explore the others. :) ![create server](http://i.imgur.com/KzqAsZB.png)
-4. A new tab should open, revealing your new server! ![new server](http://i.imgur.com/uuMPecG.png)
+3. Click the "Create PeerServer" button. You will be asked to select a template. For the purposes of this tutorial, you should choose "Empty Template." But, feel free to explore the others. :) ![create server](http://farm4.staticflickr.com/3804/12141116994_65261c0b41_b.jpg)
+4. A new tab should open, revealing your new server! ![new server](http://farm4.staticflickr.com/3804/12141366786_08835b2717_b.jpg)
 5. Click "Open Browser" in the nav bar.
 6. Marvel at your very own "Hello, world." page.
 
@@ -35,8 +35,8 @@ You might be wondering, "Well, okay. Why is this so awesome?" What just transpir
 #### A tour of the server
 
 - Let's head back to the server tab.
-- Click on "index.html" in the sidebar. This is the page contains the content you saw in the PeerServer browser's tab. ![index page](http://i.imgur.com/cKPF2yz.png)
-- Next, click on "default" under "Dynamic Files". When the PeerServer browser visits http://www.peer-server.com/connect/[your server name]/, this default dynamic file is loaded. ![default dynamic file](http://i.imgur.com/wzzHpqb.png) ![default dynamic file - annotated](http://i.imgur.com/D8jH42y.png)
+- Click on "index.html" in the sidebar. This is the page contains the content you saw in the PeerServer browser's tab. ![index page](http://farm6.staticflickr.com/5530/12140710785_fce1326157_b.jpg)
+- Next, click on "default" under "Dynamic Files". When the PeerServer browser visits http://www.peer-server.com/connect/[your server name]/, this default dynamic file is loaded. ![default dynamic file](http://farm4.staticflickr.com/3817/12141366816_5cde816f02_b.jpg) ![default dynamic file - annotated](http://farm8.staticflickr.com/7337/12141652926_4ed8ee622f_b.jpg)
 
 #### (Optional) Running the project locally
 
