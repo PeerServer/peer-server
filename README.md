@@ -22,7 +22,7 @@ This tutorial will walk you through how to make the canonical "Hello, world." pa
 1. Go to [www.peer-server.com](http://www.peer-server.com/)
 2. Type your server name in the input field. _Note: If the server name is already taken, you will be prompted to choose another name._
 3. Click the "Create PeerServer" button. You will be asked to select a template. For the purposes of this tutorial, you should choose "Empty Template." But, feel free to explore the others. :) ![create server](http://i.imgur.com/KzqAsZB.png)
-4. A new tab should open, revealing your new server! ![new server](http://i.imgur.com/uuMPecG)
+4. A new tab should open, revealing your new server! ![new server](http://i.imgur.com/uuMPecG.png)
 5. Click "Open Browser" in the nav bar.
 6. Marvel at your very own "Hello, world." page.
 
