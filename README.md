@@ -21,8 +21,8 @@ This tutorial will walk you through how to make the canonical "Hello, world." pa
 
 1. Go to [www.peer-server.com](http://www.peer-server.com/)
 2. Type your server name in the input field. _Note: If the server name is already taken, you will be prompted to choose another name._
-3. Click the "Create PeerServer" button. You will be asked to select a template. For the purposes of this tutorial, you should choose "Empty Template." But, feel free to explore the others. :) ![create server](http://s30.postimg.org/x4befdyoh/Screen_Shot_2014_01_24_at_4_51_17_PM.png)
-4. A new tab should open, revealing your new server! ![new server](http://s30.postimg.org/657jk8c7l/Screen_Shot_2014_01_24_at_4_51_28_PM.png)
+3. Click the "Create PeerServer" button. You will be asked to select a template. For the purposes of this tutorial, you should choose "Empty Template." But, feel free to explore the others. :) ![create server](http://i.imgur.com/KzqAsZB.png)
+4. A new tab should open, revealing your new server! ![new server](http://i.imgur.com/uuMPecG)
 5. Click "Open Browser" in the nav bar.
 6. Marvel at your very own "Hello, world." page.
 
@@ -35,8 +35,8 @@ You might be wondering, "Well, okay. Why is this so awesome?" What just transpir
 #### A tour of the server
 
 - Let's head back to the server tab.
-- Click on "index.html" in the sidebar. This is the page contains the content you saw in the PeerServer browser's tab. ![index page](http://s30.postimg.org/4ow1239ap/Screen_Shot_2014_01_24_at_4_51_35_PM.png)
-- Next, click on "default" under "Dynamic Files". When the PeerServer browser visits http://www.peer-server.com/connect/[your server name]/, this default dynamic file is loaded. ![default dynamic file](http://s20.postimg.org/h6tzkhuh9/Screen_Shot_2014_01_24_at_5_16_23_PM.png) ![default dynamic file - annotated](http://s20.postimg.org/6la48ho5p/Screen_Shot_2014_01_24_at_5_16_23_PM.png)
+- Click on "index.html" in the sidebar. This is the page contains the content you saw in the PeerServer browser's tab. ![index page](http://i.imgur.com/cKPF2yz.png)
+- Next, click on "default" under "Dynamic Files". When the PeerServer browser visits http://www.peer-server.com/connect/[your server name]/, this default dynamic file is loaded. ![default dynamic file](http://i.imgur.com/wzzHpqb.png) ![default dynamic file - annotated](http://i.imgur.com/D8jH42y.png)
 
 #### (Optional) Running the project locally
 
