@@ -11,7 +11,7 @@ This system allows you to quickly create a decentralized, short-lived web applic
 
 We built PeerServer in 8 weeks for our Stanford senior project in Spring 2013.
 
-![poster](http://s20.postimg.org/opd4t4lu5/peerserver_final_version.png)
+![poster](http://i.imgur.com/nLEVcya.jpg)
 
 ### Getting Started
 
