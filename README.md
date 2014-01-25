@@ -13,6 +13,17 @@ We built PeerServer in 8 weeks for our Stanford senior project in Spring 2013.
 
 ![poster](http://farm6.staticflickr.com/5505/12141206363_140ba3310d_b.jpg)
 
+### Videos
+
+Get started with PeerServer and learn about how it works.
+
+[![Getting Started Video](http://farm8.staticflickr.com/7356/12141113594_6fcffdc44c_z.jpg)](http://youtu.be/yQH5Vkzw8ko)
+
+
+Go more in-depth with a more complicated website that uses additional features.
+
+[![More In-depth Video](http://farm8.staticflickr.com/7406/12141113564_1d6c986048_z.jpg)](http://youtu.be/w76V3H1Q6HI)
+
 ### Getting Started
 
 This tutorial will walk you through how to make the canonical "Hello, world." page using PeerServer.
