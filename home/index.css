@@ -29,3 +29,9 @@
 #serverName {
     width: 400px;
 }
+h3 {
+    margin-top: 1em;
+}
+iframe, .senior-poster {
+    margin: 1em .4em;
+}
