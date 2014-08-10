@@ -1,0 +1,108 @@
+<html>
+<head>
+<title>+PeerServer</title>
+<link href="/shared/css/bootstrap.min.css" rel="stylesheet">
+<link href="/home/index.css" rel="stylesheet">
+
+<script src="/shared/lib/jquery-2.0.0.js"></script>
+<script src="/shared/lib/bootstrap.js"></script>
+<script src="/shared/lib/json2.js"></script>
+<script src="/shared/lib/underscore.js"></script>
+<script src="/shared/lib/backbone.js"></script>
+<script src="/shared/lib/handlebars.js"></script>
+<script src="/shared/lib/backbone.localStorage.js"></script>
+<script src="/shared/lib/ace/ace.js"></script>
+<script src="/shared/lib/ace/theme-tomorrow_night_eighties.js"></script>
+<script src="/shared/lib/ace/mode-javascript.js"></script>
+<script src="/shared/lib/ace/mode-html.js"></script>
+<script src="/shared/lib/ace/mode-css.js"></script>
+<script src="/home/compiled/init.js"></script>
+
+
+
+</head>
+<body>
+<div class="top-line"></div>
+
+<a href="https://github.com/PeerServer/peer-server">
+    <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork us on GitHub">
+</a>
+
+<div class="container">
+    <div class="row well title">
+        <h1>+PeerServer: A Server in a Browser <small class="subtitle-part">with WebRTC</small></h1>
+        <h4>Sophia Westwood and Brie Bunge</h4>
+        <h4><small class="subtitle-part-two">(sophia at cs.stanford.edu, @sophiawestwood | brie at cs.stanford.edu)</small></h4>
+    </div>
+
+    <div class="row">
+        <div class="span1">
+        </div>
+        <div class="span10 goto-server-wrapper ">
+            <div class="goto-server">
+
+                <input id="serverName" placeholder="Server Name?"> </input>
+
+
+
+                <div class="btn-group">
+                    <a class="btn btn-primary dropdown-toggle" class="create-server" target="_blank" data-toggle="dropdown" href="/server/">
+                        Create PeerServer
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="create-server" target="_blank" data-tmpl="grocery" href="/server/">Grocery List Demo</a></li>
+                        <li><a class="create-server" target="_blank" data-tmpl="store" href="/server/">Garage Sale Demo</a></li>
+                        <li><a class="create-server" target="_blank" data-tmpl="accounts" href="/server/">Login Demo</a></li>
+                        <li><a class="create-server" target="_blank" data-tmpl="blank" href="/server/">Empty Template</a></li>
+                    </ul>
+                </div>
+
+                <p><small>(Supported in <a href="https://www.google.com/intl/en/chrome/browser/">Chrome</a> (31+) and <a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a> (22+) due to WebRTC robust DataChannel support.)</small></p>
+            </div>
+            <div class="span1">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span1">
+            </div>
+            <div class="span10">
+               <h3>Getting Started Tutorial</h3>
+               <p>This tutorial will walk you through how to make the canonical "Hello, world." page using PeerServer.</p>
+
+               <h4 id="createanewserver">Create a new server</h4>
+
+               <ol>
+               <li>Type your server name in the input field. <em>Note: If the server name is already taken, you will be prompted to choose another name.</em></li>
+               <li>Click the "Create PeerServer" button. You will be asked to select a template. For the purposes of this tutorial, you should choose "Empty Template." But, feel free to explore the others. In particular, the Login template shows off an account registration system, the Grocery template shows a Bootstrap grocery list app, and the Garage Sale template shows an image-intensive store app. <img src="http://farm4.staticflickr.com/3804/12141116994_65261c0b41_b.jpg" alt="create server" title="" /></li>
+               <li>A new tab should open, revealing your new server! <img src="http://farm4.staticflickr.com/3804/12141366786_08835b2717_b.jpg" alt="new server" title="" /></li>
+               <li>Click "Open Browser" in the nav bar.</li>
+               <li>Marvel at your very own "Hello, world." page.</li>
+               </ol>
+
+               <h4>What just happened?</h4>
+
+               <p>You might be wondering, "Well, okay. Why is this so awesome?" What you just saw is really cool! The first tab is your server, so its responsibility is to serve pages. How can a tab serve a webpage? WebRTC allows for between-browser communication. PeerServer uses the data channel capability of WebRTC. The data channel lets you send any sort of data between tabs. In this case, the server tab sends HTTP-like data (analogous to a HTTP server, such as Apache). The second tab is the browser, or client, of the server in the first tab. The PeerServer code on the browser/client tab overrides the standard HTTP requests, ensuring that everything is sent over the data channel. As long as your browser tab is open and awake, anyone can open your link in a WebRTC-enabled browser (recent Chrome or Firefox) to visit your webpage.</p>
+
+
+            </div>
+            <div class="span1"></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+ })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-42333100-1', 'peer-server.com');
+ga('send', 'pageview');
+
+</script>
+
+</body>
+</html>
