@@ -39,6 +39,13 @@
     };
 
     ClientDataChannel.prototype.onData = function(data) {
+      var e;
+      try {
+        data = JSON.parse(data);
+      } catch (_error) {
+        e = _error;
+        data = data;
+      }
       return this.onDataCallback(data);
     };
 

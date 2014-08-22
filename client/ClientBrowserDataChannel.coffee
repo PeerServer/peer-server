@@ -5,9 +5,12 @@ class window.ClientBrowserDataChannel extends ClientDataChannel
 
   onOpen: (id) =>
     super(id)
-    @connection = @peer.connect(@desiredServer, { reliable: true, serialization: "json" })
+    # TODO put back JSON serialization when PeerJS/Chrome works again with big JSON objects.
+    # @connection = @peer.connect(@desiredServer, { reliable: true, serialization: "json" })
+    @connection = @peer.connect(@desiredServer, { reliable: true })
     @connection.on("data", @onData)
 
   send: (data) =>
-    @connection.send(data)
+    # TODO remove the stringify when PeerJS/Chrome works again with big JSON objects.
+    @connection.send(JSON.stringify(data))
 

@@ -18,14 +18,13 @@
     ClientBrowserDataChannel.prototype.onOpen = function(id) {
       ClientBrowserDataChannel.__super__.onOpen.call(this, id);
       this.connection = this.peer.connect(this.desiredServer, {
-        reliable: true,
-        serialization: "json"
+        reliable: true
       });
       return this.connection.on("data", this.onData);
     };
 
     ClientBrowserDataChannel.prototype.send = function(data) {
-      return this.connection.send(data);
+      return this.connection.send(JSON.stringify(data));
     };
 
     return ClientBrowserDataChannel;

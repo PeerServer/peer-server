@@ -24,6 +24,12 @@ class window.ClientDataChannel
     @id = id
 
   onData: (data) =>
+    # TODO remove: hack until PeerJS / Chrome works again with huge JSON objects.
+    # In the meantime, this seems to work with the connection sending a stringified data object.
+    try
+      data = JSON.parse(data)
+    catch e
+      data = data
     @onDataCallback(data)
 
   onError: (error) =>
